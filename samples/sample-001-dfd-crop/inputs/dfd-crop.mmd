@@ -1,0 +1,43 @@
+%% sample-001-dfd-crop — AI SaaS Security Review Portal
+%% Synthetic DFD for AISRAF SAS Prototype v0.1.2 Build Package 10.
+%% No real PII, PAN, SSN, PHI, secrets, credentials, or production endpoints.
+%% Regenerate the PNG with:
+%%   mmdc -i samples/sample-001-dfd-crop/inputs/dfd-crop.mmd \
+%%        -o samples/sample-001-dfd-crop/inputs/dfd-crop.png \
+%%        -w 2200 -H 1400 -b transparent
+flowchart LR
+  classDef extZone fill:#fbe9e7,stroke:#bf360c,stroke-width:1px,color:#212121
+  classDef appZone fill:#e3f2fd,stroke:#0d47a1,stroke-width:1px,color:#0d47a1
+  classDef dataZone fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px,color:#1b5e20
+  classDef saasZone fill:#fff8e1,stroke:#827717,stroke-width:1px,color:#827717
+  classDef toolZone fill:#ede7f6,stroke:#311b92,stroke-width:1px,color:#311b92
+  classDef stackMark fill:#ffffff,stroke:#0d47a1,stroke-width:2px,color:#0d47a1
+
+  subgraph BND01[BND-01 Internet boundary]
+    CMP01["CMP-01 Reviewer Browser<br/>external_actor · IA1"]:::extZone
+  end
+
+  subgraph BND03[BND-03 Application zone — Review Portal]
+    CMP02["CMP-02 Review Portal Web App<br/>application_service"]:::appZone
+    CMP03["CMP-03 Review API Gateway<br/>gateway_service · S1 ◇"]:::appZone
+    CMP08["CMP-08 Jira/Confluence Draft Formatter<br/>tool_or_api_surface · formatted_only"]:::toolZone
+  end
+
+  subgraph BND04[BND-04 Internal data zone]
+    CMP04["CMP-04 Review Metadata DB<br/>data_store · C4P · E1 marker"]:::dataZone
+    CMP06["CMP-06 Policy Reference Store<br/>data_store · C2"]:::dataZone
+    CMP07["CMP-07 Findings Store<br/>data_store · C4"]:::dataZone
+  end
+
+  subgraph BND02[BND-02 External AI SaaS boundary]
+    CMP05["CMP-05 AI Analysis Service<br/>model_endpoint (external SaaS) · SA1"]:::saasZone
+  end
+
+  CMP01 -- "F1 HTTPS · IA1 · T1 · C4 review request" --> CMP02
+  CMP02 -- "F2 API call · SA1" --> CMP03
+  CMP03 -- "F3 write · C4P · E1 marker" --> CMP04
+  CMP03 -- "F4 model call · SA1 · request payload class unknown" --> CMP05
+  CMP05 -- "F5 model response · class unknown" --> CMP03
+  CMP03 -- "F6 write · C4 finding record" --> CMP07
+  CMP03 -- "F7 read · C2 policy reference" --> CMP06
+  CMP03 -- "F8 formatted_only draft handoff" --> CMP08

@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "09"
-  build_package_name: Templates
-  build_package_status: active
-next_build_package:
   build_package_number: "10"
   build_package_name: Samples and expected baselines
+  build_package_status: active
+next_build_package:
+  build_package_number: "11"
+  build_package_name: Runs and execution evidence model
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -701,6 +701,108 @@ build_package_09_allowed_writes:
     - external post-back claim without postback_execution_status executed_by_operator and matching templates/run/postback-log-entry-row-template.md row in {{output_root}}/00-run-log.md
     - any template count or layout deviating from the locked 31 templates / 4 families / 37 files
     - runtime services, cloud assets, ADK/Vertex/GCP, MCP/Jira/Confluence/Rovo execution proof, database jobs, Terraform, release binaries
+build_package_10_allowed_writes:
+  sample_root_files:
+    - samples/README.md
+    - samples/sample-registry.yaml
+  sample_001_files:
+    - samples/sample-001-dfd-crop/README.md
+    - samples/sample-001-dfd-crop/inputs/dfd-crop.png
+    - samples/sample-001-dfd-crop/inputs/dfd-crop.mmd
+    - samples/sample-001-dfd-crop/inputs/dfd-legend-excerpt.md
+    - samples/sample-001-dfd-crop/inputs/cloud-triage-notes.md
+    - samples/sample-001-dfd-crop/inputs/review-transcript.md
+    - samples/sample-001-dfd-crop/inputs/intake-ticket.md
+  sample_001_expected_rs_baselines:
+    - samples/sample-001-dfd-crop/expected/expected-01-input-inventory.md
+    - samples/sample-001-dfd-crop/expected/expected-02-visible-dfd-objects.md
+    - samples/sample-001-dfd-crop/expected/expected-03-legend-normalization.md
+    - samples/sample-001-dfd-crop/expected/expected-04-components.md
+    - samples/sample-001-dfd-crop/expected/expected-05-flows.md
+    - samples/sample-001-dfd-crop/expected/expected-06-boundaries.md
+    - samples/sample-001-dfd-crop/expected/expected-07-security-stack-assessment.md
+    - samples/sample-001-dfd-crop/expected/expected-08-internal-review-table.md
+    - samples/sample-001-dfd-crop/expected/expected-09-missing-facts.md
+    - samples/sample-001-dfd-crop/expected/expected-10-ai-action-level.md
+    - samples/sample-001-dfd-crop/expected/expected-11-blueprint-match.md
+    - samples/sample-001-dfd-crop/expected/expected-12-targeted-questions.md
+    - samples/sample-001-dfd-crop/expected/expected-13-findings.md
+    - samples/sample-001-dfd-crop/expected/expected-14-recommendations.md
+    - samples/sample-001-dfd-crop/expected/expected-15-handoff-pack.md
+    - samples/sample-001-dfd-crop/expected/expected-16-validation-notes.md
+    - samples/sample-001-dfd-crop/expected/expected-17-accuracy-score.md
+  sample_001_expected_dfd_baselines:
+    - samples/sample-001-dfd-crop/expected/expected-dfd-01-intake-quality-check.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-02-boundary-catalog.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-03-component-catalog.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-04-flow-inventory.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-05-annotation-resolution.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-06-boundary-crossings.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-07-control-signals.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-08-confidence-score.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-09-extraction-summary.md
+  validation_files:
+    - validation/package-10-samples-checklist.md
+    - validation/sample-registry-checklist.md
+    - validation/sample-baseline-checklist.md
+  governance_updates:
+    - PACKAGE-MANIFEST.yaml
+    - FOLDER-CONTRACTS.md
+    - README.md
+    - START-HERE.md
+    - .github/copilot-instructions.md
+    - validation/no-drift-rules.md
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1
+  sample_count_active: 1
+  sample_count_deferred: 7
+  sample_class_counts:
+    gold_standard_scored: 1
+    targeted_behavior_baseline: 0
+    exploratory: 0
+  expected_baseline_counts_per_sample:
+    sample-001-dfd-crop:
+      rs: 17
+      dfd: 9
+      total: 26
+  total_files_under_samples_after_build_package_10: 36   # 1 root README + 1 registry + 1 sample README + 6 inputs + 26 expected + 1 implicit folder root file count omitted
+  founder_decisions:
+    q1_expected_baseline_shape: markdown_only_with_optional_yaml_front_matter_for_scoring_metadata
+    q2_run_log_expected: do_not_create_expected_00_run_log_md_run_logs_belong_to_build_package_11
+    q3_dfd_subskill_expected_baselines: included_9_dfd_baselines_in_sample_001
+    q4_dfd_png_regeneration: regenerated_from_v0_1_2_mermaid_source_via_mmdc_not_bit_copied_from_v0_01
+    q5_expected_score: legacy_reference_151_160_recorded_only_v0_1_2_verdict_PASS_READY_FOR_REVIEW
+    q6_test_aisraf_package_patch: surgical_four_change_patch_approved
+    q7_sample_registry: required_active_sample_001_plus_planned_deferred_002_through_008
+    q8_sample_family_scope: build_only_sample_001_now_deferred_002_through_008_recorded_only_in_registry
+  prohibited:
+    - prompts/* prompt cards or registry edits
+    - skills/* skill contracts or registry edits
+    - prototype-agents/* PRA specs or registry edits
+    - .agents/*.agent.md adapter file edits
+    - catalogs/* catalog content or registry edits
+    - blueprints/* blueprint content or registry edits
+    - templates/* template content or registry edits
+    - config/* schema or sample-config edits
+    - runs/* committed run outputs (deferred to Build Package 11)
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides
+    - release/* release artifacts
+    - schemas outside config/
+    - .github/prompts/ wrappers
+    - tools/Export-AisrafRelease.ps1 or any new release-export tool
+    - any new tool beyond the surgical Test-AisrafPackage.ps1 patch
+    - introduction of {{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, or {{validation_root}} variables in any sample artefact
+    - new catalog identifier introduced inside any sample artefact
+    - new controlled value introduced inside any sample artefact
+    - new BP-* identifier introduced inside any sample artefact
+    - JSON expected baselines (founder decision Q1: Markdown-only)
+    - expected-00-run-log.md inside any sample folder (founder decision Q2)
+    - sample-002-* through sample-008-* folders or files (founder decision Q8)
+    - Jira post-back, Confluence publication, Rovo / MCP / runtime / cloud / ADK / Vertex / GCP / database / Terraform execution claims
+    - real PII, PAN, SSN, PHI, credentials, secrets, or production endpoints in any sample artefact
+    - severity / finding-category / AI Action Level / blueprint-match / accuracy-score computation inside any sample artefact body
+    - lowering expected_score_threshold inside any sample artefact to force a pass
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
@@ -717,7 +819,7 @@ agent_adapter_status: active
 catalog_status: active
 blueprint_status: active
 template_status: active
-sample_status: deferred_to_build_package_10
+sample_status: active
 run_output_status: deferred_to_build_package_11
 release_artifact_status: deferred_to_build_package_15
 final_qa_status: deferred_to_build_package_16

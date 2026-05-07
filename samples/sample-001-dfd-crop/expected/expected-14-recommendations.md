@@ -1,0 +1,50 @@
+---
+expected_baseline_id: EXP-RS-14-RECOMMENDATIONS
+sample_id: sample-001-dfd-crop
+mirrors_template: templates/output/output-14-recommendations-template.md
+prompt: prompts/rs/10-finding-recommendation-write.prompt.md
+skill: skills/rs/SK-RECOMMENDATION-WRITE.md
+owning_pra: PRA-07-FINDING-RECOMMENDER
+adapter: .agents/aisraf-finding-recommender.agent.md
+target_run_output: "{{output_root}}/14-recommendations.md"
+expected_outcome: PASS_READY_FOR_REVIEW
+scoring_basis: template-aligned qualitative baseline; numeric scoring deferred to Build Package 11 run execution
+package_version: v0.1.2
+---
+
+# Recommendations — sample-001-dfd-crop
+
+| field | value |
+|---|---|
+| run_id | `{{run_id}}` |
+| sample_id | sample-001-dfd-crop |
+| mode | `{{mode}}` |
+| output_root | `{{output_root}}` |
+| step | RS-10 |
+| prompt | prompts/rs/10-finding-recommendation-write.prompt.md |
+| skill | skills/rs/SK-RECOMMENDATION-WRITE.md |
+| owning_pra | PRA-07-FINDING-RECOMMENDER |
+
+## Recommendation Rows
+
+| recommendation_id | source_finding_id | recommendation_type | recommendation_statement | supporting_concern | expected_next_action | owner_or_route_if_known | confidence | review_status | unknown_fields | notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REC-01 | FN-02 | `<value-from-catalogs/review/recommendation-type-catalog.yaml#RT-REQUEST-OWNER-OR-EVIDENCE>` | Request the approved-stack inventory record for CMP-03 Review API Gateway and confirm which control gates the visible `S1` diamond corresponds to. | Approved-stack scope at the API Gateway (MF-01) is unknown. | The gateway owner provides the approved-stack inventory entry that maps to the deployed gateway controls; reviewer accepts or routes the gap to a validation ticket. | unknown (`[copy from runs/{{run_id}}/run-profile.yaml#operator_name]` may identify the gateway owner) | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | `<value-from-catalogs/review/review-status-catalog.yaml#RS-AWAITING-HUMAN-REVIEW>` | owner | No invented owner. Recommendation cites MF-01; routes to VN-02 if evidence is not produced before handoff. |
+| REC-02 | FN-02 | `<value-from-catalogs/review/recommendation-type-catalog.yaml#RT-ROUTE-TO-VALIDATION-TICKET>` | Route at-rest encryption proof for CMP-04 Review Metadata DB (KMS, key rotation, key scope) to a separate validation ticket; handoff pack remains design-review only. | At-rest encryption proof on CMP-04 (MF-02) is unknown beyond the `E1` marker. | Validation ticket is opened; data team supplies KMS configuration and key-management evidence; the validation ticket is tracked separately from the handoff pack. | unknown (`[copy from runs/{{run_id}}/run-profile.yaml#operator_name]` may identify the data-team owner) | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | `<value-from-catalogs/review/review-status-catalog.yaml#RS-AWAITING-HUMAN-REVIEW>` | owner | Cross-references VN-01. |
+| REC-03 | FN-01, FN-03 | `<value-from-catalogs/review/recommendation-type-catalog.yaml#RT-DEFINE-SCOPE>` | Define and confirm the data-class scope and authorization policy for F4 calls from CMP-03 to CMP-05, including request-payload redaction policy. | F4 to external AI SaaS may carry C4 review-IP content (MF-03) and authorization scope at the SaaS endpoint is unknown (MF-04). | AI platform owner documents the agreed payload-class scope, redaction approach, and AZ policy before pre-deployment sign-off. | unknown (AI platform owner) | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | `<value-from-catalogs/review/review-status-catalog.yaml#RS-AWAITING-HUMAN-REVIEW>` | owner | Resolves the BP-MODEL-ENDPOINT-CALL `candidate` disposition vs the BP-AI-SAAS-INTEGRATION `matched` primary. |
+
+## Unknowns
+
+| unknown_id | recommendation_id | unresolved_field | notes |
+|---|---|---|---|
+| UNK-19 | REC-01 | owner | gateway owner is not named in the inputs |
+| UNK-20 | REC-02 | owner | data-team owner is not named in the inputs |
+| UNK-21 | REC-03 | owner | AI platform owner is not named in the inputs |
+
+## Human Review Gate Status
+
+`<value-from-catalogs/review/review-status-catalog.yaml#RS-AWAITING-HUMAN-REVIEW>`
+
+## Stop Conditions Recorded
+
+None at this step. No invented controls, owners, or evidence. Every recommendation traces to a finding in `13-findings.md` and a missing fact in `09-missing-facts.md`.

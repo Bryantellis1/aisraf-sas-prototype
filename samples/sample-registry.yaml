@@ -1,0 +1,408 @@
+registry_id: aisraf-sample-registry
+schema_version: aisraf_sample_registry.v0_1_2
+package_version: v0.1.2
+title: AISRAF SAS Sample Registry
+owning_build_package: Build Package 10
+status: active
+
+# Headline counts (founder decision Q8 — Build Package 10).
+sample_count_active: 1
+sample_count_deferred: 7
+sample_class_counts:
+  gold_standard_scored: 1
+  targeted_behavior_baseline: 0
+  exploratory: 0
+total_files_under_samples: 36   # 1 registry + 1 root README + 1 sample README + 6 inputs + 26 expected + 1 sample-001 implicit folder count is excluded; physical files only
+
+unknown_value: unknown
+
+purpose: >
+  Pin the AISRAF SAS sample inventory for v0.1.2. Samples are test fixtures
+  that exercise the Build Package 04-09 chain end-to-end against synthetic
+  inputs and Markdown expected baselines. They are not live runs, runtime
+  evidence, release artefacts, diagrams package assets, or external Jira /
+  Confluence / MCP proof. Package 10 builds sample-001 only; sample-002
+  through sample-008 are recorded as planned/deferred entries here without
+  folders or files (founder decision Q8).
+
+scope:
+  canonical_sample_root: samples
+  sample_subfolders_present:
+    - samples/sample-001-dfd-crop
+  samples_are_runtime_tools: false
+  samples_compute_severity_or_score_or_action_level_or_match: false
+  samples_invent_findings_or_recommendations: false
+  samples_claim_external_postback: false
+  samples_claim_runtime_or_cloud_execution: false
+
+# Allowed run-profile variable set (the 7 approved placeholders only).
+parameter_contract:
+  run_profile_source: runs/{{run_id}}/run-profile.yaml
+  required_run_profile_fields:
+    - "{{run_id}}"
+    - "{{input_root}}"
+    - "{{expected_root}}"
+    - "{{output_root}}"
+    - "{{mode}}"
+    - "{{postback_execution_status}}"
+    - "{{output_destination_mode}}"
+  rejected_non_schema_variables:
+    - "{{catalog_root}}"
+    - "{{prompt_root}}"
+    - "{{skill_root}}"
+    - "{{template_root}}"
+    - "{{diagram_root}}"
+    - "{{validation_root}}"
+  expected_root_rule: every_sample_baseline_path_must_resolve_under_samples_<sample_id>_expected
+  schema_authority: config/run-profile.schema.yaml
+
+# Required metadata block in every sample registry entry.
+required_sample_entry_fields:
+  - sample_id
+  - sample_class
+  - status
+  - scenario_summary
+  - inputs
+  - expected_baselines
+  - consumers
+  - mirrors_templates
+  - blueprint_dispositions_expected
+  - ai_action_level_expected
+  - critical_miss_categories
+  - prohibited_claims
+  - runtime_and_external_execution
+  - source_reference
+  - version_notes
+
+# Global prohibited claims (mirrors Package 07/08/09 shape).
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - severity_computed_inside_sample
+  - score_computed_inside_sample
+  - ai_action_level_computed_inside_sample
+  - blueprint_match_decided_inside_sample
+  - finding_facts_invented_inside_sample
+  - recommendation_prose_invented_inside_sample
+  - external_postback_claimed_inside_sample
+  - new_catalog_value_introduced_inside_sample
+  - new_blueprint_id_introduced_inside_sample
+  - implementation_proof_claimed_inside_sample
+  - real_pii_pan_ssn_phi_in_sample
+  - real_secrets_or_credentials_in_sample
+  - real_production_endpoints_in_sample
+
+# Founder Q-block — six explicit runtime/external execution flags.
+runtime_and_external_execution:
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false
+
+# Founder decisions for Build Package 10 (echoes the implementation-scope
+# instructions from BUILD-AG-10-SAMPLES-R1).
+founder_decisions:
+  q1_expected_baseline_shape: markdown_only_with_optional_yaml_front_matter_for_scoring_metadata
+  q2_run_log_expected: do_not_create_expected_00_run_log_md_run_logs_belong_to_build_package_11
+  q3_dfd_subskill_expected_baselines: included_9_dfd_baselines_in_sample_001
+  q4_dfd_png_regeneration: regenerated_from_v0_1_2_mermaid_source_via_mmdc_not_bit_copied_from_v0_01
+  q5_expected_score: legacy_reference_151_160_recorded_only_v0_1_2_verdict_PASS_READY_FOR_REVIEW
+  q6_test_aisraf_package_patch: surgical_four_change_patch_approved
+  q7_sample_registry: required_active_sample_001_plus_planned_deferred_002_through_008
+  q8_sample_family_scope: build_only_sample_001_now_deferred_002_through_008_recorded_only_in_registry
+
+# Active sample inventory.
+samples:
+  - sample_id: sample-001-dfd-crop
+    sample_class: gold_standard_scored
+    status: active
+    scenario_summary: >
+      AI SaaS Security Review Portal — internal security-review web application
+      that accepts authenticated review requests, stores review metadata in an
+      internal database, calls an external AI Analysis Service for analysis
+      assistance, retrieves policy/reference context, captures reviewer
+      findings, and renders local Jira/Confluence drafts (formatted_only).
+      Reviewer (HITL) approves before any external action. No external
+      post-back is claimed.
+    counts:
+      components: 8
+      flows: 8
+      boundaries: 4
+      data_stores: 3
+      external_systems: 1
+      model_endpoints: 1
+      human_actors: 1
+      tool_or_api_surfaces: 1
+      boundary_crossings: 7
+      missing_material_facts: 4
+      targeted_questions: 4
+      findings: 3
+      recommendations: 3
+      validation_notes: 2
+    inputs:
+      - samples/sample-001-dfd-crop/inputs/dfd-crop.png
+      - samples/sample-001-dfd-crop/inputs/dfd-crop.mmd
+      - samples/sample-001-dfd-crop/inputs/dfd-legend-excerpt.md
+      - samples/sample-001-dfd-crop/inputs/cloud-triage-notes.md
+      - samples/sample-001-dfd-crop/inputs/review-transcript.md
+      - samples/sample-001-dfd-crop/inputs/intake-ticket.md
+    expected_baselines:
+      rs:
+        - samples/sample-001-dfd-crop/expected/expected-01-input-inventory.md
+        - samples/sample-001-dfd-crop/expected/expected-02-visible-dfd-objects.md
+        - samples/sample-001-dfd-crop/expected/expected-03-legend-normalization.md
+        - samples/sample-001-dfd-crop/expected/expected-04-components.md
+        - samples/sample-001-dfd-crop/expected/expected-05-flows.md
+        - samples/sample-001-dfd-crop/expected/expected-06-boundaries.md
+        - samples/sample-001-dfd-crop/expected/expected-07-security-stack-assessment.md
+        - samples/sample-001-dfd-crop/expected/expected-08-internal-review-table.md
+        - samples/sample-001-dfd-crop/expected/expected-09-missing-facts.md
+        - samples/sample-001-dfd-crop/expected/expected-10-ai-action-level.md
+        - samples/sample-001-dfd-crop/expected/expected-11-blueprint-match.md
+        - samples/sample-001-dfd-crop/expected/expected-12-targeted-questions.md
+        - samples/sample-001-dfd-crop/expected/expected-13-findings.md
+        - samples/sample-001-dfd-crop/expected/expected-14-recommendations.md
+        - samples/sample-001-dfd-crop/expected/expected-15-handoff-pack.md
+        - samples/sample-001-dfd-crop/expected/expected-16-validation-notes.md
+        - samples/sample-001-dfd-crop/expected/expected-17-accuracy-score.md
+      dfd:
+        - samples/sample-001-dfd-crop/expected/expected-dfd-01-intake-quality-check.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-02-boundary-catalog.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-03-component-catalog.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-04-flow-inventory.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-05-annotation-resolution.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-06-boundary-crossings.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-07-control-signals.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-08-confidence-score.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-09-extraction-summary.md
+    consumers:
+      prompts:
+        - prompts/rs/00-run-full-chain.prompt.md
+        - prompts/rs/01-input-package-read.prompt.md
+        - prompts/rs/02-dfd-visual-read.prompt.md
+        - prompts/rs/03-legend-normalization.prompt.md
+        - prompts/rs/04-design-fact-extract.prompt.md
+        - prompts/rs/05-boundary-stack-detect.prompt.md
+        - prompts/rs/06-review-table-build.prompt.md
+        - prompts/rs/07-missing-fact-question-generate.prompt.md
+        - prompts/rs/08-ai-action-level-classify.prompt.md
+        - prompts/rs/09-blueprint-match.prompt.md
+        - prompts/rs/10-finding-recommendation-write.prompt.md
+        - prompts/rs/11-handoff-pack-build.prompt.md
+        - prompts/rs/12-validation-note-write.prompt.md
+        - prompts/rs/13-accuracy-score.prompt.md
+        - prompts/dfd/02-dfd-intake-quality-check.prompt.md
+        - prompts/dfd/03-boundary-extract.prompt.md
+        - prompts/dfd/04-component-extract.prompt.md
+        - prompts/dfd/05-flow-extract.prompt.md
+        - prompts/dfd/06-annotation-resolve.prompt.md
+        - prompts/dfd/07-boundary-crossing-detect.prompt.md
+        - prompts/dfd/08-control-signal-detect.prompt.md
+        - prompts/dfd/09-confidence-score.prompt.md
+        - prompts/dfd/10-dfd-extraction-summarize.prompt.md
+      skills:
+        - skills/rs/SK-INPUT-PACKAGE-READ.md
+        - skills/rs/SK-DFD-VISUAL-READ.md
+        - skills/rs/SK-LEGEND-NORMALIZE.md
+        - skills/rs/SK-COMPONENT-EXTRACT.md
+        - skills/rs/SK-FLOW-EXTRACT.md
+        - skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+        - skills/rs/SK-SECURITY-STACK-ASSESS.md
+        - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+        - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+        - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+        - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+        - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+        - skills/rs/SK-FINDING-CLASSIFY.md
+        - skills/rs/SK-RECOMMENDATION-WRITE.md
+        - skills/rs/SK-HANDOFF-PACK-BUILD.md
+        - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+        - skills/rs/SK-ACCURACY-SCORE.md
+        - skills/dfd/SK-DFD-01-INTAKE-QUALITY-CHECK.md
+        - skills/dfd/SK-DFD-02-BOUNDARY-EXTRACT.md
+        - skills/dfd/SK-DFD-03-COMPONENT-EXTRACT.md
+        - skills/dfd/SK-DFD-04-FLOW-EXTRACT.md
+        - skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md
+        - skills/dfd/SK-DFD-06-BOUNDARY-CROSSING-DETECT.md
+        - skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+        - skills/dfd/SK-DFD-08-CONFIDENCE-SCORE.md
+        - skills/dfd/SK-DFD-09-EXTRACTION-SUMMARIZE.md
+      pras:
+        - prototype-agents/PRA-01-SAS-REVIEW-ORCHESTRATOR.md
+        - prototype-agents/PRA-02-INPUT-READER.md
+        - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+        - prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+        - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+        - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+        - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+        - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+      adapters:
+        - .agents/aisraf-orchestrator.agent.md
+        - .agents/aisraf-input-reader.agent.md
+        - .agents/aisraf-dfd-extractor.agent.md
+        - .agents/aisraf-review-table-builder.agent.md
+        - .agents/aisraf-blueprint-questioner.agent.md
+        - .agents/aisraf-finding-recommender.agent.md
+        - .agents/aisraf-handoff-qa-scorer.agent.md
+      catalogs_referenced:
+        - catalogs/components/component-type-catalog.yaml
+        - catalogs/components/component-role-catalog.yaml
+        - catalogs/components/component-evidence-rule-catalog.yaml
+        - catalogs/interactions/interaction-type-catalog.yaml
+        - catalogs/interactions/flow-direction-catalog.yaml
+        - catalogs/interactions/flow-evidence-rule-catalog.yaml
+        - catalogs/boundaries/boundary-type-catalog.yaml
+        - catalogs/boundaries/boundary-crossing-rule-catalog.yaml
+        - catalogs/boundaries/trust-zone-catalog.yaml
+        - catalogs/identity-access/authentication-catalog.yaml
+        - catalogs/identity-access/authorization-catalog.yaml
+        - catalogs/identity-access/identity-evidence-rule-catalog.yaml
+        - catalogs/data-protection/data-class-catalog.yaml
+        - catalogs/data-protection/transport-protection-catalog.yaml
+        - catalogs/data-protection/at-rest-protection-catalog.yaml
+        - catalogs/data-protection/confidence-level-catalog.yaml
+        - catalogs/security-stacks/security-stack-marker-catalog.yaml
+        - catalogs/security-stacks/control-signal-catalog.yaml
+        - catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+        - catalogs/review/finding-category-catalog.yaml
+        - catalogs/review/severity-catalog.yaml
+        - catalogs/review/recommendation-type-catalog.yaml
+        - catalogs/review/ai-action-level-catalog.yaml
+        - catalogs/review/review-status-catalog.yaml
+      blueprints_referenced:
+        - blueprints/cloud-patterns/BP-AI-SAAS-INTEGRATION.yaml
+        - blueprints/platform-independent/BP-MODEL-ENDPOINT-CALL.yaml
+        - blueprints/platform-independent/BP-HITL-APPROVAL.yaml
+        - blueprints/platform-independent/BP-API-WRITEBACK.yaml
+    mirrors_templates:
+      output_27_minus_run_log:
+        - templates/output/output-01-input-inventory-template.md
+        - templates/output/output-02-visible-dfd-objects-template.md
+        - templates/output/output-03-legend-normalization-template.md
+        - templates/output/output-04-components-template.md
+        - templates/output/output-05-flows-template.md
+        - templates/output/output-06-boundaries-template.md
+        - templates/output/output-07-security-stack-assessment-template.md
+        - templates/output/output-08-internal-review-table-template.md
+        - templates/output/output-09-missing-facts-template.md
+        - templates/output/output-10-ai-action-level-template.md
+        - templates/output/output-11-blueprint-match-template.md
+        - templates/output/output-12-targeted-questions-template.md
+        - templates/output/output-13-findings-template.md
+        - templates/output/output-14-recommendations-template.md
+        - templates/output/output-15-handoff-pack-template.md
+        - templates/output/output-16-validation-notes-template.md
+        - templates/output/output-17-accuracy-score-template.md
+        - templates/output/output-dfd-01-intake-quality-check-template.md
+        - templates/output/output-dfd-02-boundary-catalog-template.md
+        - templates/output/output-dfd-03-component-catalog-template.md
+        - templates/output/output-dfd-04-flow-inventory-template.md
+        - templates/output/output-dfd-05-annotation-resolution-template.md
+        - templates/output/output-dfd-06-boundary-crossings-template.md
+        - templates/output/output-dfd-07-control-signals-template.md
+        - templates/output/output-dfd-08-confidence-score-template.md
+        - templates/output/output-dfd-09-extraction-summary-template.md
+      run_log_template_referenced_only_as_future_run_support:
+        - templates/output/output-00-run-log-template.md
+    blueprint_dispositions_expected:
+      - blueprint_id: BP-AI-SAAS-INTEGRATION
+        match_state: matched
+        confidence: high
+      - blueprint_id: BP-MODEL-ENDPOINT-CALL
+        match_state: candidate
+        confidence: medium
+      - blueprint_id: BP-HITL-APPROVAL
+        match_state: matched
+        confidence: high
+      - blueprint_id: BP-API-WRITEBACK
+        match_state: candidate
+        confidence: medium
+    ai_action_level_expected:
+      level: AAL-L3
+      confidence: medium
+      rationale: HITL approval gates external action; AI assists drafting; F4 payload class and AZ scope at CMP-05 are open.
+    critical_miss_categories:
+      - assert_security_stack_present_from_S1_alone
+      - assert_at_rest_encryption_proof_from_E1_alone
+      - assert_transit_encryption_proof_from_T1_alone
+      - force_F4_or_F5_data_class_to_specific_value_without_evidence
+      - miss_BND_02_internet_boundary_crossing
+      - claim_external_jira_postback_or_confluence_publication_from_F8
+      - invent_owner_for_REC_01_REC_02_REC_03
+      - invent_finding_category_outside_finding_category_catalog
+      - assert_AAL_L4_without_HITL_evidence
+      - assert_AAL_L1_ignoring_F4_model_call
+      - mix_implementation_validation_into_handoff_pack
+      - produce_numeric_accuracy_score_outside_SK_ACCURACY_SCORE
+    source_reference:
+      old_v0_01_reference: true
+      old_reference_paths:
+        - aisraf-sas-prototype-skill-chain-pack-v0.01/samples/sample-001-dfd-crop/
+      derivation_mode: rebuilt_for_v0_1_2_with_new_application_scenario
+      copied_verbatim: false
+    version_notes: >
+      Initial Build Package 10 release. New scenario: AI SaaS Security Review
+      Portal. 6 inputs + 26 expected baselines (17 RS + 9 DFD).
+
+# Planned/deferred samples — registry only; no folders or files exist yet.
+planned_or_deferred_samples:
+  - sample_id: sample-002-annotation-token-matrix
+    sample_class: targeted_behavior_baseline
+    status: planned
+    target_behavior: annotation token semantics (`T1`, `C5T1P`, storage words, auth markers)
+    primary_chain_lane: prompts/dfd/06-annotation-resolve.prompt.md; skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md; PRA-04-LEGEND-NORMALIZER
+    deferred_to: future governed Build Package increment after Build Package 10
+  - sample_id: sample-003-nested-cloud-boundaries
+    sample_class: targeted_behavior_baseline
+    status: planned
+    target_behavior: nested provider/folder/project/region/VPC/subnet boundaries without runtime proof
+    primary_chain_lane: prompts/dfd/03-boundary-extract.prompt.md; skills/dfd/SK-DFD-02-BOUNDARY-EXTRACT.md; PRA-05-REVIEW-TABLE-BUILDER
+    deferred_to: future governed Build Package increment after Build Package 10
+  - sample_id: sample-004-overlapping-lines-low-confidence
+    sample_class: targeted_behavior_baseline
+    status: planned
+    target_behavior: raw-flow preservation, low confidence, unknown endpoints
+    primary_chain_lane: prompts/dfd/05-flow-extract.prompt.md; skills/dfd/SK-DFD-04-FLOW-EXTRACT.md; PRA-03-DFD-EXTRACTOR
+    deferred_to: future governed Build Package increment after Build Package 10
+  - sample_id: sample-005-storage-and-backup-flows
+    sample_class: targeted_behavior_baseline
+    status: planned
+    target_behavior: storage markers, backup/restore flows, validation-note routing
+    primary_chain_lane: prompts/dfd/08-control-signal-detect.prompt.md; skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md; PRA-05-REVIEW-TABLE-BUILDER / PRA-08-HANDOFF-QA-SCORER
+    deferred_to: future governed Build Package increment after Build Package 10
+  - sample_id: sample-006-cross-boundary-authz-gap
+    sample_class: targeted_behavior_baseline
+    status: planned
+    target_behavior: AuthN/AuthZ separation across a boundary crossing
+    primary_chain_lane: prompts/rs/07-missing-fact-question-generate.prompt.md; skills/rs/SK-MISSING-FACT-IDENTIFY.md; PRA-06-BLUEPRINT-QUESTIONER
+    deferred_to: future governed Build Package increment after Build Package 10
+  - sample_id: sample-007-security-stack-diamonds
+    sample_class: targeted_behavior_baseline
+    status: planned
+    target_behavior: stack diamonds as review signal only (proof-vs-signal rule)
+    primary_chain_lane: prompts/dfd/08-control-signal-detect.prompt.md; skills/rs/SK-SECURITY-STACK-ASSESS.md; PRA-05-REVIEW-TABLE-BUILDER
+    deferred_to: future governed Build Package increment after Build Package 10
+  - sample_id: sample-008-jira-confluence-formatted-output
+    sample_class: targeted_behavior_baseline
+    status: planned
+    target_behavior: local Jira/Confluence formatting with `formatted_only` post-back status
+    primary_chain_lane: prompts/rs/11-handoff-pack-build.prompt.md; skills/rs/SK-HANDOFF-PACK-BUILD.md; PRA-08-HANDOFF-QA-SCORER
+    deferred_to: future governed Build Package increment after Build Package 10
+
+compatibility_notes:
+  upstream_registries_sealed_for_build_package_10:
+    - prompts/prompt-registry.yaml
+    - skills/skill-registry.yaml
+    - prototype-agents/prototype-agent-registry.yaml
+    - catalogs/catalog-registry.yaml
+    - blueprints/blueprint-registry.yaml
+    - templates/template-registry.yaml
+  c4p_under_dc_c5p_raw_pattern: >
+    The sample-001 token `C4P` resolves under the data-class-catalog raw_pattern
+    `^C[1-5]P$` recorded in `catalogs/data-protection/data-class-catalog.yaml#DC-C5P`.
+    This is documented in `samples/sample-001-dfd-crop/expected/expected-03-legend-normalization.md`
+    with a CL-MEDIUM confidence note. No new catalog entry is introduced.

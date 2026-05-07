@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-09 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-10 surface of AISRAF SAS Prototype v0.1.2.
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -39,9 +39,14 @@
         Markdown templates in total: 27 output + 1 jira + 1 confluence + 2
         run);
       - Build Package 09 validation files exist;
+      - Build Package 10 samples/ surface matches the approved layout
+        (README.md, sample-registry.yaml, sample-001-dfd-crop/README.md
+        with inputs/ holding exactly 6 files and expected/ holding exactly
+        26 Markdown baselines: 17 RS + 9 DFD; no expected-00-run-log.md;
+        no JSON baselines; no sample-002 through sample-008 folders);
+      - Build Package 10 validation files exist;
       - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP,
-        sample/diagram/docs/release content beyond folder README
-        placeholders);
+        diagram/docs/release content beyond folder README placeholders);
       - the old reference workspace path is acknowledged as read-only.
 
     The test does not run prompts, skills, PRAs, .agent.md adapters, Jira,
@@ -704,21 +709,130 @@ else {
     Add-Result -Status FAIL -Check '08g-templates-content-limits' -Detail "templates/ folder is missing."
 }
 
-# 9. samples/ — only README.md at top, no sample-* subfolders before Build Package 10
+# 9. samples/ — Build Package 10 surface (Check 08h-samples-content-limits)
 $samplesAbs = Resolve-PackagePath 'samples'
-$samplesFails = @()
+$samplesTopAllowedFiles = @('README.md', 'sample-registry.yaml')
+$samplesTopAllowedDirs = @('sample-001-dfd-crop')
+$sample001InputsAllowed = @('dfd-crop.png', 'dfd-crop.mmd', 'dfd-legend-excerpt.md', 'cloud-triage-notes.md', 'review-transcript.md', 'intake-ticket.md')
+$sample001ExpectedAllowed = @(
+    'expected-01-input-inventory.md',
+    'expected-02-visible-dfd-objects.md',
+    'expected-03-legend-normalization.md',
+    'expected-04-components.md',
+    'expected-05-flows.md',
+    'expected-06-boundaries.md',
+    'expected-07-security-stack-assessment.md',
+    'expected-08-internal-review-table.md',
+    'expected-09-missing-facts.md',
+    'expected-10-ai-action-level.md',
+    'expected-11-blueprint-match.md',
+    'expected-12-targeted-questions.md',
+    'expected-13-findings.md',
+    'expected-14-recommendations.md',
+    'expected-15-handoff-pack.md',
+    'expected-16-validation-notes.md',
+    'expected-17-accuracy-score.md',
+    'expected-dfd-01-intake-quality-check.md',
+    'expected-dfd-02-boundary-catalog.md',
+    'expected-dfd-03-component-catalog.md',
+    'expected-dfd-04-flow-inventory.md',
+    'expected-dfd-05-annotation-resolution.md',
+    'expected-dfd-06-boundary-crossings.md',
+    'expected-dfd-07-control-signals.md',
+    'expected-dfd-08-confidence-score.md',
+    'expected-dfd-09-extraction-summary.md'
+)
 if (Test-Path -LiteralPath $samplesAbs -PathType Container) {
-    foreach ($c in @(Get-ChildItem -LiteralPath $samplesAbs -Force)) {
-        if ($c.Name -ne 'README.md') {
-            $samplesFails += "samples/$($c.Name)"
+    # Top-level files
+    foreach ($c in @(Get-ChildItem -LiteralPath $samplesAbs -Force -File)) {
+        if (-not ($samplesTopAllowedFiles -contains $c.Name)) {
+            Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Forbidden file in samples/: samples/$($c.Name). Build Package 10 fixes the top-level inventory at README.md and sample-registry.yaml."
         }
     }
-}
-if ($samplesFails.Count -gt 0) {
-    foreach ($s in $samplesFails) { Add-Result -Status FAIL -Check '09-samples-deferred' -Detail "Forbidden content in samples/ (owned by Build Package 10): $s" }
+    foreach ($name in $samplesTopAllowedFiles) {
+        if (-not (Test-Path -LiteralPath (Join-Path $samplesAbs $name) -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Required Build Package 10 sample file missing: samples/$name"
+        }
+    }
+    # Top-level subfolders
+    foreach ($d in @(Get-ChildItem -LiteralPath $samplesAbs -Force -Directory)) {
+        if (-not ($samplesTopAllowedDirs -contains $d.Name)) {
+            Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Forbidden subfolder in samples/: samples/$($d.Name). Build Package 10 builds only sample-001-dfd-crop; samples 002-008 are registry-only entries (founder decision Q8)."
+        }
+    }
+    # sample-001 README and inputs/expected
+    $sample001Abs = Join-Path $samplesAbs 'sample-001-dfd-crop'
+    if (Test-Path -LiteralPath $sample001Abs -PathType Container) {
+        # README required
+        if (-not (Test-Path -LiteralPath (Join-Path $sample001Abs 'README.md') -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Required Build Package 10 sample file missing: samples/sample-001-dfd-crop/README.md"
+        }
+        # Forbid extra files at sample-001 root
+        foreach ($c in @(Get-ChildItem -LiteralPath $sample001Abs -Force -File)) {
+            if ($c.Name -ne 'README.md') {
+                Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Forbidden file in samples/sample-001-dfd-crop/: samples/sample-001-dfd-crop/$($c.Name)"
+            }
+        }
+        # Allowed subfolders inside sample-001
+        $sample001AllowedDirs = @('inputs', 'expected')
+        foreach ($d in @(Get-ChildItem -LiteralPath $sample001Abs -Force -Directory)) {
+            if (-not ($sample001AllowedDirs -contains $d.Name)) {
+                Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Forbidden subfolder in samples/sample-001-dfd-crop/: $($d.Name)"
+            }
+        }
+        # inputs/
+        $inputsAbs = Join-Path $sample001Abs 'inputs'
+        if (Test-Path -LiteralPath $inputsAbs -PathType Container) {
+            foreach ($c in @(Get-ChildItem -LiteralPath $inputsAbs -Force -File)) {
+                if (-not ($sample001InputsAllowed -contains $c.Name)) {
+                    Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Forbidden file in samples/sample-001-dfd-crop/inputs/: $($c.Name). Build Package 10 fixes inputs/ at exactly 6 files."
+                }
+            }
+            foreach ($name in $sample001InputsAllowed) {
+                if (-not (Test-Path -LiteralPath (Join-Path $inputsAbs $name) -PathType Leaf)) {
+                    Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Required Build Package 10 input missing: samples/sample-001-dfd-crop/inputs/$name"
+                }
+            }
+        }
+        else {
+            Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Required Build Package 10 inputs/ folder missing: samples/sample-001-dfd-crop/inputs/"
+        }
+        # expected/
+        $expectedAbs = Join-Path $sample001Abs 'expected'
+        if (Test-Path -LiteralPath $expectedAbs -PathType Container) {
+            foreach ($c in @(Get-ChildItem -LiteralPath $expectedAbs -Force -File)) {
+                if ($c.Name -eq 'expected-00-run-log.md') {
+                    Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Forbidden file in samples/sample-001-dfd-crop/expected/: expected-00-run-log.md (founder decision Q2: run logs are run artefacts deferred to Build Package 11)."
+                    continue
+                }
+                if ($c.Extension -ieq '.json') {
+                    Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Forbidden JSON expected baseline in samples/sample-001-dfd-crop/expected/: $($c.Name) (founder decision Q1: Markdown-only)."
+                    continue
+                }
+                if (-not ($sample001ExpectedAllowed -contains $c.Name)) {
+                    Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Forbidden file in samples/sample-001-dfd-crop/expected/: $($c.Name). Build Package 10 fixes expected/ at exactly 26 Markdown baselines (17 RS + 9 DFD)."
+                }
+            }
+            foreach ($name in $sample001ExpectedAllowed) {
+                if (-not (Test-Path -LiteralPath (Join-Path $expectedAbs $name) -PathType Leaf)) {
+                    Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Required Build Package 10 expected baseline missing: samples/sample-001-dfd-crop/expected/$name"
+                }
+            }
+        }
+        else {
+            Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Required Build Package 10 expected/ folder missing: samples/sample-001-dfd-crop/expected/"
+        }
+    }
+    else {
+        Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "Required Build Package 10 sample folder missing: samples/sample-001-dfd-crop/"
+    }
+    $samplesFails = @($results | Where-Object { $_.Check -eq '08h-samples-content-limits' -and $_.Status -eq 'FAIL' }).Count
+    if ($samplesFails -eq 0) {
+        Add-Result -Status PASS -Check '08h-samples-content-limits' -Detail "samples/ surface matches Build Package 10 contract (README.md, sample-registry.yaml, sample-001-dfd-crop/ with README.md, inputs/ holding 6 files, and expected/ holding 26 Markdown baselines: 17 RS + 9 DFD)."
+    }
 }
 else {
-    Add-Result -Status PASS -Check '09-samples-deferred' -Detail "samples/ contains only README.md."
+    Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "samples/ folder is missing."
 }
 
 # 10. authoring-agents/ — only the four templates approved by Build Package 01
@@ -741,7 +855,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md', 'package-09-templates-checklist.md', 'template-registry-checklist.md', 'template-consumption-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md', 'package-09-templates-checklist.md', 'template-registry-checklist.md', 'template-consumption-checklist.md', 'package-10-samples-checklist.md', 'sample-registry-checklist.md', 'sample-baseline-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -754,7 +868,7 @@ if ($validationFails.Count -gt 0) {
     foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 03: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-09 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-10 documents."
 }
 
 # 12. tools/ — Build Package 03 expected file set

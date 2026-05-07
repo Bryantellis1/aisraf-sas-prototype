@@ -241,19 +241,19 @@ Path: `samples/`
 
 Owning Build Package: Build Package 10.
 
-Purpose: future synthetic samples and expected baselines.
+Purpose: synthetic samples and expected baselines for the Build Package 04–09 chain.
 
 Who uses it: sample designers, prompt/skill testers, validators, and operators.
 
-Allowed file types: Markdown README in Build Package 01; later synthetic inputs and expected baselines when Build Package 10 authorizes them.
+Allowed file types: Markdown for sample READMEs, expected baselines, and sample input narratives; PNG for the sample DFD image; Mermaid `.mmd` for the DFD source companion; YAML for `samples/sample-registry.yaml` only.
 
-Belongs here: synthetic input packs and expected outputs used for scoring.
+Belongs here: `samples/README.md`, `samples/sample-registry.yaml`, `samples/sample-001-dfd-crop/README.md`, six synthetic inputs under `samples/sample-001-dfd-crop/inputs/`, and 26 Markdown expected baselines under `samples/sample-001-dfd-crop/expected/` (17 RS + 9 DFD; mirroring Package 09 templates `output-NN-*` and `output-dfd-NN-*`). Optional YAML front matter is allowed inside expected baselines for traceability and scoring metadata only (founder decision Q1). Samples 002–008 are recorded as `planned_or_deferred_samples` entries inside `samples/sample-registry.yaml` only — no folders or files (founder decision Q8).
 
-Does not belong here: real PII, PAN, SSN, credentials, production endpoints, run outputs, release artifacts, or unsupported rebaselines.
+Does not belong here: real PII, PAN, SSN, PHI, customer identifiers, internal employee identifiers, secrets, credentials, production endpoints, vendor commercial product names asserted as mandatory, run outputs (those belong under `runs/<run_id>/`), release artifacts, diagrams package assets, JSON expected baselines (founder decision Q1: Markdown-only), `expected-00-run-log.md` inside any sample folder (founder decision Q2: run logs are run artefacts deferred to Build Package 11), folders or files for `sample-002` through `sample-008` (founder decision Q8), Jira post-back / Confluence publication / Rovo / MCP / runtime / cloud / ADK / Vertex / GCP / database / Terraform execution claims, severity / finding-category / AI Action Level / blueprint-match / accuracy-score computation inside expected-baseline bodies, or new BP-* identifiers / controlled values introduced inside any sample artefact.
 
 Populated by: Build Package 10.
 
-Build Package 01 status: reserved with README only.
+Build Package 10 status: active. 1 sample (`sample-001-dfd-crop`, gold-standard scored sample — AI SaaS Security Review Portal scenario) plus the sample registry; 7 samples (002–008) recorded as planned/deferred in the registry only. 36 files under `samples/` (1 root README, 1 sample-registry.yaml, 1 sample-001 README, 6 inputs, 26 expected baselines, plus the implicit folder layout). Founder decision Q4 seals the upstream Build Package 04, 05, 06, 07, 08, 09 registries; Build Package 10 records its sample-to-prompt, sample-to-skill, sample-to-PRA, sample-to-adapter, sample-to-blueprint, and sample-to-catalog consumer maps in `samples/sample-registry.yaml` only.
 
 ## Root Area 13 — `runs/`
 
