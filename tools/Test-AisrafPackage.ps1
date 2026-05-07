@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-10 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-11 surface of AISRAF SAS Prototype v0.1.2.
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -45,6 +45,14 @@
         26 Markdown baselines: 17 RS + 9 DFD; no expected-00-run-log.md;
         no JSON baselines; no sample-002 through sample-008 folders);
       - Build Package 10 validation files exist;
+      - Build Package 11 runs/ surface matches the approved layout
+        (README.md, runs/RUN-001/ with README.md, run-profile.yaml,
+        00-run-log.md, inputs/ holding exactly 6 byte-copied files,
+        and an empty dfd/ folder; the 17 RS chain outputs at the
+        run-folder root and the 9 DFD outputs under dfd/ are permitted
+        when the operator executes the chain but are NOT required by
+        Build Package 11);
+      - Build Package 11 validation files exist;
       - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP,
         diagram/docs/release content beyond folder README placeholders);
       - the old reference workspace path is acknowledged as read-only.
@@ -52,9 +60,10 @@
     The test does not run prompts, skills, PRAs, .agent.md adapters, Jira,
     Confluence, Rovo, MCP, scoring, diagram generation, or release export.
 
-    runs/RUN-* folders generate WARN rows only. The Package 03 validation
-    checklist requires any smoke run folder to be removed before human git
-    stage.
+    runs/RUN-001/ is the first canonical governed run fixture and is
+    validated by Check 08i-runs-content-limits. Other runs/RUN-* folders
+    generate WARN rows only; the Package 03 validation checklist requires
+    any smoke run folder to be removed before human git stage.
 
     Exit code 0 when there is no FAIL row (WARN rows are allowed). Exit code 1
     on any FAIL.
@@ -835,6 +844,90 @@ else {
     Add-Result -Status FAIL -Check '08h-samples-content-limits' -Detail "samples/ folder is missing."
 }
 
+# 9b. runs/ — Build Package 11 surface (Check 08i-runs-content-limits)
+# Allowed under runs/: README.md plus exactly one governed run folder, RUN-001.
+# Other runs/RUN-* folders are smoke runs and are reported as WARN by Check 14.
+# Allowed under runs/RUN-001/: README.md, run-profile.yaml, 00-run-log.md,
+#   inputs/, dfd/, and (when the chain has executed) the 17 RS outputs at
+#   root matching ^(0[1-9]|1[0-7])-[a-z0-9-]+\.md$ and the 9 DFD outputs
+#   under dfd/ matching ^dfd-0[1-9]-[a-z0-9-]+\.md$. Optional Jira/Confluence
+#   draft files (jira-ticket-draft.md, confluence-page-draft.md) are also
+#   permitted.
+# Allowed under runs/RUN-001/inputs/: exactly the 6 byte-copied sample
+#   inputs (no other files; no subfolders).
+# Allowed under runs/RUN-001/dfd/: empty (Build Package 11 reservation) or
+#   the 9 DFD chain outputs matching ^dfd-0[1-9]-[a-z0-9-]+\.md$. No nested
+#   folders.
+# FAIL anything else.
+$run001InputsAllowed = @('dfd-crop.png', 'dfd-crop.mmd', 'dfd-legend-excerpt.md', 'cloud-triage-notes.md', 'review-transcript.md', 'intake-ticket.md')
+$run001RootAllowedFiles = @('README.md', 'run-profile.yaml', '00-run-log.md', 'jira-ticket-draft.md', 'confluence-page-draft.md')
+$run001RootRsOutputPattern = '^(0[1-9]|1[0-7])-[a-z0-9-]+\.md$'
+$run001DfdOutputPattern    = '^dfd-0[1-9]-[a-z0-9-]+\.md$'
+$run001Abs = Resolve-PackagePath 'runs/RUN-001'
+if (Test-Path -LiteralPath $run001Abs -PathType Container) {
+    # Required Build Package 11 files at run-folder root
+    foreach ($name in @('README.md', 'run-profile.yaml', '00-run-log.md')) {
+        if (-not (Test-Path -LiteralPath (Join-Path $run001Abs $name) -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Required Build Package 11 file missing: runs/RUN-001/$name"
+        }
+    }
+    # Top-level files
+    foreach ($c in @(Get-ChildItem -LiteralPath $run001Abs -Force -File)) {
+        if ($run001RootAllowedFiles -contains $c.Name) { continue }
+        if ($c.Name -match $run001RootRsOutputPattern) { continue }
+        Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden file in runs/RUN-001/: $($c.Name). Build Package 11 fixture allows README.md, run-profile.yaml, 00-run-log.md, optional jira/confluence drafts, and 17 RS chain outputs matching '$run001RootRsOutputPattern'."
+    }
+    # Top-level subfolders
+    $run001AllowedDirs = @('inputs', 'dfd')
+    foreach ($d in @(Get-ChildItem -LiteralPath $run001Abs -Force -Directory)) {
+        if (-not ($run001AllowedDirs -contains $d.Name)) {
+            Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden subfolder in runs/RUN-001/: $($d.Name). Build Package 11 allows only inputs/ and dfd/."
+        }
+    }
+    # inputs/ — must contain exactly the 6 byte-copied sample inputs
+    $run001Inputs = Join-Path $run001Abs 'inputs'
+    if (Test-Path -LiteralPath $run001Inputs -PathType Container) {
+        foreach ($d in @(Get-ChildItem -LiteralPath $run001Inputs -Force -Directory)) {
+            Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden subfolder in runs/RUN-001/inputs/ (Build Package 11 disallows nested folders): $($d.Name)/"
+        }
+        foreach ($c in @(Get-ChildItem -LiteralPath $run001Inputs -Force -File)) {
+            if (-not ($run001InputsAllowed -contains $c.Name)) {
+                Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden file in runs/RUN-001/inputs/: $($c.Name). Build Package 11 fixes inputs/ at exactly 6 byte-copied sample inputs."
+            }
+        }
+        foreach ($name in $run001InputsAllowed) {
+            if (-not (Test-Path -LiteralPath (Join-Path $run001Inputs $name) -PathType Leaf)) {
+                Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Required Build Package 11 input missing: runs/RUN-001/inputs/$name"
+            }
+        }
+    }
+    else {
+        Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Required Build Package 11 inputs/ folder missing: runs/RUN-001/inputs/"
+    }
+    # dfd/ — empty (Build Package 11) or 9 DFD chain outputs (post-execution)
+    $run001Dfd = Join-Path $run001Abs 'dfd'
+    if (Test-Path -LiteralPath $run001Dfd -PathType Container) {
+        foreach ($d in @(Get-ChildItem -LiteralPath $run001Dfd -Force -Directory)) {
+            Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden subfolder in runs/RUN-001/dfd/ (Build Package 11 disallows nested folders): $($d.Name)/"
+        }
+        foreach ($c in @(Get-ChildItem -LiteralPath $run001Dfd -Force -File)) {
+            if ($c.Name -notmatch $run001DfdOutputPattern) {
+                Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden file in runs/RUN-001/dfd/: $($c.Name). Build Package 11 reserves dfd/ empty (or post-chain DFD outputs matching '$run001DfdOutputPattern')."
+            }
+        }
+    }
+    else {
+        Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Required Build Package 11 dfd/ folder missing: runs/RUN-001/dfd/"
+    }
+    $run001Fails = @($results | Where-Object { $_.Check -eq '08i-runs-content-limits' -and $_.Status -eq 'FAIL' }).Count
+    if ($run001Fails -eq 0) {
+        Add-Result -Status PASS -Check '08i-runs-content-limits' -Detail "runs/RUN-001/ surface matches Build Package 11 contract (README.md, run-profile.yaml, 00-run-log.md, inputs/ with 6 byte-copied files, and dfd/ as empty governed reservation)."
+    }
+}
+else {
+    Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Required Build Package 11 run fixture missing: runs/RUN-001/"
+}
+
 # 10. authoring-agents/ — only the four templates approved by Build Package 01
 $authAbs = Resolve-PackagePath 'authoring-agents'
 $authoringAllowed = @('README.md', 'agent-instruction-triad-template.md', 'package-build-agent-template.md', 'package-validation-template.md', 'package-acceptance-checklist.md')
@@ -855,7 +948,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md', 'package-09-templates-checklist.md', 'template-registry-checklist.md', 'template-consumption-checklist.md', 'package-10-samples-checklist.md', 'sample-registry-checklist.md', 'sample-baseline-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md', 'package-09-templates-checklist.md', 'template-registry-checklist.md', 'template-consumption-checklist.md', 'package-10-samples-checklist.md', 'sample-registry-checklist.md', 'sample-baseline-checklist.md', 'package-11-runs-checklist.md', 'run-folder-shape-checklist.md', 'run-log-checklist.md', 'run-comparison-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -868,7 +961,7 @@ if ($validationFails.Count -gt 0) {
     foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 03: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-10 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-11 documents."
 }
 
 # 12. tools/ — Build Package 03 expected file set
@@ -907,12 +1000,16 @@ else {
     Add-Result -Status PASS -Check '13-config-allowed' -Detail "config/ contains only the nine Build Package 02 files plus README.md."
 }
 
-# 14. runs/ — RUN-* folders generate WARN rows; only README.md is committed
+# 14. runs/ — Build Package 11 surface posture
+# Allowed top-level files: README.md only. Any other file at runs/ root FAILs.
+# Allowed governed run folder: runs/RUN-001/ (validated by Check 08i-runs-content-limits).
+# Other runs/RUN-* folders are smoke runs from tools/New-AisrafRun.ps1 and WARN
+# until removed before human git stage (per validation/no-drift-rules.md).
 $runsAbs = Resolve-PackagePath 'runs'
-$runFolders = @()
+$runFolderNames = @()
 if (Test-Path -LiteralPath $runsAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $runsAbs -Force -Directory)) {
-        $runFolders += $c.Name
+        $runFolderNames += $c.Name
     }
     foreach ($f in @(Get-ChildItem -LiteralPath $runsAbs -Force -File)) {
         if ($f.Name -ne 'README.md') {
@@ -920,13 +1017,18 @@ if (Test-Path -LiteralPath $runsAbs -PathType Container) {
         }
     }
 }
-if ($runFolders.Count -gt 0) {
-    foreach ($r in $runFolders) {
-        Add-Result -Status WARN -Check '14-runs-readme-only' -Detail "runs/$r/ exists. Build Package 03 must remove smoke run folders before human git stage; Build Package 11 owns the run-output surface."
-    }
+$smokeRunFolders = @($runFolderNames | Where-Object { $_ -ne 'RUN-001' })
+foreach ($r in $smokeRunFolders) {
+    Add-Result -Status WARN -Check '14-runs-readme-only' -Detail "runs/$r/ exists alongside the governed RUN-001 fixture. Build Package 03 must remove smoke run folders before human git stage."
 }
-elseif (-not (@($results | Where-Object { $_.Check -eq '14-runs-readme-only' -and $_.Status -eq 'FAIL' }).Count -gt 0)) {
-    Add-Result -Status PASS -Check '14-runs-readme-only' -Detail "runs/ contains only README.md."
+$runsFails = @($results | Where-Object { $_.Check -eq '14-runs-readme-only' -and $_.Status -eq 'FAIL' }).Count
+if ($runsFails -eq 0) {
+    if ($runFolderNames -contains 'RUN-001') {
+        Add-Result -Status PASS -Check '14-runs-readme-only' -Detail "runs/ contains README.md and the governed RUN-001 fixture (validated by Check 08i-runs-content-limits)."
+    }
+    else {
+        Add-Result -Status PASS -Check '14-runs-readme-only' -Detail "runs/ contains only README.md."
+    }
 }
 
 # 15. Old reference workspace acknowledgement

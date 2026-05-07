@@ -1,0 +1,77 @@
+# Run Profile — RUN-001
+#
+# Package: AISRAF SAS Prototype v0.1.2
+# Owning Build Package: Build Package 11 — Runs and execution evidence model.
+# Schema authority: config/run-profile.schema.yaml
+#
+# Purpose: first canonical governed run fixture for sample-001-dfd-crop.
+# Hand-built from config/run-profile.template.yaml; not produced via
+# tools/New-AisrafRun.ps1 because RUN-001 is the v0.1.2 reference fixture.
+#
+# Build Package 11 does not execute the review chain. No prompt, skill, PRA,
+# .agent.md adapter, Jira, Confluence, Rovo, MCP, scoring, diagram render,
+# or release export runs as part of this fixture. The 17 RS outputs (top
+# level) and 9 DFD subskill outputs (under dfd/) are reserved future
+# artefacts produced when the operator executes the chain.
+#
+# Sensitive-data prohibitions apply to every string field. See
+# config/sensitive-data-rules.md.
+
+schema_version: run_profile.v0_1_2
+package_version: v0.1.2
+
+# ── Run identity ──────────────────────────────────────────────────────────────
+run_id: "RUN-001"
+sample_id: "sample-001-dfd-crop"
+
+# ── Mode ──────────────────────────────────────────────────────────────────────
+# folder_first_test pins output_destination_mode=local_only,
+# postback_execution_status=deferred, all connector statuses to
+# {not_required, unavailable}, rovo_mcp_available=false, and forces all
+# source/destination URLs to empty. See config/run-profile.schema.yaml allOf.
+mode: "folder_first_test"
+
+# ── Path roots ────────────────────────────────────────────────────────────────
+# Relative, forward-slash, no drive letters, no leading "/", no ".."
+# components. See config/path-resolution-rules.md.
+workspace_root: "."
+input_root: "runs/RUN-001/inputs"
+expected_root: "samples/sample-001-dfd-crop/expected"
+output_root: "runs/RUN-001"
+old_reference_workspace: "D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01"
+
+# ── Source / destination references ───────────────────────────────────────────
+# folder_first_test forces these to empty.
+source_ticket_url: ""
+destination_ticket_url: ""
+destination_confluence_url: ""
+
+# ── Connector and post-back posture ───────────────────────────────────────────
+# folder_first_test forces output_destination_mode=local_only and
+# postback_execution_status=deferred. No external action is claimed by
+# this fixture.
+output_destination_mode: "local_only"
+postback_execution_status: "deferred"
+jira_connector_status: "not_required"
+confluence_connector_status: "not_required"
+rovo_mcp_available: false
+mcp_execution_status: "not_required"
+
+# ── Operator and reviewer identity ────────────────────────────────────────────
+# Role labels only. No PII, credentials, email addresses, or full legal
+# names tied to a real customer.
+operator_name: "SAS reviewer"
+reviewer_name: "SAS reviewer"
+
+# ── Safety and scoring flags ──────────────────────────────────────────────────
+# sample-001-dfd-crop inputs are documented synthetic in
+# samples/sample-001-dfd-crop/README.md §1; the operator confirms
+# redaction posture true for this fixture.
+sensitive_data_confirmed_redacted: true
+expected_baseline_required: true
+scoring_enabled: true
+
+# ── Metadata ──────────────────────────────────────────────────────────────────
+created_at: "2026-05-07T00:00:00Z"
+
+notes: "First governed run fixture. Build Package 11 establishes the run-evidence model; no chain execution claimed."

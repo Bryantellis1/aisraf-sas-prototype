@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "10"
-  build_package_name: Samples and expected baselines
-  build_package_status: active
-next_build_package:
   build_package_number: "11"
   build_package_name: Runs and execution evidence model
+  build_package_status: active
+next_build_package:
+  build_package_number: "12"
+  build_package_name: Validation
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -803,10 +803,85 @@ build_package_10_allowed_writes:
     - real PII, PAN, SSN, PHI, credentials, secrets, or production endpoints in any sample artefact
     - severity / finding-category / AI Action Level / blueprint-match / accuracy-score computation inside any sample artefact body
     - lowering expected_score_threshold inside any sample artefact to force a pass
+build_package_11_allowed_writes:
+  run_fixture_files:
+    - runs/RUN-001/README.md
+    - runs/RUN-001/run-profile.yaml
+    - runs/RUN-001/00-run-log.md
+    - runs/RUN-001/inputs/dfd-crop.png
+    - runs/RUN-001/inputs/dfd-crop.mmd
+    - runs/RUN-001/inputs/dfd-legend-excerpt.md
+    - runs/RUN-001/inputs/cloud-triage-notes.md
+    - runs/RUN-001/inputs/review-transcript.md
+    - runs/RUN-001/inputs/intake-ticket.md
+  run_fixture_folders:
+    - runs/RUN-001/dfd/   # empty governed folder; reserved for the 9 DFD subskill outputs
+  validation_files:
+    - validation/package-11-runs-checklist.md
+    - validation/run-folder-shape-checklist.md
+    - validation/run-log-checklist.md
+    - validation/run-comparison-checklist.md
+  governance_updates:
+    - PACKAGE-MANIFEST.yaml
+    - FOLDER-CONTRACTS.md
+    - runs/README.md
+    - validation/no-drift-rules.md
+    - README.md
+    - START-HERE.md
+    - .github/copilot-instructions.md
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1
+  run_fixture_count_active: 1
+  run_fixture_class_counts:
+    first_governed_fixture: 1
+    smoke_run: 0
+  expected_baseline_required_for_run: true
+  scoring_enabled_for_run: true
+  reserved_future_outputs_per_run: 26   # 17 RS + 9 DFD; NOT created by Build Package 11
+  founder_decisions:
+    q1_chain_execution_in_build_package_11: do_not_execute_chain_no_26_outputs_no_numeric_score
+    q2_run_log_file_shape: mirror_templates_output_output_00_run_log_template_md_package_09_q1_split
+    q3_inputs_byte_copy_rule: byte_copy_six_synthetic_inputs_from_samples_sample_001_dfd_crop_inputs_into_runs_run_001_inputs
+    q4_dfd_folder_shape: empty_governed_folder_reserved_for_9_dfd_outputs
+    q5_run_profile_mode: folder_first_test_pinned_safe_defaults_per_schema_allOf
+    q6_sensitive_data_confirmed_redacted: true_for_run_001_inheriting_synthetic_input_guarantee
+    q7_new_aisraf_run_ps1_legacy_log_header: build_run_001_by_hand_tool_stays_sealed_compatibility_note_in_run_log_checklist
+    q8_test_aisraf_package_patch: surgical_three_change_patch_approved
+  prohibited:
+    - prompts/* prompt cards or registry edits
+    - skills/* skill contracts or registry edits
+    - prototype-agents/* PRA specs or registry edits
+    - .agents/*.agent.md adapter file edits
+    - catalogs/* catalog content or registry edits
+    - blueprints/* blueprint content or registry edits
+    - templates/* template content or registry edits
+    - samples/* sample inputs, expected baselines, or registry edits
+    - config/* schema or sample-config edits
+    - tools/New-AisrafRun.ps1 edits
+    - tools/Test-AisrafRunProfile.ps1 edits
+    - any new tool beyond the surgical Test-AisrafPackage.ps1 patch
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides
+    - release/* release artefacts
+    - schemas outside config/
+    - .github/prompts/ wrappers
+    - tools/Export-AisrafRelease.ps1 or any new release-export tool
+    - any second governed run fixture (RUN-002 and beyond) inside Build Package 11
+    - introduction of {{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, or {{validation_root}} variables in any run artefact
+    - JSON expected baselines or any modification to expected baselines under samples/sample-001-dfd-crop/expected/
+    - the 17 RS run outputs (01-input-inventory.md through 17-accuracy-score.md) at runs/RUN-001/ root (deferred to chain execution)
+    - the 9 DFD run outputs (dfd-01-intake-quality-check.md through dfd-09-extraction-summary.md) under runs/RUN-001/dfd/ (deferred to chain execution)
+    - numeric accuracy score inside RUN-001 (owned by skills/rs/SK-ACCURACY-SCORE.md when the chain runs)
+    - Jira post-back, Confluence publication, Rovo / MCP / runtime / cloud / ADK / Vertex / GCP / database / Terraform execution claims
+    - real PII, PAN, SSN, PHI, credentials, secrets, or production endpoints in any run artefact
+    - severity / finding-category / AI Action Level / blueprint-match / accuracy-score computation inside any run artefact body
+    - any executed_by_operator claim inside RUN-001 (postback_execution_status remains deferred under folder_first_test)
+    - lowering expected_score_threshold inside any run artefact to force a pass
+    - committing additional runs/RUN-* folders alongside RUN-001 (smoke runs must be removed before commit)
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
-run_test_status: not_started
+run_test_status: first_governed_fixture_active_no_chain_execution
 cloud_runtime_status: not_started
 mcp_status: not_required_for_build_package_01
 adk_status: future
@@ -820,7 +895,7 @@ catalog_status: active
 blueprint_status: active
 template_status: active
 sample_status: active
-run_output_status: deferred_to_build_package_11
+run_output_status: active_first_governed_fixture
 release_artifact_status: deferred_to_build_package_15
 final_qa_status: deferred_to_build_package_16
 reference_read_summary:

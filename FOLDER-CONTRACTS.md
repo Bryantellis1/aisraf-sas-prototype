@@ -261,19 +261,19 @@ Path: `runs/`
 
 Owning Build Package: Build Package 11.
 
-Purpose: future self-contained execution evidence folders.
+Purpose: self-contained execution evidence folders. Each `runs/<run_id>/` folder carries a Build Package 02 schema-compliant `run-profile.yaml`, a Build Package 09 file-shape compliant `00-run-log.md`, byte-copies of staged inputs under `inputs/`, reserved paths for the 17 RS chain outputs (top level) and 9 DFD subskill outputs (under `dfd/`), and any operator-driven post-back artefacts.
 
 Who uses it: operators, validators, scorers, and reviewers.
 
-Allowed file types: Markdown README in Build Package 01; later per-run Markdown/YAML/JSON outputs when Build Package 11 authorizes them.
+Allowed file types: Markdown READMEs, Markdown chain outputs, Markdown run-log, YAML run-profile, byte-copy inputs (PNG, Mermaid `.mmd`, Markdown). Layout: `runs/README.md`, plus governed `runs/<run_id>/` folders. The first canonical governed fixture is `runs/RUN-001/` for `sample-001-dfd-crop`; it contains `README.md`, `run-profile.yaml`, `00-run-log.md`, `inputs/` (6 byte-copies of `samples/sample-001-dfd-crop/inputs/`), and an empty governed `dfd/` folder. The 17 RS outputs (`01-input-inventory.md` … `17-accuracy-score.md`) and 9 DFD outputs (`dfd/dfd-01-intake-quality-check.md` … `dfd/dfd-09-extraction-summary.md`) are reserved future paths produced when the operator executes the Build Package 04–09 chain — Build Package 11 does NOT create them.
 
-Belongs here: `runs/<run_id>/` folders containing a run profile, staged inputs, outputs, run log, and scoring evidence when implemented.
+Belongs here: governed run folders following the canonical shape pinned in `validation/run-folder-shape-checklist.md`. Run logs follow `validation/run-log-checklist.md` (file shape from `templates/output/output-00-run-log-template.md`; row patterns from `templates/run/`). Comparison/scoring procedure is recorded in `validation/run-comparison-checklist.md`. Other `runs/RUN-*` folders are smoke runs from `tools/New-AisrafRun.ps1` and must be removed before human git stage (per `validation/no-drift-rules.md`).
 
-Does not belong here: source artifacts, expected baselines, hidden reports, secrets, or release exports.
+Does not belong here: source artifacts, expected baselines (those live under `samples/<sample_id>/expected/` and are read-only at run time), hidden reports, secrets, credentials, real PII / PAN / SSN / PHI / production endpoints, diagrams, release exports, package source files, JSON expected baselines (founder decision Q1 of Build Package 10: Markdown-only), executable scripts, schemas outside `config/`, modifications to files under `samples/<sample_id>/` from a run, or any `executed_by_operator` claim without `postback_execution_status: executed_by_operator` plus a matching `templates/run/postback-log-entry-row-template.md` row in `00-run-log.md`. Top-level `runs/` accepts only `README.md`. Any `runs/<run_id>/` accepts only `README.md`, `run-profile.yaml`, `00-run-log.md`, `inputs/`, `dfd/`, the 17 RS chain-output Markdown files, and the optional Jira/Confluence post-back drafts.
 
 Populated by: Build Package 11.
 
-Build Package 01 status: reserved with README only.
+Build Package 11 status: active. `runs/RUN-001/` is present as the first canonical governed run fixture with `README.md`, `run-profile.yaml`, `00-run-log.md`, 6 byte-copied inputs under `inputs/`, and an empty governed `dfd/` folder. Build Package 11 does not execute the chain; the 26 future-output paths are reserved. Founder decision Q4 seals the upstream Build Package 04, 05, 06, 07, 08, 09, 10 registries plus `config/` and `tools/New-AisrafRun.ps1` / `tools/Test-AisrafRunProfile.ps1`; Build Package 11 records its run-folder shape, run-log shape, and comparison/scoring procedure only in the four Package 11 validation checklists.
 
 ## Root Area 14 — `diagrams/`
 
