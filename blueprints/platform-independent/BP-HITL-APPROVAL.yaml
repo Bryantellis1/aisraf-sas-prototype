@@ -1,0 +1,252 @@
+blueprint_id: BP-HITL-APPROVAL
+blueprint_name: HITL Approval
+owning_build_package: Build Package 08
+status: active
+
+purpose: >
+  Recognize patterns in which a human operator reviews and approves
+  AI-generated output at a discrete checkpoint before any post-AI action
+  is taken (write-back, downstream forwarding, customer-facing delivery).
+  The blueprint helps the reviewer distinguish a formal HITL gate from an
+  informal human review and scopes the catalog evidence that supports the
+  match.
+
+applicability:
+  category: platform-independent
+  ai_action_levels:
+    - AAL-L3
+    - AAL-L4
+    - AAL-UNKNOWN
+  primary_interaction_types:
+    - IT-HITL-APPROVAL
+    - IT-MODEL-CALL
+  primary_concerns:
+    - Is the human review step a formal approval gate or informal practice?
+    - What is the operator's authentication mechanism at the gate interface?
+    - What is the approval scope and how are rejected outputs handled?
+    - Is post-gate write-back additionally authorized?
+  not_applicable_when: |
+    No IT-HITL-APPROVAL is supported in the chain (use BP-NON-AI-DATAFLOW-BASELINE,
+    BP-MODEL-ENDPOINT-CALL, BP-RAG-RETRIEVAL, BP-TOOL-USING-AGENT, BP-API-WRITEBACK,
+    or BP-AGENT-TO-AGENT depending on context). The HITL gate is part of a larger
+    multi-step composition (BP-AI-WORKFLOW may be primary; HITL becomes a sub-pattern).
+
+catalog_dependencies:
+  - catalog_id: interaction-type-catalog
+    family_id: interactions
+    path: catalogs/interactions/interaction-type-catalog.yaml
+    use: confirm IT-HITL-APPROVAL is supported as a discrete gate
+  - catalog_id: flow-direction-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-direction-catalog.yaml
+    use: classify HITL flow direction
+  - catalog_id: flow-evidence-rule-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-evidence-rule-catalog.yaml
+    use: enforce per-flow evidence rules at the gate
+  - catalog_id: boundary-type-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-type-catalog.yaml
+    use: identify the human-operator-gate boundary
+  - catalog_id: trust-zone-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/trust-zone-catalog.yaml
+    use: classify model-output zone and human-review zone
+  - catalog_id: authentication-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authentication-catalog.yaml
+    use: identify operator authentication markers at the gate interface
+  - catalog_id: authorization-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authorization-catalog.yaml
+    use: identify approval authority and post-gate write-back authorization
+  - catalog_id: identity-evidence-rule-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/identity-evidence-rule-catalog.yaml
+    use: enforce identity evidence rules including approval authority and least privilege
+  - catalog_id: confidence-level-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/confidence-level-catalog.yaml
+    use: cross-cutting confidence levels for blueprint match disposition
+  - catalog_id: ai-action-level-catalog
+    family_id: review
+    path: catalogs/review/ai-action-level-catalog.yaml
+    use: scope of AI Action Levels supported by this pattern (AAL-L3 specifically requires HITL)
+  - catalog_id: finding-category-catalog
+    family_id: review
+    path: catalogs/review/finding-category-catalog.yaml
+    use: scope of supported finding categories
+  - catalog_id: recommendation-type-catalog
+    family_id: review
+    path: catalogs/review/recommendation-type-catalog.yaml
+    use: scope of supported recommendation types
+  - catalog_id: proof-vs-signal-rule-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    use: global signal-vs-proof rule referenced by every blueprint claim
+
+required_inputs:
+  - input_id: review_table_chain
+    description: chain of flow rows with interaction types resolved
+    source: skills/rs/SK-DATA-FLOW-TABLE-BUILD.md output
+  - input_id: ai_action_level_classification
+    description: AI Action Level result for the highest-action-level step
+    source: skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md output
+  - input_id: confidence_levels
+    description: per-row confidence values
+    source: catalogs/data-protection/confidence-level-catalog.yaml
+
+match_conditions:
+  - condition_id: BP-HITL-APPROVAL-MATCH-01
+    description: An IT-HITL-APPROVAL interaction is supported with explicit approval/rejection semantics, sitting between a model/agent output and a downstream action.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        required_values: [IT-HITL-APPROVAL]
+      - catalog_id: interaction-type-catalog
+        accompanying_values: [IT-MODEL-CALL, IT-AGENT-TO-AGENT, IT-WRITE-BACK]
+
+candidate_conditions:
+  - condition_id: BP-HITL-APPROVAL-CANDIDATE-01
+    description: A human actor is on the path with possible review semantics, but the gate's formality (block-until-approved) is unclear.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        partial_support_values: [IT-HITL-APPROVAL, IT-DATA-FLOW, IT-UNKNOWN]
+      - catalog_id: confidence-level-catalog
+        partial_support_values: [medium, low]
+
+no_match_conditions:
+  - condition_id: BP-HITL-APPROVAL-NO-MATCH-01
+    description: No IT-HITL-APPROVAL interaction is supported in the chain; any human actor present is in a non-approval role.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        absent_or_conflicting_values: [IT-HITL-APPROVAL]
+
+unknown_conditions:
+  - condition_id: BP-HITL-APPROVAL-UNKNOWN-01
+    description: HITL semantics are unresolved; an actor is present but the gate's blocking nature is undetermined.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        unknown_when_value: IT-UNKNOWN
+      - catalog_id: confidence-level-catalog
+        unknown_when_value: unknown
+
+material_missing_facts:
+  - fact_id: BP-HITL-APPROVAL-MMF-01
+    description: Is the human review step a formal approval gate that blocks the next action until approved, or an informal review?
+    catalog_reference: interaction-type-catalog
+    affects:
+      - blueprint_match
+      - ai_action_level
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-HITL-APPROVAL-MMF-02
+    description: What authentication does the operator use at the HITL gate interface?
+    catalog_reference: authentication-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-HITL-APPROVAL-MMF-03
+    description: What is the approval scope, and how are rejected outputs handled (held, discarded, escalated)?
+    catalog_reference: authorization-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-HITL-APPROVAL-MMF-04
+    description: Is post-gate write-back additionally authorized after operator approval, or is the approval the only check?
+    catalog_reference: authorization-catalog
+    affects:
+      - finding_category
+      - ai_action_level
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+
+supported_finding_categories:
+  - finding_category_id: FC-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-DEFICIENCY
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-EVIDENCE-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-OBSERVATION
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-RISK
+    catalog: catalogs/review/finding-category-catalog.yaml
+
+supported_recommendation_types:
+  - recommendation_type_id: RT-FORMALIZE-GATE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-ADD-CONTROL
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-EXPAND-CONTROL-SCOPE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-DEFINE-SCOPE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-REQUEST-OWNER-OR-EVIDENCE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-ROUTE-TO-VALIDATION-TICKET
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+
+human_review_gate:
+  required: true
+  notes: >
+    A blueprint match for HITL Approval is itself a review hypothesis;
+    informal review must not be accepted as a HITL gate without targeted
+    question confirmation. AI Action Level reduction (an AAL-L4 design
+    moving toward AAL-L3 because of HITL) is a skill-level decision,
+    not a blueprint claim.
+
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - implementation_proof_from_blueprint_match
+  - severity_computed_inside_blueprint
+  - ai_action_level_computed_inside_blueprint
+  - score_computed_inside_blueprint
+  - finding_prose_inside_blueprint
+  - recommendation_prose_inside_blueprint
+  - handoff_prose_inside_blueprint
+  - validation_ticket_prose_inside_blueprint
+  - owner_routing_inside_blueprint
+  - new_catalog_value_introduced_inside_blueprint
+  - approved_security_stack_from_blueprint_match
+
+source_reference:
+  v0_01_artifact: blueprints/BP-HITL-APPROVAL.md
+  v0_01_path: aisraf-sas-prototype-skill-chain-pack-v0.01/blueprints/BP-HITL-APPROVAL.md
+  derivation_mode: restructured_and_improved
+  notes: >
+    Translated the v0.01 25-section Markdown form into structured YAML.
+    Removed the v0.01 references to a non-existent v0.1.2 catalog
+    (validation-note-catalog) and prose recommendation tables.
+
+version_notes: >
+  Initial Build Package 08 release. Four-state matching per founder
+  decision Q1.
+
+match_evidence_policy:
+  match_requires_supported_catalog_values: true
+  candidate_allows_partial_support: true
+  no_match_requires_clear_absence_or_conflict: true
+  unknown_when_required_inputs_missing: true
+  human_review_required: true
+
+catalog_value_policy:
+  may_reference_catalog_values_only: true
+  may_not_introduce_new_catalog_values: true
+  missing_catalog_value_action: "record material_missing_fact; do not invent"
+
+output_boundary:
+  does_not_write_outputs: true
+  does_not_create_templates: true
+  does_not_generate_handoff_text: true
+  supports_future_outputs_only_through_templates: true
+
+runtime_and_external_execution:
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false

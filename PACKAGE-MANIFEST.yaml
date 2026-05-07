@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "07"
-  build_package_name: Catalogs
-  build_package_status: active
-next_build_package:
   build_package_number: "08"
   build_package_name: Blueprints
+  build_package_status: active
+next_build_package:
+  build_package_number: "09"
+  build_package_name: Templates
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -536,6 +536,77 @@ build_package_07_allowed_writes:
     - severity, scoring, or AI Action Level computation inside catalogs
     - catalog count or layout deviating from the explicit 24 controlled-vocabulary YAML catalog list (catalog_count is locked at 24 for Build Package 07; future expansion requires a separate governed update)
     - runtime services, cloud assets, ADK/Vertex/GCP, MCP/Jira/Confluence/Rovo execution proof, database jobs, Terraform, release binaries
+build_package_08_allowed_writes:
+  blueprint_files:
+    - blueprints/blueprint-registry.yaml
+    - blueprints/blueprint-template.yaml
+    - blueprints/platform-independent/BP-NON-AI-DATAFLOW-BASELINE.yaml
+    - blueprints/platform-independent/BP-RAG-RETRIEVAL.yaml
+    - blueprints/platform-independent/BP-MODEL-ENDPOINT-CALL.yaml
+    - blueprints/platform-independent/BP-TOOL-USING-AGENT.yaml
+    - blueprints/platform-independent/BP-API-WRITEBACK.yaml
+    - blueprints/platform-independent/BP-HITL-APPROVAL.yaml
+    - blueprints/platform-independent/BP-AGENT-TO-AGENT.yaml
+    - blueprints/platform-independent/BP-AI-WORKFLOW.yaml
+    - blueprints/cloud-patterns/BP-AI-SAAS-INTEGRATION.yaml
+  blueprint_readmes:
+    - blueprints/README.md
+    - blueprints/platform-independent/README.md
+    - blueprints/cloud-patterns/README.md
+  validation_files:
+    - validation/package-08-blueprints-checklist.md
+    - validation/blueprint-registry-checklist.md
+    - validation/blueprint-catalog-consumption-checklist.md
+  governance_updates:
+    - PACKAGE-MANIFEST.yaml
+    - FOLDER-CONTRACTS.md
+    - README.md
+    - START-HERE.md
+    - .github/copilot-instructions.md
+    - validation/no-drift-rules.md
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1
+  blueprint_count: 9
+  blueprint_category_count: 2
+  total_files_under_blueprints: 14
+  blueprint_match_states:
+    - matched
+    - candidate
+    - no_match
+    - unknown
+  founder_decisions:
+    q1_match_state_model: four_state_matched_candidate_no_match_unknown
+    q2_blueprint_inventory_locked_at_9: applied_8_platform_independent_plus_1_cloud_pattern
+    q3_two_folder_split: applied_platform_independent_and_cloud_patterns
+    q4_sealed_upstream_registries: applied_no_edits_to_prompts_skills_pras_adapters_or_catalogs_registries
+    q5_test_aisraf_package_patch: surgical_five_change_patch_approved
+    q6_count_decision: blueprint_count_9_blueprint_category_count_2_total_files_14
+    q7_blueprint_category_model: platform_independent_and_cloud_patterns
+    q8_runtime_and_external_execution_flags: applied_six_false_flags_in_every_bp_and_registry
+  prohibited:
+    - prompts/* prompt cards or registry edits
+    - skills/* skill contracts or registry edits
+    - prototype-agents/* PRA specs or registry edits
+    - .agents/*.agent.md adapter file edits
+    - catalogs/* catalog content or registry edits
+    - templates/* template content beyond authoring-agent templates
+    - samples/* sample inputs or expected baselines
+    - runs/* committed run outputs
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides
+    - release/* release artifacts
+    - schemas outside config/
+    - .github/prompts/ wrappers
+    - tools/Export-AisrafRelease.ps1 or any new release-export tool
+    - any new tool beyond the surgical Test-AisrafPackage.ps1 patch
+    - any 10th blueprint or new blueprint category in this package
+    - introduction of {{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, or {{validation_root}} variables in any blueprint
+    - new catalog identifier introduced inside any blueprint
+    - new controlled value introduced inside any blueprint
+    - recommendation prose, handoff text, validation-ticket prose, severity computation, scoring computation, or AI Action Level computation inside any blueprint
+    - owner routing inside any blueprint
+    - implementation proof claims inside any blueprint
+    - runtime services, cloud assets, ADK/Vertex/GCP, MCP/Jira/Confluence/Rovo execution proof, database jobs, Terraform, release binaries
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
@@ -550,7 +621,7 @@ skill_status: active
 pra_status: active
 agent_adapter_status: active
 catalog_status: active
-blueprint_status: deferred_to_build_package_08
+blueprint_status: active
 template_status: deferred_to_build_package_09_except_authoring_agent_templates
 sample_status: deferred_to_build_package_10
 run_output_status: deferred_to_build_package_11

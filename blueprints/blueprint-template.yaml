@@ -1,0 +1,200 @@
+# AISRAF SAS Prototype v0.1.2 — Blueprint Template
+#
+# This file is the canonical template every BP-*.yaml must follow.
+# Every controlled blueprint authored under Build Package 08 must include
+# the 19 required fields plus the three policy blocks plus the runtime
+# execution flag block. No BP-*.yaml may omit a section.
+#
+# Blueprints are reusable review patterns. Blueprints are NOT:
+#   - catalogs (Build Package 07; sealed)
+#   - prompt cards (Build Package 04; sealed)
+#   - skill contracts (Build Package 05; sealed)
+#   - PRA specs (Build Package 06; sealed)
+#   - .agent.md adapters (Build Package 06; sealed)
+#   - templates (Build Package 09; deferred)
+#   - samples (Build Package 10; deferred)
+#   - run outputs (Build Package 11; deferred)
+#   - runtime, cloud, ADK, MCP, Jira, Confluence, Rovo, database,
+#     or Terraform execution proof
+#
+# Blueprints reference Package 07 catalog values only. Blueprints must not
+# introduce new catalog values; if a controlled value is required but
+# missing, record it in material_missing_facts.
+
+blueprint_id: BP-PLACEHOLDER
+blueprint_name: Placeholder Blueprint Name
+owning_build_package: Build Package 08
+status: template_only
+
+purpose: >
+  One-paragraph description of the design pattern this blueprint recognizes.
+  State what the blueprint helps a reviewer do (match observed shape, drive
+  targeted questions, classify finding categories, classify recommendation
+  types). Do not describe runtime behavior, deployment, or implementation.
+
+applicability:
+  category: platform-independent
+  ai_action_levels:
+    - AAL-L0
+    - AAL-L1
+    - AAL-L2
+    - AAL-L3
+    - AAL-L4
+    - AAL-UNKNOWN
+  primary_interaction_types:
+    - IT-DATA-FLOW
+  primary_concerns:
+    - placeholder concern phrased as a review question
+  not_applicable_when: |
+    State the conditions under which a different blueprint is the better
+    primary match. List secondary candidate blueprints that may overlap.
+
+# Catalog dependencies must reference only Build Package 07 controlled
+# catalogs. Every blueprint must include confidence-level-catalog and
+# proof-vs-signal-rule-catalog. Every blueprint must include
+# interaction-type-catalog because blueprints recognize interaction shapes.
+catalog_dependencies:
+  - catalog_id: interaction-type-catalog
+    family_id: interactions
+    path: catalogs/interactions/interaction-type-catalog.yaml
+    use: classify the chain interactions that drive this blueprint
+  - catalog_id: confidence-level-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/confidence-level-catalog.yaml
+    use: cross-cutting confidence levels for blueprint match disposition
+  - catalog_id: proof-vs-signal-rule-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    use: global signal-vs-proof rule referenced by every blueprint claim
+
+required_inputs:
+  - input_id: review_table_chain
+    description: chain of flow rows produced by SK-DATA-FLOW-TABLE-BUILD with interaction types resolved
+    source: skills/rs/SK-DATA-FLOW-TABLE-BUILD.md output
+  - input_id: ai_action_level_classification
+    description: AI Action Level result from SK-AI-ACTION-LEVEL-CLASSIFY for the highest-action-level step in the chain
+    source: skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md output
+  - input_id: confidence_levels
+    description: per-row confidence values from confidence-level-catalog
+    source: catalogs/data-protection/confidence-level-catalog.yaml
+
+# Match-state condition blocks. Founder decision Q1 fixes the four states:
+# matched, candidate, no_match, unknown. Every blueprint must populate every
+# block with at least one entry; conditions reference catalog values only.
+match_conditions:
+  - condition_id: BP-PLACEHOLDER-MATCH-01
+    description: stating the supported catalog evidence required to record matched
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        required_values: [IT-DATA-FLOW]
+
+candidate_conditions:
+  - condition_id: BP-PLACEHOLDER-CANDIDATE-01
+    description: stating partial catalog support that does not yet justify matched
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        partial_support_values: [IT-UNKNOWN]
+
+no_match_conditions:
+  - condition_id: BP-PLACEHOLDER-NO-MATCH-01
+    description: stating the supported absence or conflict with this pattern
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        absent_or_conflicting_values: [IT-MODEL-CALL]
+
+unknown_conditions:
+  - condition_id: BP-PLACEHOLDER-UNKNOWN-01
+    description: stating the missing required-input condition that prevents the other three states
+    catalog_evidence:
+      - catalog_id: confidence-level-catalog
+        unknown_when_value: unknown
+
+material_missing_facts:
+  - fact_id: BP-PLACEHOLDER-MMF-01
+    description: missing fact phrased as a reviewer-readable question
+    catalog_reference: interaction-type-catalog
+    affects:
+      - blueprint_match
+      - ai_action_level
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+
+supported_finding_categories:
+  - finding_category_id: FC-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-EVIDENCE-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-OBSERVATION
+    catalog: catalogs/review/finding-category-catalog.yaml
+
+supported_recommendation_types:
+  - recommendation_type_id: RT-ADD-CONTROL
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-REQUEST-OWNER-OR-EVIDENCE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+
+human_review_gate:
+  required: true
+  notes: >
+    A blueprint match is a review hypothesis. Selection of the match state,
+    severity, AI Action Level, finding categories, and recommendation types
+    requires human review and the relevant skill outputs. The blueprint
+    file does not decide; it scopes.
+
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - implementation_proof_from_blueprint_match
+  - severity_computed_inside_blueprint
+  - ai_action_level_computed_inside_blueprint
+  - score_computed_inside_blueprint
+  - finding_prose_inside_blueprint
+  - recommendation_prose_inside_blueprint
+  - handoff_prose_inside_blueprint
+  - validation_ticket_prose_inside_blueprint
+  - owner_routing_inside_blueprint
+  - new_catalog_value_introduced_inside_blueprint
+  - approved_security_stack_from_blueprint_match
+
+source_reference:
+  v0_01_artifact: blueprints/blueprint-template.md
+  v0_01_path: aisraf-sas-prototype-skill-chain-pack-v0.01/blueprints/blueprint-template.md
+  derivation_mode: restructured_and_improved
+  notes: >
+    v0.1.2 template replaces the v0.01 25-section Markdown form with a
+    structured YAML form aligned to Package 07 catalog vocabulary and
+    Package 08 four-state matching.
+
+version_notes: >
+  Initial Build Package 08 release. Template is non-active (status:
+  template_only). Every controlled BP-*.yaml under blueprints/ adopts this
+  shape; deviations require a future governed blueprint update.
+
+match_evidence_policy:
+  match_requires_supported_catalog_values: true
+  candidate_allows_partial_support: true
+  no_match_requires_clear_absence_or_conflict: true
+  unknown_when_required_inputs_missing: true
+  human_review_required: true
+
+catalog_value_policy:
+  may_reference_catalog_values_only: true
+  may_not_introduce_new_catalog_values: true
+  missing_catalog_value_action: "record material_missing_fact; do not invent"
+
+output_boundary:
+  does_not_write_outputs: true
+  does_not_create_templates: true
+  does_not_generate_handoff_text: true
+  supports_future_outputs_only_through_templates: true
+
+runtime_and_external_execution:
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-07 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-08 surface of AISRAF SAS Prototype v0.1.2.
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -28,8 +28,13 @@
         and only the listed YAML files; 24 controlled-vocabulary YAML catalogs
         in total);
       - Build Package 07 validation files exist;
+      - Build Package 08 blueprints/ surface matches the approved layout
+        (README.md, blueprint-registry.yaml, blueprint-template.yaml, two
+        category folders each with README.md and only the listed YAML files;
+        9 controlled YAML blueprints in total);
+      - Build Package 08 validation files exist;
       - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP,
-        blueprint/template/sample/diagram/docs/release content beyond folder
+        template/sample/diagram/docs/release content beyond folder
         README placeholders);
       - the old reference workspace path is acknowledged as read-only.
 
@@ -216,8 +221,8 @@ if ($adapterFails -eq 0) {
 # prototype-agents/ is owned by Build Package 06 (active); see Check 08d for the prototype-agents/ allowed surface.
 # .agents/ is owned by Build Package 06 (active); see Check 07 for the adapter surface.
 # catalogs/ is owned by Build Package 07 (active); see Check 08e for the catalogs/ allowed surface.
+# blueprints/ is owned by Build Package 08 (active); see Check 08f for the blueprints/ allowed surface.
 $readmeOnlyFolders = @{
-    'blueprints'       = 'Build Package 08'
     'templates'        = 'Build Package 09'
     'diagrams'         = 'Build Package 13'
     'docs'             = 'Build Package 14'
@@ -510,6 +515,85 @@ else {
     Add-Result -Status FAIL -Check '08e-catalogs-content-limits' -Detail "catalogs/ folder is missing."
 }
 
+# 8f. Build Package 08 blueprints content limits.
+# Allowed under blueprints/: README.md, blueprint-registry.yaml,
+# blueprint-template.yaml, and exactly 2 category folders.
+# Each category folder must contain README.md plus exactly the approved
+# BP-*.yaml blueprint files.
+# FAIL: unexpected files at blueprints/ root, unexpected category folders,
+# missing required BP-*.yaml files, extra BP-*.yaml files, nested folders,
+# or non-YAML/non-README files inside categories.
+$blueprintsAbs = Resolve-PackagePath 'blueprints'
+$blueprintsTopAllowedFiles = @('README.md', 'blueprint-registry.yaml', 'blueprint-template.yaml')
+$blueprintCategoryAllowedFiles = @{
+    'platform-independent' = @(
+        'README.md',
+        'BP-NON-AI-DATAFLOW-BASELINE.yaml',
+        'BP-RAG-RETRIEVAL.yaml',
+        'BP-MODEL-ENDPOINT-CALL.yaml',
+        'BP-TOOL-USING-AGENT.yaml',
+        'BP-API-WRITEBACK.yaml',
+        'BP-HITL-APPROVAL.yaml',
+        'BP-AGENT-TO-AGENT.yaml',
+        'BP-AI-WORKFLOW.yaml'
+    )
+    'cloud-patterns'       = @(
+        'README.md',
+        'BP-AI-SAAS-INTEGRATION.yaml'
+    )
+}
+if (Test-Path -LiteralPath $blueprintsAbs -PathType Container) {
+    foreach ($entry in @(Get-ChildItem -LiteralPath $blueprintsAbs -Force)) {
+        if ($entry.PSIsContainer) {
+            if (-not ($blueprintCategoryAllowedFiles.ContainsKey($entry.Name))) {
+                Add-Result -Status FAIL -Check '08f-blueprints-content-limits' -Detail "Forbidden subfolder in blueprints/ (Build Package 08 allows only the 2 approved category folders): blueprints/$($entry.Name)/"
+            }
+        }
+        else {
+            if (-not ($blueprintsTopAllowedFiles -contains $entry.Name)) {
+                Add-Result -Status FAIL -Check '08f-blueprints-content-limits' -Detail "Forbidden file at blueprints/ root (Build Package 08 allows only README.md, blueprint-registry.yaml, and blueprint-template.yaml here): blueprints/$($entry.Name)"
+            }
+        }
+    }
+    foreach ($category in $blueprintCategoryAllowedFiles.Keys) {
+        $categoryAbs = Join-Path $blueprintsAbs $category
+        if (-not (Test-Path -LiteralPath $categoryAbs -PathType Container)) {
+            Add-Result -Status FAIL -Check '08f-blueprints-content-limits' -Detail "Required Build Package 08 blueprint category folder missing: blueprints/$category/"
+            continue
+        }
+        $approvedNames = $blueprintCategoryAllowedFiles[$category]
+        $observedNames = @()
+        foreach ($child in @(Get-ChildItem -LiteralPath $categoryAbs -Force)) {
+            if ($child.PSIsContainer) {
+                Add-Result -Status FAIL -Check '08f-blueprints-content-limits' -Detail "Forbidden subfolder in blueprints/$category/ (Build Package 08 disallows nested folders): blueprints/$category/$($child.Name)/"
+                continue
+            }
+            $observedNames += $child.Name
+            if (-not ($approvedNames -contains $child.Name)) {
+                Add-Result -Status FAIL -Check '08f-blueprints-content-limits' -Detail "Forbidden file in blueprints/$category/ (Build Package 08 fixes the blueprint inventory at the approved YAML file list): blueprints/$category/$($child.Name)"
+            }
+        }
+        foreach ($name in $approvedNames) {
+            if (-not ($observedNames -contains $name)) {
+                Add-Result -Status FAIL -Check '08f-blueprints-content-limits' -Detail "Required Build Package 08 blueprint file missing: blueprints/$category/$name"
+            }
+        }
+    }
+    foreach ($name in $blueprintsTopAllowedFiles) {
+        $expected = Join-Path $blueprintsAbs $name
+        if (-not (Test-Path -LiteralPath $expected -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '08f-blueprints-content-limits' -Detail "Required Build Package 08 blueprint file missing: blueprints/$name"
+        }
+    }
+    $blueprintFails = @($results | Where-Object { $_.Check -eq '08f-blueprints-content-limits' -and $_.Status -eq 'FAIL' }).Count
+    if ($blueprintFails -eq 0) {
+        Add-Result -Status PASS -Check '08f-blueprints-content-limits' -Detail "blueprints/ surface matches Build Package 08 contract (README.md, blueprint-registry.yaml, blueprint-template.yaml, 2 category folders each with README.md and the approved BP-*.yaml files; 9 controlled blueprints total)."
+    }
+}
+else {
+    Add-Result -Status FAIL -Check '08f-blueprints-content-limits' -Detail "blueprints/ folder is missing."
+}
+
 # 9. samples/ — only README.md at top, no sample-* subfolders before Build Package 10
 $samplesAbs = Resolve-PackagePath 'samples'
 $samplesFails = @()
@@ -547,7 +631,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -560,7 +644,7 @@ if ($validationFails.Count -gt 0) {
     foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 03: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-07 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-08 documents."
 }
 
 # 12. tools/ — Build Package 03 expected file set

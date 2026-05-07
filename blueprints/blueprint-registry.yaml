@@ -1,0 +1,624 @@
+registry_id: aisraf-blueprint-registry
+schema_version: aisraf_blueprint_registry.v0_1_2
+package_version: v0.1.2
+owning_build_package: Build Package 08
+status: active
+
+# Headline counts (founder decision Q6).
+blueprint_count: 9
+blueprint_category_count: 2
+total_files_under_blueprints: 14
+
+# Match-state model (founder decision Q1).
+blueprint_match_states:
+  - matched
+  - candidate
+  - no_match
+  - unknown
+
+unknown_value: unknown
+
+# Global prohibited claims for every blueprint and the registry.
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - implementation_proof_from_blueprint_match
+  - severity_computed_inside_blueprint
+  - ai_action_level_computed_inside_blueprint
+  - score_computed_inside_blueprint
+  - finding_prose_inside_blueprint
+  - recommendation_prose_inside_blueprint
+  - handoff_prose_inside_blueprint
+  - validation_ticket_prose_inside_blueprint
+  - owner_routing_inside_blueprint
+  - new_catalog_value_introduced_inside_blueprint
+  - approved_security_stack_from_blueprint_match
+
+# Founder decision Q8 — explicit runtime and external execution flags.
+runtime_and_external_execution:
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false
+
+# Founder decision Q4 — sealed upstream registries. Build Package 08
+# records its consumer mappings in this file and in the validation
+# checklists only; it does not modify any of the four upstream
+# registries.
+sealed_upstream_registries:
+  - prompts/prompt-registry.yaml
+  - skills/skill-registry.yaml
+  - prototype-agents/prototype-agent-registry.yaml
+  - catalogs/catalog-registry.yaml
+sealed_upstream_policy: >
+  Build Package 08 must not modify any of the upstream registries above.
+  All blueprint-level consumer mapping is recorded in this
+  blueprint-registry.yaml, in validation/blueprint-registry-checklist.md,
+  and in validation/blueprint-catalog-consumption-checklist.md.
+
+# Human review gate policy (every blueprint asserts human_review_required: true).
+human_review_gate_policy:
+  every_blueprint_match_is_a_review_hypothesis: true
+  selection_of_match_state_requires_human_review: true
+  ai_action_level_selection_remains_with_skills_and_human_review: true
+  finding_severity_selection_remains_with_skills_and_human_review: true
+  final_disposition_remains_with_skills_and_human_review: true
+
+# Founder decision Q7 — two-category model.
+blueprint_categories:
+  - category_id: platform-independent
+    path: blueprints/platform-independent/
+    description: Blueprints whose match conditions do not materially depend on a specific cloud provider, vendor SaaS, or third-party platform.
+    blueprint_count: 8
+  - category_id: cloud-patterns
+    path: blueprints/cloud-patterns/
+    description: Blueprints whose match conditions materially depend on a cloud or third-party SaaS boundary crossing.
+    blueprint_count: 1
+
+# Authoritative inventory.
+blueprints:
+  - blueprint_id: BP-NON-AI-DATAFLOW-BASELINE
+    blueprint_name: Non-AI Dataflow Baseline
+    category: platform-independent
+    path: blueprints/platform-independent/BP-NON-AI-DATAFLOW-BASELINE.yaml
+    status: active
+    purpose_summary: Recognize service-to-service / service-to-store flows with no AI invocation; confirm AAL-L0.
+    primary_interaction_types: [IT-DATA-FLOW, IT-OBSERVABILITY, IT-CONTROL-PLANE-ACTION]
+
+  - blueprint_id: BP-RAG-RETRIEVAL
+    blueprint_name: RAG Retrieval
+    category: platform-independent
+    path: blueprints/platform-independent/BP-RAG-RETRIEVAL.yaml
+    status: active
+    purpose_summary: Recognize retrieval-augmented generation (vector/search retrieval feeding a model endpoint).
+    primary_interaction_types: [IT-MODEL-CALL, IT-DATA-FLOW]
+
+  - blueprint_id: BP-MODEL-ENDPOINT-CALL
+    blueprint_name: Model Endpoint Call
+    category: platform-independent
+    path: blueprints/platform-independent/BP-MODEL-ENDPOINT-CALL.yaml
+    status: active
+    purpose_summary: Recognize direct invocation of an internally hosted or managed-cloud model endpoint.
+    primary_interaction_types: [IT-MODEL-CALL, IT-DATA-FLOW]
+
+  - blueprint_id: BP-TOOL-USING-AGENT
+    blueprint_name: Tool-Using Agent
+    category: platform-independent
+    path: blueprints/platform-independent/BP-TOOL-USING-AGENT.yaml
+    status: active
+    purpose_summary: Recognize an AI agent invoking tools or APIs as part of a model-driven decision loop.
+    primary_interaction_types: [IT-TOOL-CALL, IT-MODEL-CALL, IT-DATA-FLOW]
+
+  - blueprint_id: BP-API-WRITEBACK
+    blueprint_name: API Write-Back
+    category: platform-independent
+    path: blueprints/platform-independent/BP-API-WRITEBACK.yaml
+    status: active
+    purpose_summary: Recognize AI/agent output written back to a data store or downstream service via an API call.
+    primary_interaction_types: [IT-WRITE-BACK, IT-MODEL-CALL, IT-HITL-APPROVAL]
+
+  - blueprint_id: BP-HITL-APPROVAL
+    blueprint_name: HITL Approval
+    category: platform-independent
+    path: blueprints/platform-independent/BP-HITL-APPROVAL.yaml
+    status: active
+    purpose_summary: Recognize a discrete human-in-the-loop approval gate before any post-AI action.
+    primary_interaction_types: [IT-HITL-APPROVAL, IT-MODEL-CALL]
+
+  - blueprint_id: BP-AGENT-TO-AGENT
+    blueprint_name: Agent-to-Agent
+    category: platform-independent
+    path: blueprints/platform-independent/BP-AGENT-TO-AGENT.yaml
+    status: active
+    purpose_summary: Recognize orchestrator-to-executor or peer-agent delegation between AI agents.
+    primary_interaction_types: [IT-AGENT-TO-AGENT, IT-MODEL-CALL]
+
+  - blueprint_id: BP-AI-WORKFLOW
+    blueprint_name: AI Workflow
+    category: platform-independent
+    path: blueprints/platform-independent/BP-AI-WORKFLOW.yaml
+    status: active
+    purpose_summary: Recognize multi-step composition of two or more AI sub-patterns in a coordinated chain.
+    primary_interaction_types: [IT-MODEL-CALL, IT-TOOL-CALL, IT-WRITE-BACK, IT-HITL-APPROVAL, IT-AGENT-TO-AGENT, IT-DATA-FLOW]
+
+  - blueprint_id: BP-AI-SAAS-INTEGRATION
+    blueprint_name: AI SaaS Integration
+    category: cloud-patterns
+    path: blueprints/cloud-patterns/BP-AI-SAAS-INTEGRATION.yaml
+    status: active
+    purpose_summary: Recognize internet-crossing model invocation to an external AI SaaS provider.
+    primary_interaction_types: [IT-MODEL-CALL, IT-DATA-FLOW]
+
+# Blueprint -> Catalog consumer map.
+# Catalog IDs come from catalogs/catalog-registry.yaml. Every blueprint
+# includes confidence-level-catalog and proof-vs-signal-rule-catalog.
+# Build Package 08 must not introduce new catalog IDs.
+blueprint_catalog_map:
+  BP-NON-AI-DATAFLOW-BASELINE:
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - confidence-level-catalog
+      - ai-action-level-catalog
+      - finding-category-catalog
+      - recommendation-type-catalog
+      - proof-vs-signal-rule-catalog
+  BP-RAG-RETRIEVAL:
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - confidence-level-catalog
+      - ai-action-level-catalog
+      - finding-category-catalog
+      - recommendation-type-catalog
+      - proof-vs-signal-rule-catalog
+  BP-MODEL-ENDPOINT-CALL:
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - confidence-level-catalog
+      - ai-action-level-catalog
+      - finding-category-catalog
+      - recommendation-type-catalog
+      - proof-vs-signal-rule-catalog
+  BP-TOOL-USING-AGENT:
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - identity-evidence-rule-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - confidence-level-catalog
+      - ai-action-level-catalog
+      - finding-category-catalog
+      - recommendation-type-catalog
+      - proof-vs-signal-rule-catalog
+  BP-API-WRITEBACK:
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - identity-evidence-rule-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - confidence-level-catalog
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - ai-action-level-catalog
+      - finding-category-catalog
+      - recommendation-type-catalog
+      - proof-vs-signal-rule-catalog
+  BP-HITL-APPROVAL:
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - identity-evidence-rule-catalog
+      - confidence-level-catalog
+      - ai-action-level-catalog
+      - finding-category-catalog
+      - recommendation-type-catalog
+      - proof-vs-signal-rule-catalog
+  BP-AGENT-TO-AGENT:
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - identity-evidence-rule-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - confidence-level-catalog
+      - ai-action-level-catalog
+      - finding-category-catalog
+      - recommendation-type-catalog
+      - proof-vs-signal-rule-catalog
+  BP-AI-WORKFLOW:
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - identity-evidence-rule-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - confidence-level-catalog
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - ai-action-level-catalog
+      - finding-category-catalog
+      - recommendation-type-catalog
+      - review-status-catalog
+      - proof-vs-signal-rule-catalog
+  BP-AI-SAAS-INTEGRATION:
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - identity-evidence-rule-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - confidence-level-catalog
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - ai-action-level-catalog
+      - finding-category-catalog
+      - recommendation-type-catalog
+      - proof-vs-signal-rule-catalog
+
+# Blueprint -> Skill consumer map.
+# All consumed skills are existing Build Package 05 skills.
+# SK-REVIEW-BLUEPRINT-MATCH and SK-TARGETED-QUESTION-GENERATE are
+# referenced by every blueprint.
+blueprint_skill_map:
+  BP-NON-AI-DATAFLOW-BASELINE:
+    skills:
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+  BP-RAG-RETRIEVAL:
+    skills:
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+  BP-MODEL-ENDPOINT-CALL:
+    skills:
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+  BP-TOOL-USING-AGENT:
+    skills:
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+  BP-API-WRITEBACK:
+    skills:
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+      - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+  BP-HITL-APPROVAL:
+    skills:
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+  BP-AGENT-TO-AGENT:
+    skills:
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+      - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+  BP-AI-WORKFLOW:
+    skills:
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+      - skills/rs/SK-HANDOFF-PACK-BUILD.md
+      - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+      - skills/rs/SK-ACCURACY-SCORE.md
+  BP-AI-SAAS-INTEGRATION:
+    skills:
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+      - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+
+# Blueprint -> PRA consumer map.
+# All consumed PRAs are existing Build Package 06 PRAs.
+blueprint_pra_map:
+  BP-NON-AI-DATAFLOW-BASELINE:
+    pras:
+      - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+      - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  BP-RAG-RETRIEVAL:
+    pras:
+      - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+      - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  BP-MODEL-ENDPOINT-CALL:
+    pras:
+      - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+      - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  BP-TOOL-USING-AGENT:
+    pras:
+      - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+      - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  BP-API-WRITEBACK:
+    pras:
+      - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+      - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+      - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  BP-HITL-APPROVAL:
+    pras:
+      - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+      - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  BP-AGENT-TO-AGENT:
+    pras:
+      - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+      - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+      - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  BP-AI-WORKFLOW:
+    pras:
+      - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+      - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+      - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  BP-AI-SAAS-INTEGRATION:
+    pras:
+      - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+      - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+      - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+
+# Blueprint -> .agent.md adapter consumer map.
+# All consumed adapters are the 7 existing Build Package 06 adapters.
+blueprint_adapter_map:
+  BP-NON-AI-DATAFLOW-BASELINE:
+    adapters:
+      - .agents/aisraf-blueprint-questioner.agent.md
+      - .agents/aisraf-finding-recommender.agent.md
+  BP-RAG-RETRIEVAL:
+    adapters:
+      - .agents/aisraf-blueprint-questioner.agent.md
+      - .agents/aisraf-finding-recommender.agent.md
+  BP-MODEL-ENDPOINT-CALL:
+    adapters:
+      - .agents/aisraf-blueprint-questioner.agent.md
+      - .agents/aisraf-finding-recommender.agent.md
+  BP-TOOL-USING-AGENT:
+    adapters:
+      - .agents/aisraf-blueprint-questioner.agent.md
+      - .agents/aisraf-finding-recommender.agent.md
+  BP-API-WRITEBACK:
+    adapters:
+      - .agents/aisraf-blueprint-questioner.agent.md
+      - .agents/aisraf-finding-recommender.agent.md
+      - .agents/aisraf-handoff-qa-scorer.agent.md
+  BP-HITL-APPROVAL:
+    adapters:
+      - .agents/aisraf-blueprint-questioner.agent.md
+      - .agents/aisraf-finding-recommender.agent.md
+  BP-AGENT-TO-AGENT:
+    adapters:
+      - .agents/aisraf-blueprint-questioner.agent.md
+      - .agents/aisraf-finding-recommender.agent.md
+      - .agents/aisraf-handoff-qa-scorer.agent.md
+  BP-AI-WORKFLOW:
+    adapters:
+      - .agents/aisraf-blueprint-questioner.agent.md
+      - .agents/aisraf-finding-recommender.agent.md
+      - .agents/aisraf-handoff-qa-scorer.agent.md
+  BP-AI-SAAS-INTEGRATION:
+    adapters:
+      - .agents/aisraf-blueprint-questioner.agent.md
+      - .agents/aisraf-finding-recommender.agent.md
+      - .agents/aisraf-handoff-qa-scorer.agent.md
+
+# Blueprint -> Prompt consumer map.
+# All consumed prompts are existing Build Package 04 prompt cards.
+blueprint_prompt_map:
+  BP-NON-AI-DATAFLOW-BASELINE:
+    prompts:
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+  BP-RAG-RETRIEVAL:
+    prompts:
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+  BP-MODEL-ENDPOINT-CALL:
+    prompts:
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+  BP-TOOL-USING-AGENT:
+    prompts:
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+  BP-API-WRITEBACK:
+    prompts:
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+      - prompts/rs/12-validation-note-write.prompt.md
+  BP-HITL-APPROVAL:
+    prompts:
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+  BP-AGENT-TO-AGENT:
+    prompts:
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+      - prompts/rs/12-validation-note-write.prompt.md
+  BP-AI-WORKFLOW:
+    prompts:
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+      - prompts/rs/11-handoff-pack-build.prompt.md
+      - prompts/rs/12-validation-note-write.prompt.md
+      - prompts/rs/13-accuracy-score.prompt.md
+  BP-AI-SAAS-INTEGRATION:
+    prompts:
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+      - prompts/rs/12-validation-note-write.prompt.md
+
+# Founder decision Q8 / future-only ADK alignment block. Future intent
+# only; no runtime, ADK, cloud, MCP, Jira, Confluence, Rovo, database,
+# or Terraform code or proof exists in this package.
+planned_future_adk_alignment:
+  status: future_only
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false
+
+# Compatibility notes.
+compatibility_notes:
+  upstream_blueprint_match_skill_placeholder:
+    issue: |
+      The Build Package 05 skill registry records SK-REVIEW-BLUEPRINT-MATCH
+      with a minimal placeholder catalog list (trust-zone-catalog plus
+      confidence-level-catalog) and a note that "Blueprint match is
+      deferred to Build Package 08; this catalog consumption is read-only
+      context only." The Build Package 07 catalog registry records the
+      same minimal placeholder for PR-RS-09-BLUEPRINT-MATCH.
+    package_08_action: |
+      Per founder decision Q4, Build Package 08 must not edit either
+      upstream registry. The full per-blueprint catalog consumption is
+      recorded in this blueprint-registry.yaml#blueprint_catalog_map and
+      cross-checked in validation/blueprint-catalog-consumption-checklist.md.
+    recommended_future_fix: |
+      A future governed skill-registry update may align the
+      SK-REVIEW-BLUEPRINT-MATCH catalog list with the union of all
+      blueprint_catalog_map entries; until then, the blueprint registry
+      is the authoritative consumer map for Package 08.
+  pra_06_catalog_alignment:
+    issue: |
+      PRA-06-BLUEPRINT-QUESTIONER's existing catalog dependency list in
+      catalogs/catalog-registry.yaml#pra_consumption_map covers eight
+      catalogs (interaction-type, trust-zone, authentication, authorization,
+      identity-evidence-rule, ai-action-level, confidence-level,
+      proof-vs-signal-rule). Several Package 08 blueprints (notably
+      BP-API-WRITEBACK, BP-AI-WORKFLOW, BP-AI-SAAS-INTEGRATION) span a
+      wider catalog set including data-protection and security-stack
+      catalogs.
+    package_08_action: |
+      Per founder decision Q4, Build Package 08 must not edit the catalog
+      registry. The wider per-blueprint catalog consumption is recorded
+      here in blueprint_catalog_map. PRA-06 fetches blueprint files at
+      runtime; its existing catalog list remains the canonical PRA-level
+      record.
+    recommended_future_fix: |
+      A future governed update may expand PRA-06's catalog list to mirror
+      the union of blueprint catalog dependencies. Until then, the two
+      lists are reconciled here in compatibility_notes.
+
+source_reference:
+  v0_01_artifact: blueprints/blueprint-index.yaml
+  v0_01_path: aisraf-sas-prototype-skill-chain-pack-v0.01/blueprints/blueprint-index.yaml
+  derivation_mode: restructured_and_improved
+  notes: >
+    The v0.01 blueprint-index.yaml carried 9 blueprints with three match
+    states (matched, candidate, unknown). This v0.1.2 registry preserves
+    the 9-blueprint inventory, splits them across two category folders,
+    expands match states to four (founder Q1), and records consumer maps
+    so that no upstream registry edit is required.
+
+version_notes: >
+  Initial Build Package 08 release. Blueprint count: 9 (8 platform-independent
+  + 1 cloud-pattern). Total files under blueprints/: 14 (1 root README +
+  this registry + blueprint-template.yaml + 2 family READMEs + 9 BP-*.yaml).
+  Match states fixed at four (matched, candidate, no_match, unknown) per
+  founder decision Q1.

@@ -201,19 +201,19 @@ Path: `blueprints/`
 
 Owning Build Package: Build Package 08.
 
-Purpose: future reusable review patterns.
+Purpose: reusable review-pattern source. Each controlled blueprint is a YAML document that turns Build Package 07 catalog vocabulary into a recognizable design pattern, scopes catalog evidence required for a match, and surfaces the material missing facts that block matching. Blueprints are not catalogs, not prompt cards, not skill contracts, not PRA specs, not `.agent.md` adapters, not templates, not samples, and not run outputs. Match states are fixed at four values (`matched`, `candidate`, `no_match`, `unknown`).
 
-Who uses it: blueprint authors, SAS reviewers, prompt authors, PRA authors, and validators.
+Who uses it: blueprint authors, SAS reviewers, prompt authors (Build Package 04), skill authors (Build Package 05), PRA authors (Build Package 06), `.agent.md` adapter authors (Build Package 06), and validators.
 
-Allowed file types: Markdown README in Build Package 01; later Markdown/YAML blueprint content when Build Package 08 authorizes it.
+Allowed file types: YAML blueprint files and Markdown READMEs only. Layout: `blueprints/README.md`, `blueprints/blueprint-registry.yaml`, `blueprints/blueprint-template.yaml`, `blueprints/platform-independent/README.md`, `blueprints/cloud-patterns/README.md`, plus 8 `blueprints/platform-independent/BP-*.yaml` files and 1 `blueprints/cloud-patterns/BP-AI-SAAS-INTEGRATION.yaml` file. Total: 9 controlled blueprints, 1 blueprint registry, 1 blueprint template, 3 READMEs (14 files).
 
-Belongs here: patterns that help match observed design shapes to known architectural/security review patterns.
+Belongs here: closed YAML blueprints whose match conditions reference Package 07 catalog values only, with the 19 required fields plus the three policy blocks (`match_evidence_policy`, `catalog_value_policy`, `output_boundary`) plus the `runtime_and_external_execution` block (six false flags).
 
-Does not belong here: implementation proof, findings, recommendations, catalogs, runtime code, or generated outputs.
+Does not belong here: invented one-off vocabulary, new catalog identifiers, new controlled values, recommendation prose, handoff text, validation-ticket text, owner routing prose, severity / score / AI Action Level computation, implementation proof claims, runtime/cloud/ADK/Vertex/GCP/MCP/Jira/Confluence/Rovo/database/Terraform claims, runtime code, schemas, release artifacts, prompt bodies, skill contracts, PRA specs, `.agent.md` adapters, templates beyond authoring-agent templates, samples, runs, diagrams, or docs/runbooks.
 
 Populated by: Build Package 08.
 
-Build Package 01 status: reserved with README only.
+Build Package 08 status: active. 9 controlled YAML blueprints (8 platform-independent + 1 cloud-pattern) plus the blueprint registry, the blueprint template, and 3 READMEs are present. Founder decision Q4 seals the upstream Build Package 04, 05, 06, and 07 registries; Build Package 08 records its blueprint→catalog, blueprint→skill, blueprint→PRA, blueprint→adapter, and blueprint→prompt consumer maps in `blueprints/blueprint-registry.yaml` only.
 
 ## Root Area 11 — `templates/`
 
