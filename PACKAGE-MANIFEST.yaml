@@ -1,0 +1,223 @@
+package_name: AISRAF SAS Prototype
+package_version: v0.1.2
+package_state: foundation_reconciled
+active_workspace: D:/E-Way 2/AISRAF- SAS Prototype v0.1.2
+reference_workspace: D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01
+old_workspace_policy:
+  status: reference_only
+  may_read_for_intent_and_lessons: true
+  may_modify: false
+  may_copy_stale_outputs_or_release_artifacts: false
+  note: Old v0.01 material is not current truth for this clean rebuild.
+terminology:
+  build_package: Governed implementation phase in the 01-16 build sequence.
+  root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
+  filesystem_path: Actual lowercase folder or file path in this workspace.
+current_build_package:
+  build_package_number: "01"
+  build_package_name: Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent standard
+  build_package_status: foundation_reconciled
+next_build_package:
+  build_package_number: "02"
+  build_package_name: Config and run-profile variable model
+  build_package_status: next_allowed
+build_packages:
+  - build_package_number: "01"
+    build_package_name: Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent standard
+  - build_package_number: "02"
+    build_package_name: Config and run-profile variable model
+  - build_package_number: "03"
+    build_package_name: Tools and setup/test/export scripts
+  - build_package_number: "04"
+    build_package_name: Prompts and prompt registry
+  - build_package_number: "05"
+    build_package_name: Skills and skill registry
+  - build_package_number: "06"
+    build_package_name: Prototype agents, PRA specs, and .agent.md adapter model
+  - build_package_number: "07"
+    build_package_name: Catalogs
+  - build_package_number: "08"
+    build_package_name: Blueprints
+  - build_package_number: "09"
+    build_package_name: Templates
+  - build_package_number: "10"
+    build_package_name: Samples and expected baselines
+  - build_package_number: "11"
+    build_package_name: Runs and execution evidence model
+  - build_package_number: "12"
+    build_package_name: Validation
+  - build_package_number: "13"
+    build_package_name: Diagrams
+  - build_package_number: "14"
+    build_package_name: Practitioner documentation and runbooks
+  - build_package_number: "15"
+    build_package_name: Release packaging
+  - build_package_number: "16"
+    build_package_name: Final QA, seal, and export
+root_areas:
+  - root_area_number: "01"
+    root_area_name: "Root & Top-Level Files"
+    path: .
+    owning_build_package: "01"
+  - root_area_number: "02"
+    root_area_name: .github/
+    path: .github/
+    owning_build_package: "01"
+  - root_area_number: "03"
+    root_area_name: .agents/
+    path: .agents/
+    owning_build_package: "06"
+  - root_area_number: "04"
+    root_area_name: config/
+    path: config/
+    owning_build_package: "02"
+  - root_area_number: "05"
+    root_area_name: tools/
+    path: tools/
+    owning_build_package: "03"
+  - root_area_number: "06"
+    root_area_name: prompts/
+    path: prompts/
+    owning_build_package: "04"
+  - root_area_number: "07"
+    root_area_name: skills/
+    path: skills/
+    owning_build_package: "05"
+  - root_area_number: "08"
+    root_area_name: prototype-agents/
+    path: prototype-agents/
+    owning_build_package: "06"
+  - root_area_number: "09"
+    root_area_name: catalogs/
+    path: catalogs/
+    owning_build_package: "07"
+  - root_area_number: "10"
+    root_area_name: blueprints/
+    path: blueprints/
+    owning_build_package: "08"
+  - root_area_number: "11"
+    root_area_name: templates/
+    path: templates/
+    owning_build_package: "09"
+  - root_area_number: "12"
+    root_area_name: samples/
+    path: samples/
+    owning_build_package: "10"
+  - root_area_number: "13"
+    root_area_name: runs/
+    path: runs/
+    owning_build_package: "11"
+  - root_area_number: "14"
+    root_area_name: diagrams/
+    path: diagrams/
+    owning_build_package: "13"
+  - root_area_number: "15"
+    root_area_name: docs/
+    path: docs/
+    owning_build_package: "14"
+  - root_area_number: "16"
+    root_area_name: validation/
+    path: validation/
+    owning_build_package: "12"
+  - root_area_number: "17"
+    root_area_name: release/
+    path: release/
+    owning_build_package: "15"
+  - root_area_number: "18"
+    root_area_name: authoring-agents/
+    path: authoring-agents/
+    owning_build_package: "01"
+allowed_root_files:
+  - README.md
+  - START-HERE.md
+  - PACKAGE-MANIFEST.yaml
+  - PROTOTYPE-CHARTER.md
+  - FOLDER-CONTRACTS.md
+  - BUILD-ORDER.md
+allowed_root_folders:
+  - .github
+  - .agents
+  - config
+  - tools
+  - prompts
+  - skills
+  - prototype-agents
+  - catalogs
+  - blueprints
+  - templates
+  - samples
+  - runs
+  - diagrams
+  - docs
+  - validation
+  - release
+  - authoring-agents
+build_package_01_allowed_writes:
+  root_files:
+    - README.md
+    - START-HERE.md
+    - PACKAGE-MANIFEST.yaml
+    - PROTOTYPE-CHARTER.md
+    - FOLDER-CONTRACTS.md
+    - BUILD-ORDER.md
+  support_files:
+    - .github/copilot-instructions.md
+    - .agents/README.md
+    - config/README.md
+    - tools/README.md
+    - prompts/README.md
+    - skills/README.md
+    - prototype-agents/README.md
+    - catalogs/README.md
+    - blueprints/README.md
+    - templates/README.md
+    - samples/README.md
+    - runs/README.md
+    - diagrams/README.md
+    - docs/README.md
+    - validation/README.md
+    - release/README.md
+    - authoring-agents/README.md
+    - authoring-agents/agent-instruction-triad-template.md
+    - authoring-agents/package-build-agent-template.md
+    - authoring-agents/package-validation-template.md
+    - authoring-agents/package-acceptance-checklist.md
+    - validation/package-01-foundation-checklist.md
+    - validation/no-drift-rules.md
+    - validation/release-readiness-checklist.md
+controlled_release_status: not_ready
+zip_status: not_authorized
+diagram_status: not_started
+run_test_status: not_started
+cloud_runtime_status: not_started
+mcp_status: not_required_for_build_package_01
+adk_status: future
+validation_status: build_package_01_self_check_required
+folder_first_model_status: reserved_not_implemented
+prompt_status: deferred_to_build_package_04
+skill_status: deferred_to_build_package_05
+pra_status: deferred_to_build_package_06
+agent_adapter_status: deferred_to_build_package_06
+catalog_status: deferred_to_build_package_07
+blueprint_status: deferred_to_build_package_08
+template_status: deferred_to_build_package_09_except_authoring_agent_templates
+sample_status: deferred_to_build_package_10
+run_output_status: deferred_to_build_package_11
+release_artifact_status: deferred_to_build_package_15
+final_qa_status: deferred_to_build_package_16
+reference_read_summary:
+  inspected:
+    - root_intent
+    - folder_contracts_and_structure
+    - prompt_skill_agent_lessons
+    - config_and_run_model_lessons
+    - validation_lessons
+    - diagram_lessons_for_naming_only
+    - release_lessons_for_deferred_status
+  unavailable_references:
+    - .agents folder in old reference package
+    - PACKAGE-MANIFEST.yaml uppercase form in old reference package
+    - validation/release-readiness-checklist.md in old reference package
+cleanup_status:
+  failed_prior_diagram_artifacts_deleted: []
+  note: Active workspace had no failed DFD-L1/L2/L3 artifacts during implementation.
