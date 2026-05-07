@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "06"
-  build_package_name: Prototype agents, PRA specs, and .agent.md adapter model
-  build_package_status: active
-next_build_package:
   build_package_number: "07"
   build_package_name: Catalogs
+  build_package_status: active
+next_build_package:
+  build_package_number: "08"
+  build_package_name: Blueprints
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -452,6 +452,90 @@ build_package_06_allowed_writes:
     - duplication of full prompt or skill body inside an adapter
     - introduction of {{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, or {{validation_root}} variables anywhere in PRA specs or adapters
     - runtime services, cloud assets, ADK/Vertex/GCP, MCP/Jira/Confluence/Rovo execution proof, database jobs, Terraform, release binaries
+build_package_07_allowed_writes:
+  catalog_files:
+    - catalogs/catalog-registry.yaml
+    - catalogs/components/component-type-catalog.yaml
+    - catalogs/components/component-role-catalog.yaml
+    - catalogs/components/component-evidence-rule-catalog.yaml
+    - catalogs/interactions/interaction-type-catalog.yaml
+    - catalogs/interactions/flow-direction-catalog.yaml
+    - catalogs/interactions/flow-evidence-rule-catalog.yaml
+    - catalogs/boundaries/boundary-type-catalog.yaml
+    - catalogs/boundaries/boundary-crossing-rule-catalog.yaml
+    - catalogs/boundaries/trust-zone-catalog.yaml
+    - catalogs/identity-access/authentication-catalog.yaml
+    - catalogs/identity-access/authorization-catalog.yaml
+    - catalogs/identity-access/identity-evidence-rule-catalog.yaml
+    - catalogs/data-protection/data-class-catalog.yaml
+    - catalogs/data-protection/transport-protection-catalog.yaml
+    - catalogs/data-protection/at-rest-protection-catalog.yaml
+    - catalogs/data-protection/confidence-level-catalog.yaml
+    - catalogs/security-stacks/security-stack-marker-catalog.yaml
+    - catalogs/security-stacks/control-signal-catalog.yaml
+    - catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    - catalogs/review/finding-category-catalog.yaml
+    - catalogs/review/severity-catalog.yaml
+    - catalogs/review/recommendation-type-catalog.yaml
+    - catalogs/review/ai-action-level-catalog.yaml
+    - catalogs/review/review-status-catalog.yaml
+  catalog_readmes:
+    - catalogs/README.md
+    - catalogs/components/README.md
+    - catalogs/interactions/README.md
+    - catalogs/boundaries/README.md
+    - catalogs/identity-access/README.md
+    - catalogs/data-protection/README.md
+    - catalogs/security-stacks/README.md
+    - catalogs/review/README.md
+  validation_files:
+    - validation/package-07-catalogs-checklist.md
+    - validation/catalog-registry-checklist.md
+    - validation/catalog-consumption-checklist.md
+  governance_updates:
+    - PACKAGE-MANIFEST.yaml
+    - FOLDER-CONTRACTS.md
+    - README.md
+    - START-HERE.md
+    - .github/copilot-instructions.md
+    - validation/no-drift-rules.md
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1
+  catalog_count: 24
+  catalog_family_count: 7
+  catalog_readme_count: 8
+  total_files_under_catalogs: 33
+  founder_decisions:
+    q1_confidence_cross_cutting: applied_with_cross_cutting_catalog_true_primary_family_data_protection_applies_to_six_areas
+    q2_no_control_family_aggregator_catalog: applied_blueprint_concerns_deferred_to_build_package_08
+    q3_proof_vs_signal_global: applied_with_global_rule_true_applies_to_all_catalogs_true_referenced_in_evidence_rules_everywhere
+    q4_test_aisraf_package_patch: surgical_five_change_patch_approved
+    q5_ai_action_level_definitions_only: applied_no_computation_no_scoring_no_remediation_inside_catalog
+    q6_recommendation_type_no_prose: applied_no_prose_no_handoff_text_no_template_language_no_remediation_script
+    q7_catalog_count: documented_arithmetic_discrepancy_actual_24_yaml_catalogs_33_total_files_vs_approval_28_38_recorded_in_compatibility_notes
+    q8_sealed_upstream_registries: applied_no_edits_to_prompts_skills_or_prototype_agents_registries
+  prohibited:
+    - prompts/* prompt cards or registry edits
+    - skills/* skill contracts or registry edits
+    - prototype-agents/* PRA specs or registry edits
+    - .agents/*.agent.md adapter file edits
+    - blueprints/* blueprint content
+    - templates/* template content beyond authoring-agent templates
+    - samples/* sample inputs or expected baselines
+    - runs/* committed run outputs
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides
+    - release/* release artifacts
+    - schemas outside config/
+    - .github/prompts/ wrappers
+    - tools/Export-AisrafRelease.ps1 or any new release-export tool
+    - any new tool beyond the surgical Test-AisrafPackage.ps1 patch
+    - introduction of {{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, or {{validation_root}} variables in any catalog
+    - blueprint identifier (BP-*) references in any catalog
+    - recommendation prose, handoff text, template language, scripted remediation language inside catalogs
+    - severity, scoring, or AI Action Level computation inside catalogs
+    - catalog count or layout deviating from the explicit 24 controlled-vocabulary YAML catalog list (catalog_count is locked at 24 for Build Package 07; future expansion requires a separate governed update)
+    - runtime services, cloud assets, ADK/Vertex/GCP, MCP/Jira/Confluence/Rovo execution proof, database jobs, Terraform, release binaries
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
@@ -465,7 +549,7 @@ prompt_status: active
 skill_status: active
 pra_status: active
 agent_adapter_status: active
-catalog_status: deferred_to_build_package_07
+catalog_status: active
 blueprint_status: deferred_to_build_package_08
 template_status: deferred_to_build_package_09_except_authoring_agent_templates
 sample_status: deferred_to_build_package_10

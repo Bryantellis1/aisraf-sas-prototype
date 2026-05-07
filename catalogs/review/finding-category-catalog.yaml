@@ -1,0 +1,145 @@
+catalog_id: finding-category-catalog
+catalog_name: Finding Category Catalog
+schema_version: aisraf_finding_category_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of finding categories used to classify review
+  findings: Gap, Deficiency, Evidence Gap, Observation, Requirement, Risk,
+  Out of Scope, and Unknown. Categories are review classifications only;
+  they do not produce finding prose, remediation language, severity, or
+  recommendations.
+
+consumers:
+  prompts:
+    - prompts/rs/10-finding-recommendation-write.prompt.md
+  skills:
+    - skills/rs/SK-FINDING-CLASSIFY.md
+    - skills/rs/SK-RECOMMENDATION-WRITE.md
+    - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+  pras:
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  adapters:
+    - .agents/aisraf-finding-recommender.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-FC-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-FC-02
+    rule: A finding category requires a flow-level or component-level reference and a supported expectation that the finding addresses.
+  - rule_id: ER-FC-03
+    rule: A finding category does not produce prose, remediation text, or severity. Severity comes from severity-catalog.yaml; recommendation type comes from recommendation-type-catalog.yaml.
+  - rule_id: ER-FC-04
+    rule: Out of Scope is a category for items deliberately excluded by review boundaries; it is not a fallback for unknown.
+
+prohibited_claims:
+  - finding_prose_in_category_field
+  - severity_value_inside_category
+  - remediation_text_inside_category
+  - blueprint_match_inferred_from_category
+  - generic_checklist_finding_without_evidence
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Category is not severity, impact, or recommendation.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/review/finding-category-catalog.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: FC-GAP
+    label: Gap
+    description: A control or expected design element is missing where the design or blueprint expectation requires it.
+    when_to_use: A required control is plainly absent and the absence is supported by visible design or note.
+    when_not_to_use: The expectation is unsupported (use Observation or Unknown) or the control is implementation-evidence-only (use Evidence Gap).
+    evidence_required: documented expectation plus supported absence
+    confidence_guidance: Medium-to-high typically; record per-row evidence in the finding row.
+    notes: Gap drives recommendation generation under recommendation-type-catalog.yaml.
+
+  - id: FC-DEFICIENCY
+    label: Deficiency
+    description: A control is present in design but partial, weak, or insufficient for the data class, flow type, or boundary crossing under review.
+    when_to_use: A control is supported but its scope, coverage, or strength is partial.
+    when_not_to_use: The control is fully absent (use Gap) or fully present (no finding required).
+    evidence_required: visible partial control plus documented insufficiency
+    confidence_guidance: Medium typically; record per-row evidence.
+    notes: Deficiency overlaps with control-signal-catalog.yaml's partial value.
+
+  - id: FC-EVIDENCE-GAP
+    label: Evidence Gap
+    description: Implementation proof for a design-named control cannot be confirmed during design review and must be routed to a validation ticket.
+    when_to_use: A control is design-visible but implementation evidence (configuration, audit log, control test) is required.
+    when_not_to_use: Design itself is missing the control (use Gap) or evidence exists in scope.
+    evidence_required: design-visible control plus documented absence of implementation proof
+    confidence_guidance: Medium typically; the gap is closed via validation ticket, not via design review.
+    notes: Evidence Gap drives validation-note routing under validation-note-write skill.
+
+  - id: FC-OBSERVATION
+    label: Observation
+    description: A noteworthy design observation that is not a Gap, Deficiency, Evidence Gap, or Risk, but informs the review.
+    when_to_use: A reviewer-relevant observation is supported and adds context for findings or future blueprints.
+    when_not_to_use: The item is a real Gap, Deficiency, Evidence Gap, Risk, or Requirement.
+    evidence_required: documented observation with supporting design/notes
+    confidence_guidance: Medium typically; observations carry low severity by default.
+    notes: Observations are first-class outputs but do not generate recommendations by default.
+
+  - id: FC-REQUIREMENT
+    label: Requirement
+    description: A regulatory, policy, or standard requirement is invoked by the data class, flow type, or boundary, and the design must address it.
+    when_to_use: A requirement is invoked (e.g., PCI handling, residency policy) and the design must satisfy it.
+    when_not_to_use: No requirement is invoked.
+    evidence_required: requirement source (regulation, policy, standard) plus invocation context
+    confidence_guidance: Medium-to-high typically; record the requirement reference.
+    notes: Requirement-type findings drive route-to-process recommendations.
+
+  - id: FC-RISK
+    label: Risk
+    description: A condition where a control combination, boundary crossing, or data exposure introduces a meaningful risk that does not fit Gap/Deficiency exactly.
+    when_to_use: The reviewer identifies a risk surface that is broader than a single missing control.
+    when_not_to_use: A single Gap or Deficiency captures the situation.
+    evidence_required: documented risk-surface analysis with flow/component reference
+    confidence_guidance: Medium typically; severity is recorded under severity-catalog.yaml.
+    notes: Risk findings often produce multiple recommendations.
+
+  - id: FC-OUT-OF-SCOPE
+    label: Out of Scope
+    description: An item is deliberately excluded from the review scope (e.g., out-of-band processes, future blueprint coverage, separate review).
+    when_to_use: A scoping decision excludes the item.
+    when_not_to_use: The item is unknown or is in scope but understudied.
+    evidence_required: documented scope decision
+    confidence_guidance: High typically; the scoping decision is recorded in the finding row.
+    notes: Out of Scope is not a fallback for unknown.
+
+  - id: FC-UNKNOWN
+    label: Unknown
+    description: The finding category cannot be determined from available evidence.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown drives missing-fact and validation-note routing.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01
+  finding-category-catalog.md prose into a closed list of eight controlled
+  values.

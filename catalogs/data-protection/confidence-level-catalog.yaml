@@ -1,0 +1,134 @@
+catalog_id: confidence-level-catalog
+catalog_name: Confidence Level Catalog
+schema_version: aisraf_confidence_level_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+cross_cutting_catalog: true
+primary_family: data-protection
+applies_to:
+  - dfd extraction
+  - annotation resolution
+  - component classification
+  - boundary classification
+  - finding confidence
+  - accuracy scoring
+
+purpose: >
+  Provide the closed list of confidence values (high, medium, low, unknown)
+  and the rules for when each value applies. Confidence is a cross-cutting
+  field used by every catalog: every entry's confidence_guidance refers to
+  the values defined here. This catalog is also consumed by all 8 PRAs and
+  all 7 .agent.md adapters whenever an output requires a confidence record.
+
+consumers:
+  prompts:
+    - prompts/dfd/09-confidence-score.prompt.md
+    - prompts/rs/13-accuracy-score.prompt.md
+    - prompts/rs/07-missing-fact-question-generate.prompt.md
+  skills:
+    - skills/dfd/SK-DFD-08-CONFIDENCE-SCORE.md
+    - skills/rs/SK-ACCURACY-SCORE.md
+    - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+  pras:
+    - prototype-agents/PRA-01-SAS-REVIEW-ORCHESTRATOR.md
+    - prototype-agents/PRA-02-INPUT-READER.md
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+    - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  adapters:
+    - .agents/aisraf-orchestrator.agent.md
+    - .agents/aisraf-input-reader.agent.md
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-blueprint-questioner.agent.md
+    - .agents/aisraf-finding-recommender.agent.md
+    - .agents/aisraf-handoff-qa-scorer.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-CL-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-CL-02
+    rule: Confidence is recorded per field, per catalog entry, and per derived claim. A row with multiple fields may have multiple confidence values.
+  - rule_id: ER-CL-03
+    rule: Confidence on a signal is independent from confidence on the proof claim. A signal can be high-confidence while implementation proof remains unknown.
+  - rule_id: ER-CL-04
+    rule: Confidence values are not severity values. Severity is in review/severity-catalog.yaml.
+
+prohibited_claims:
+  - confidence_used_as_severity
+  - confidence_propagated_silently_from_one_field_to_another
+  - high_confidence_implies_implementation_proof
+  - low_confidence_silently_dropped_in_outputs
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Confidence is not severity and is not impact.
+  - High confidence on a signal does not imply implementation proof.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/dfd-confidence-levels.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: CL-HIGH
+    label: high
+    description: The claim is strongly supported by visible label, source note, or another catalog-supported derivation, with no significant ambiguity.
+    when_to_use: Multiple supporting signals agree, or a single signal is plainly visible and unambiguous in scope.
+    when_not_to_use: Any signal is partial, ambiguous, or contradicts another signal.
+    evidence_required: at least one direct visible signal or unambiguous source note
+    confidence_guidance: High confidence requires near-zero ambiguity. Reviewers should be willing to defend the claim without further evidence.
+    notes: High confidence on a signal is not implementation proof.
+
+  - id: CL-MEDIUM
+    label: medium
+    description: The claim is supported but with partial ambiguity, scope uncertainty, or an inferred element.
+    when_to_use: A supporting signal exists but scope is partial, OR the signal is inferred from related catalog entries with low ambiguity.
+    when_not_to_use: The signal is plainly visible and unambiguous (use high) or absent (use low/unknown).
+    evidence_required: a partial signal or supporting note
+    confidence_guidance: Medium confidence requires the reviewer to record what was inferred and why.
+    notes: Medium confidence often produces missing-fact questions when materiality applies.
+
+  - id: CL-LOW
+    label: low
+    description: The claim has minimal support and significant ambiguity. The reviewer is recording the value but flagging that the support is weak.
+    when_to_use: A signal is faintly visible, the source note is vague, or interpretation is required.
+    when_not_to_use: Support is non-existent (use unknown) or unambiguous (use high/medium).
+    evidence_required: any visible signal or note that supports the claim, even if weak
+    confidence_guidance: Low confidence almost always produces a missing-fact question when materiality applies.
+    notes: Low confidence rows are first-class outputs; they do not get silently dropped.
+
+  - id: CL-UNKNOWN
+    label: unknown
+    description: There is no supporting signal, no source note, and no catalog-supported derivation.
+    when_to_use: When no support exists, when the marker is unreadable, or when interpretation is contradictory.
+    when_not_to_use: When at least one weak signal supports the claim (use low instead).
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Unknown is the safe default for any field without supporting evidence.
+    notes: Unknown drives the materiality check that decides whether a question or validation note is generated.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01
+  dfd-confidence-levels.md prose into a cross-cutting catalog with
+  cross_cutting_catalog: true and primary_family: data-protection per
+  founder decision Q1.

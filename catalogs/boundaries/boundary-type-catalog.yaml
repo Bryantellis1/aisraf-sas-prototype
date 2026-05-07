@@ -1,0 +1,193 @@
+catalog_id: boundary-type-catalog
+catalog_name: Boundary Type Catalog
+schema_version: aisraf_boundary_type_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of boundary types and the largest-to-smallest
+  extraction order used to read a reviewed-system DFD. Boundary types cover
+  external context, provider/tenant, organization/folder/account,
+  project/subscription, region/location, VPC/network, subnet/zone,
+  trust/functional zone, component group, and unknown. The extraction order
+  exists so reviewers do not jump to component-level boundaries before
+  recording the parent context.
+
+consumers:
+  prompts:
+    - prompts/dfd/03-boundary-extract.prompt.md
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+  skills:
+    - skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/dfd/SK-DFD-02-BOUNDARY-EXTRACT.md
+  pras:
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+
+unknown_value: unknown
+
+extraction_order_largest_to_smallest:
+  - rank: 1
+    boundary_type: external_context
+  - rank: 2
+    boundary_type: enterprise_or_provider_boundary
+  - rank: 3
+    boundary_type: organization_folder_or_account_boundary
+  - rank: 4
+    boundary_type: project_or_subscription_boundary
+  - rank: 5
+    boundary_type: region_or_location_boundary
+  - rank: 6
+    boundary_type: vpc_or_network_boundary
+  - rank: 7
+    boundary_type: subnet_or_zone_boundary
+  - rank: 8
+    boundary_type: trust_or_functional_zone
+  - rank: 9
+    boundary_type: component_group_boundary
+
+evidence_rules:
+  - rule_id: ER-BT-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-BT-02
+    rule: A boundary type is supported by a visible boundary box, zone label, or source note. Otherwise the boundary type is unknown.
+  - rule_id: ER-BT-03
+    rule: Parent-before-child rule. A child boundary may not be recorded without recording its parent boundary.
+  - rule_id: ER-BT-04
+    rule: Boundary types do not declare network controls (firewalls, PSC, routing), residency compliance, tenancy, or cloud runtime.
+
+prohibited_claims:
+  - firewall_or_network_policy_from_vpc_label_alone
+  - residency_compliance_from_region_label_alone
+  - tenancy_segregation_from_provider_label_alone
+  - approved_cloud_landing_zone_from_account_label_alone
+  - private_service_connect_from_subnet_label_alone
+  - production_runtime_from_project_label_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Boundary names do not declare network controls, routing, or policy enforcement.
+  - A grouping container does not justify inventing hidden child components or hidden flows.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/boundary-type-catalog.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/boundaries/zone-catalog.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/boundaries/boundary-catalog.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: BT-EXTERNAL-CONTEXT
+    label: external_context
+    description: Internet, customer environment, partner context, or third-party context outside the reviewed system trust boundary.
+    when_to_use: An external zone label is visible (Internet, Customer Zone, Partner, Third Party).
+    when_not_to_use: The component is owned by the reviewed system.
+    evidence_required: visible external-context label or source note
+    confidence_guidance: High when explicitly labeled; medium when inferred from zone; unknown when ambiguous.
+    notes: External-context boundaries drive internet-exposure boundary-crossing review.
+
+  - id: BT-ENTERPRISE-OR-PROVIDER-BOUNDARY
+    label: enterprise_or_provider_boundary
+    description: Enterprise, organization, cloud provider, managed provider, or tenant-level box (Google Cloud, AWS, Azure, the reviewed enterprise).
+    when_to_use: An enterprise/provider boundary is visible.
+    when_not_to_use: The boundary is internal to the enterprise (use organization_folder_or_account or smaller).
+    evidence_required: visible enterprise/provider label
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Provider boundary visibility is not proof of deployed runtime.
+
+  - id: BT-ORGANIZATION-FOLDER-OR-ACCOUNT-BOUNDARY
+    label: organization_folder_or_account_boundary
+    description: Organization, folder, account, or management group inside a provider tenant.
+    when_to_use: A folder/account/management-group label is visible.
+    when_not_to_use: The boundary is provider-level or project-level.
+    evidence_required: visible folder/account label
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Folder/account label is not proof of policy enforcement or governance state.
+
+  - id: BT-PROJECT-OR-SUBSCRIPTION-BOUNDARY
+    label: project_or_subscription_boundary
+    description: Project, subscription, or workload-level boundary inside an account.
+    when_to_use: A project/subscription label is visible.
+    when_not_to_use: The boundary is account-level or smaller.
+    evidence_required: visible project/subscription label
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: A project box is not proof of service accounts, IAM, or production connectivity.
+
+  - id: BT-REGION-OR-LOCATION-BOUNDARY
+    label: region_or_location_boundary
+    description: Region, location, geographic zone, or data-residency boundary.
+    when_to_use: A region/location label is visible.
+    when_not_to_use: No geographic boundary is shown.
+    evidence_required: visible region/location label
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Region label is not proof of residency compliance or replication policy.
+
+  - id: BT-VPC-OR-NETWORK-BOUNDARY
+    label: vpc_or_network_boundary
+    description: VPC, VNet, private-network boundary, or firewall zone inside a project.
+    when_to_use: A VPC/VNet/network label is visible.
+    when_not_to_use: The boundary is provider-level or smaller than network.
+    evidence_required: visible VPC/network label
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: VPC label is not proof of firewall rules, routing, or no-public-access posture.
+
+  - id: BT-SUBNET-OR-ZONE-BOUNDARY
+    label: subnet_or_zone_boundary
+    description: Subnet, availability zone, tier, namespace, or workload segment.
+    when_to_use: A subnet/zone/namespace label is visible.
+    when_not_to_use: The boundary is network-level or smaller than subnet.
+    evidence_required: visible subnet/zone label
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Subnet label is not proof of network policy or egress control.
+
+  - id: BT-TRUST-OR-FUNCTIONAL-ZONE
+    label: trust_or_functional_zone
+    description: Application, internal-service, model, data, observability, human-actor, or tool/API zone reflecting a trust posture or functional role.
+    when_to_use: A functional/trust zone label is visible (Application Zone, Internal Data Zone, Internal Service Zone, etc.).
+    when_not_to_use: The zone is purely network or geographic.
+    evidence_required: visible trust/functional zone label
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Zone name is not proof of trust level or controls.
+
+  - id: BT-COMPONENT-GROUP-BOUNDARY
+    label: component_group_boundary
+    description: A visible box that groups components (cluster, service group, store group) for visual organization.
+    when_to_use: A grouping container is visible at component scale.
+    when_not_to_use: The container is at zone or larger scope.
+    evidence_required: visible grouping label
+    confidence_guidance: High for the boundary itself; child components remain unknown unless visible.
+    notes: Do not invent hidden child components inside the group.
+
+  - id: BT-UNKNOWN
+    label: unknown
+    description: The boundary exists but its type, parent, child, or crossing meaning is unsupported or unclear.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Materiality drives whether a question is generated.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01 boundary
+  catalogs into a closed list of nine boundary types plus unknown, with the
+  largest-to-smallest extraction order preserved as a top-level field.

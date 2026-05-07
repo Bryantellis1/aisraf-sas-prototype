@@ -1,0 +1,154 @@
+catalog_id: component-evidence-rule-catalog
+catalog_name: Component Evidence Rule Catalog
+schema_version: aisraf_component_evidence_rule_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Define the evidence rules that govern when a component-type or
+  component-role claim is supported, when a derived component property
+  remains unknown, and when a missing-fact question or validation-note route
+  is required. This catalog is consumed by extraction skills, scoring, and
+  missing-fact identification.
+
+consumers:
+  prompts:
+    - prompts/dfd/04-component-extract.prompt.md
+    - prompts/rs/04-design-fact-extract.prompt.md
+    - prompts/rs/07-missing-fact-question-generate.prompt.md
+    - prompts/rs/13-accuracy-score.prompt.md
+  skills:
+    - skills/rs/SK-COMPONENT-EXTRACT.md
+    - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+    - skills/rs/SK-ACCURACY-SCORE.md
+    - skills/dfd/SK-DFD-03-COMPONENT-EXTRACT.md
+  pras:
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-handoff-qa-scorer.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-CER-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-CER-02
+    rule: A component claim is supported only by visible label, supporting source note, or another catalog-supported derivation. Otherwise the field is unknown.
+  - rule_id: ER-CER-03
+    rule: Cloud service component labels are component-classification candidates only. They do not prove deployment, runtime, IAM, encryption, key management, or production connectivity.
+  - rule_id: ER-CER-04
+    rule: Component-level markers (auth, encryption, secret) are component signals only. Per-flow coverage requires per-flow evidence.
+
+prohibited_claims:
+  - implementation_evidence_from_visible_label_alone
+  - runtime_or_cloud_resource_from_diagram_label_alone
+  - approved_security_stack_from_component_marker_alone
+  - per_flow_coverage_from_component_marker_alone
+  - identity_authorization_scope_from_identity_authority_role_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Component-level marker is a component signal only and does not propagate to every connected flow.
+  - A grouped-boundary container does not justify inventing hidden child components.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/components/component-extraction-rules.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: CER-VISIBLE-LABEL-SUPPORTS-TYPE
+    label: visible_label_supports_type
+    description: The component-type claim is supported when a visible label, icon, or shape plainly identifies the type per component-type-catalog.yaml.
+    when_to_use: A reader can point at the label or shape and read the component-type token directly.
+    when_not_to_use: The label is unreadable, contradicts another visible label, or no label is present.
+    evidence_required: visible label or icon clearly identifying the component type
+    confidence_guidance: High when label is unambiguous; medium when label is partial; unknown when unreadable.
+    notes: Cloud service names support classification at this level.
+
+  - id: CER-NOTE-SUPPORTS-TYPE
+    label: note_supports_type
+    description: The component-type claim is supported by a triage note, intake ticket, transcript, or supporting document that explicitly names the component type.
+    when_to_use: The DFD label is missing or ambiguous, but a source note explicitly identifies the type.
+    when_not_to_use: No source note exists, or the note is interpreted rather than direct.
+    evidence_required: pointer to the supporting source note (file/section/quote)
+    confidence_guidance: Medium when the note is clear and unambiguous; low when note interpretation is required; unknown when no supporting note exists.
+    notes: Record evidence_summary in free text only inside the entry's notes field of the row.
+
+  - id: CER-INFERENCE-NOT-ALLOWED
+    label: inference_not_allowed
+    description: A component type may not be inferred from icon style, shape similarity, or naming convention alone when no label or note supports the claim.
+    when_to_use: A reviewer is tempted to classify a box by icon similarity to a known service.
+    when_not_to_use: A label or supporting note is present.
+    evidence_required: explicit label or source note
+    confidence_guidance: When this rule applies, the type is unknown and confidence is unknown.
+    notes: This rule is the most frequent source of catalog-supported "unknown" values.
+
+  - id: CER-COMPONENT-MARKER-IS-COMPONENT-SCOPE
+    label: component_marker_is_component_scope
+    description: Markers attached to the component box (auth, encryption, secret, stack diamond) record component-level signals only and do not propagate to every connected flow.
+    when_to_use: A marker is visible at the component level and review fields are flow-scoped.
+    when_not_to_use: A marker is attached to the flow arrow itself.
+    evidence_required: per-flow marker or per-flow source note for flow-level coverage claims
+    confidence_guidance: Component-level signal can be high confidence; flow-level coverage remains unknown without per-flow support.
+    notes: Common error: propagating an SA# from an actor box onto every outbound flow.
+
+  - id: CER-CLOUD-LABEL-IS-CANDIDATE
+    label: cloud_label_is_candidate
+    description: A cloud service name on a component classifies the component as a candidate of that service type. It does not prove deployed runtime, IAM, encryption, key management, residency, or production connectivity.
+    when_to_use: A cloud service icon or name is visible.
+    when_not_to_use: No cloud service indicator is present, or a non-cloud component is misread as cloud.
+    evidence_required: deployment manifest, IaC reference, or operational record for runtime/IAM/encryption claims
+    confidence_guidance: Component candidacy can be medium-to-high confidence; runtime claims remain unknown.
+    notes: This rule applies symmetrically to GCP, AWS, Azure, and on-prem cloud-style names.
+
+  - id: CER-MISSING-FACT-IF-MATERIAL
+    label: missing_fact_if_material
+    description: When a component field is unknown and the unknown materially changes a finding, recommendation, route, validation note, AI Action Level, or score, the missing-fact identification skill must generate a targeted question.
+    when_to_use: An unknown component field is discovered during extraction.
+    when_not_to_use: The unknown is immaterial to any downstream review outcome.
+    evidence_required: documented downstream impact of the unknown
+    confidence_guidance: Materiality determination is a review judgment; record reasoning in the entry's notes.
+    notes: Materiality routing is the responsibility of skills/rs/SK-MISSING-FACT-IDENTIFY.md, not this catalog.
+
+  - id: CER-VALIDATION-ROUTE-IF-PROOF-NEEDED
+    label: validation_route_if_proof_needed
+    description: When a component claim requires implementation proof (configuration, audit, deployment record) and proof is not available during design review, the validation-note skill routes the gap to a separate validation ticket.
+    when_to_use: A component-level proof claim is required and only design-review evidence is available.
+    when_not_to_use: A signal is sufficient for the review's purpose.
+    evidence_required: validation-note pointer, ticket reference, or routing record
+    confidence_guidance: Proof is unknown until the ticket returns; the design-review confidence on the signal can still be recorded.
+    notes: Routing is the responsibility of skills/rs/SK-VALIDATION-NOTE-WRITE.md, not this catalog.
+
+  - id: CER-UNKNOWN
+    label: unknown
+    description: A component evidence claim is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other rule above has supported applicability.
+    when_not_to_use: When at least one rule above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown drives the materiality check that decides whether a question or validation note is generated.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01
+  component-extraction-rules.md prose into a closed list of evidence rules
+  with explicit when-to-use / when-not-to-use guidance.

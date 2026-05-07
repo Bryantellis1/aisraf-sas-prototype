@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-06 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-07 surface of AISRAF SAS Prototype v0.1.2.
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -23,9 +23,14 @@
         and 8 PRA-0[1-8]-*.md files) and .agents/ contains exactly the 7
         approved aisraf-*.agent.md files plus README.md;
       - Build Package 06 validation files exist;
+      - Build Package 07 catalogs/ surface matches the approved layout
+        (README.md, catalog-registry.yaml, 7 family folders each with README.md
+        and only the listed YAML files; 24 controlled-vocabulary YAML catalogs
+        in total);
+      - Build Package 07 validation files exist;
       - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP,
-        catalog/blueprint/template/sample/diagram/docs/release content beyond
-        folder README placeholders);
+        blueprint/template/sample/diagram/docs/release content beyond folder
+        README placeholders);
       - the old reference workspace path is acknowledged as read-only.
 
     The test does not run prompts, skills, PRAs, .agent.md adapters, Jira,
@@ -210,8 +215,8 @@ if ($adapterFails -eq 0) {
 # skills/ is owned by Build Package 05 (active); see Check 08c for the skills/ allowed surface.
 # prototype-agents/ is owned by Build Package 06 (active); see Check 08d for the prototype-agents/ allowed surface.
 # .agents/ is owned by Build Package 06 (active); see Check 07 for the adapter surface.
+# catalogs/ is owned by Build Package 07 (active); see Check 08e for the catalogs/ allowed surface.
 $readmeOnlyFolders = @{
-    'catalogs'         = 'Build Package 07'
     'blueprints'       = 'Build Package 08'
     'templates'        = 'Build Package 09'
     'diagrams'         = 'Build Package 13'
@@ -399,6 +404,112 @@ else {
     Add-Result -Status FAIL -Check '08d-prototype-agents-content-limits' -Detail "prototype-agents/ folder is missing."
 }
 
+# 8e. Build Package 07 catalogs content limits.
+# Allowed under catalogs/: README.md, catalog-registry.yaml, and exactly 7 family folders.
+# Each family folder must contain README.md plus exactly the approved YAML catalog files.
+# FAIL: unexpected files at catalogs/ root, unexpected family folders, missing required YAML
+# catalogs, extra YAML catalogs, nested folders, or non-YAML/non-README files inside families.
+$catalogsAbs = Resolve-PackagePath 'catalogs'
+$catalogsTopAllowedFiles = @('README.md', 'catalog-registry.yaml')
+$catalogFamilyAllowedFiles = @{
+    'components'      = @(
+        'README.md',
+        'component-type-catalog.yaml',
+        'component-role-catalog.yaml',
+        'component-evidence-rule-catalog.yaml'
+    )
+    'interactions'    = @(
+        'README.md',
+        'interaction-type-catalog.yaml',
+        'flow-direction-catalog.yaml',
+        'flow-evidence-rule-catalog.yaml'
+    )
+    'boundaries'      = @(
+        'README.md',
+        'boundary-type-catalog.yaml',
+        'boundary-crossing-rule-catalog.yaml',
+        'trust-zone-catalog.yaml'
+    )
+    'identity-access' = @(
+        'README.md',
+        'authentication-catalog.yaml',
+        'authorization-catalog.yaml',
+        'identity-evidence-rule-catalog.yaml'
+    )
+    'data-protection' = @(
+        'README.md',
+        'data-class-catalog.yaml',
+        'transport-protection-catalog.yaml',
+        'at-rest-protection-catalog.yaml',
+        'confidence-level-catalog.yaml'
+    )
+    'security-stacks' = @(
+        'README.md',
+        'security-stack-marker-catalog.yaml',
+        'control-signal-catalog.yaml',
+        'proof-vs-signal-rule-catalog.yaml'
+    )
+    'review'          = @(
+        'README.md',
+        'finding-category-catalog.yaml',
+        'severity-catalog.yaml',
+        'recommendation-type-catalog.yaml',
+        'ai-action-level-catalog.yaml',
+        'review-status-catalog.yaml'
+    )
+}
+if (Test-Path -LiteralPath $catalogsAbs -PathType Container) {
+    foreach ($entry in @(Get-ChildItem -LiteralPath $catalogsAbs -Force)) {
+        if ($entry.PSIsContainer) {
+            if (-not ($catalogFamilyAllowedFiles.ContainsKey($entry.Name))) {
+                Add-Result -Status FAIL -Check '08e-catalogs-content-limits' -Detail "Forbidden subfolder in catalogs/ (Build Package 07 allows only the 7 approved family folders): catalogs/$($entry.Name)/"
+            }
+        }
+        else {
+            if (-not ($catalogsTopAllowedFiles -contains $entry.Name)) {
+                Add-Result -Status FAIL -Check '08e-catalogs-content-limits' -Detail "Forbidden file at catalogs/ root (Build Package 07 allows only README.md and catalog-registry.yaml here): catalogs/$($entry.Name)"
+            }
+        }
+    }
+    foreach ($family in $catalogFamilyAllowedFiles.Keys) {
+        $familyAbs = Join-Path $catalogsAbs $family
+        if (-not (Test-Path -LiteralPath $familyAbs -PathType Container)) {
+            Add-Result -Status FAIL -Check '08e-catalogs-content-limits' -Detail "Required Build Package 07 catalog family folder missing: catalogs/$family/"
+            continue
+        }
+        $approvedNames = $catalogFamilyAllowedFiles[$family]
+        $observedNames = @()
+        foreach ($child in @(Get-ChildItem -LiteralPath $familyAbs -Force)) {
+            if ($child.PSIsContainer) {
+                Add-Result -Status FAIL -Check '08e-catalogs-content-limits' -Detail "Forbidden subfolder in catalogs/$family/ (Build Package 07 disallows nested folders): catalogs/$family/$($child.Name)/"
+                continue
+            }
+            $observedNames += $child.Name
+            if (-not ($approvedNames -contains $child.Name)) {
+                Add-Result -Status FAIL -Check '08e-catalogs-content-limits' -Detail "Forbidden file in catalogs/$family/ (Build Package 07 fixes the catalog inventory at the approved YAML file list): catalogs/$family/$($child.Name)"
+            }
+        }
+        foreach ($name in $approvedNames) {
+            if (-not ($observedNames -contains $name)) {
+                Add-Result -Status FAIL -Check '08e-catalogs-content-limits' -Detail "Required Build Package 07 catalog file missing: catalogs/$family/$name"
+            }
+        }
+    }
+    foreach ($name in $catalogsTopAllowedFiles) {
+        $expected = Join-Path $catalogsAbs $name
+        if (-not (Test-Path -LiteralPath $expected -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '08e-catalogs-content-limits' -Detail "Required Build Package 07 catalog file missing: catalogs/$name"
+        }
+    }
+    $catalogFails = @($results | Where-Object { $_.Check -eq '08e-catalogs-content-limits' -and $_.Status -eq 'FAIL' }).Count
+    if ($catalogFails -eq 0) {
+        Add-Result -Status PASS -Check '08e-catalogs-content-limits' -Detail "catalogs/ surface matches Build Package 07 contract (README.md, catalog-registry.yaml, 7 family folders each with README.md and the approved YAML catalog files; 24 controlled-vocabulary catalogs total)."
+    }
+}
+else {
+    Add-Result -Status FAIL -Check '08e-catalogs-content-limits' -Detail "catalogs/ folder is missing."
+}
+
 # 9. samples/ — only README.md at top, no sample-* subfolders before Build Package 10
 $samplesAbs = Resolve-PackagePath 'samples'
 $samplesFails = @()
@@ -436,7 +547,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -449,7 +560,7 @@ if ($validationFails.Count -gt 0) {
     foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 03: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-06 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-07 documents."
 }
 
 # 12. tools/ — Build Package 03 expected file set

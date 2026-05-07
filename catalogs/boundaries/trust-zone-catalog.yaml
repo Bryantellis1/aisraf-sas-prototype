@@ -1,0 +1,173 @@
+catalog_id: trust-zone-catalog
+catalog_name: Trust Zone Catalog
+schema_version: aisraf_trust_zone_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of trust/functional zone names used to label
+  source and destination zones on a flow row. Zone names are review labels
+  that capture trust posture and functional role; they do not declare
+  controls, enforcement, or runtime state.
+
+consumers:
+  prompts:
+    - prompts/dfd/03-boundary-extract.prompt.md
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/rs/09-blueprint-match.prompt.md
+  skills:
+    - skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+    - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+    - skills/dfd/SK-DFD-02-BOUNDARY-EXTRACT.md
+  pras:
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+  adapters:
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-blueprint-questioner.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-TZ-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-TZ-02
+    rule: A trust-zone label is supported by visible zone label or supporting note. Otherwise the zone is unknown.
+  - rule_id: ER-TZ-03
+    rule: Trust-zone names do not declare trust level, controls, or enforcement. They are review labels for source/destination zone fields.
+  - rule_id: ER-TZ-04
+    rule: Future Build Package 08 blueprint matching may consume zone labels but no Build Package 08 blueprint identifier is recorded in this catalog.
+
+prohibited_claims:
+  - trust_level_from_zone_name_alone
+  - control_presence_from_zone_name_alone
+  - blueprint_match_from_zone_name_alone
+  - approved_security_stack_from_zone_name_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Zone name does not declare trust level or controls.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/boundaries/zone-catalog.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: TZ-INTERNET
+    label: internet_zone
+    description: External Internet zone outside the reviewed system trust boundary.
+    when_to_use: Source/destination is plainly Internet or public network.
+    when_not_to_use: The zone is customer-owned but not Internet-public, or it is internal.
+    evidence_required: visible Internet/public zone label
+    confidence_guidance: High when explicitly labeled; medium when inferred; unknown when ambiguous.
+    notes: Internet zone drives internet-exposure boundary-crossing review.
+
+  - id: TZ-CUSTOMER-ENVIRONMENT
+    label: customer_environment_zone
+    description: Customer-owned environment outside the reviewed system trust boundary.
+    when_to_use: Source/destination is plainly the customer environment (Customer Browser, Mobile Client zone).
+    when_not_to_use: The zone is internet-public, third-party, or internal.
+    evidence_required: visible customer-environment label
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Customer environment is reviewed for customer-auth and consent context.
+
+  - id: TZ-THIRD-PARTY-SERVICE
+    label: third_party_service_zone
+    description: Partner or third-party service zone outside the reviewed system trust boundary.
+    when_to_use: Source/destination is plainly a partner or third-party service.
+    when_not_to_use: The zone is customer-public or internal.
+    evidence_required: visible third-party label
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Third-party zone drives DPA/processor and provider-approval review under future blueprints.
+
+  - id: TZ-APPLICATION
+    label: application_zone
+    description: Reviewed-system application logical layer (web app, application services, orchestrators).
+    when_to_use: Source/destination is plainly the reviewed system's application layer.
+    when_not_to_use: The component is a model endpoint, store, observability sink, or human actor.
+    evidence_required: visible application zone label or component-type=application_service
+    confidence_guidance: High when labeled; medium when inferred from component types; unknown when ambiguous.
+    notes: Application zone is the most common source/destination zone label.
+
+  - id: TZ-INTERNAL-SERVICE
+    label: internal_service_zone
+    description: Reviewed-system internal services (gateway, internal API surface, control plane, identity authority).
+    when_to_use: Source/destination is plainly an internal service rather than the application logical layer.
+    when_not_to_use: The component is the application layer or external.
+    evidence_required: visible internal-service zone label or component-type indicating internal service
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Internal-service zone is reviewed for service authentication and approved-stack signals.
+
+  - id: TZ-MODEL
+    label: model_zone
+    description: AI/model endpoint zone, often crossing a provider boundary.
+    when_to_use: Source/destination is plainly a model endpoint or AI service zone.
+    when_not_to_use: The component is a generic application service.
+    evidence_required: visible model zone label or component-type=model_endpoint
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Model zone is reviewed for AI Action Level, provider approval, and data-class-on-model-hop.
+
+  - id: TZ-DATA
+    label: data_zone
+    description: Internal data persistence zone (databases, object stores, vector/retrieval stores).
+    when_to_use: Source/destination is plainly a data-store zone or store component.
+    when_not_to_use: The component is observability, application, or model.
+    evidence_required: visible data-zone label or component-type indicating store
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Data zone is reviewed for at-rest protection, retention, and key management.
+
+  - id: TZ-OBSERVABILITY
+    label: observability_zone
+    description: Logging, monitoring, telemetry, audit zone for the reviewed system.
+    when_to_use: Source/destination is plainly an observability zone or sink component.
+    when_not_to_use: The component is a generic data store unrelated to telemetry.
+    evidence_required: visible observability zone label or component-type=observability_store
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Observability zone is reviewed for log-payload class, retention, and alerting.
+
+  - id: TZ-TOOL-OR-API-SURFACE
+    label: tool_or_api_surface_zone
+    description: Outbound tool/API surface, connector, or write-back surface zone.
+    when_to_use: Source/destination is plainly a tool/API/integration surface.
+    when_not_to_use: The component is an internal service or application layer.
+    evidence_required: visible tool/API zone label or component-type=tool_or_api_surface
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Tool/API zone is reviewed for authorization, policy checkpoint, and write-back gates.
+
+  - id: TZ-HUMAN-OPERATOR
+    label: human_operator_zone
+    description: Internal human actor zone (support analyst, operator, reviewer, approver).
+    when_to_use: Source/destination is plainly an internal human actor.
+    when_not_to_use: The actor is external (use customer_environment_zone or third_party_service_zone).
+    evidence_required: visible human-operator zone label or component-type=internal_human_actor
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Human-operator zone is reviewed for HITL gates and approval authority context.
+
+  - id: TZ-UNKNOWN
+    label: unknown
+    description: The zone label is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Materiality drives whether a question is generated.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured the old v0.01 zone catalog
+  into a closed list of ten trust/functional zone labels plus unknown.

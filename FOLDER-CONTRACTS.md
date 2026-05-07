@@ -181,19 +181,19 @@ Path: `catalogs/`
 
 Owning Build Package: Build Package 07.
 
-Purpose: future controlled vocabulary and classification sources.
+Purpose: controlled vocabulary and classification source for prompts, skills, PRAs, `.agent.md` adapters, future blueprints, future templates, future samples, and validation. Catalogs are not executable tools, runtime services, blueprints, prompts, skills, agent logic, or runbooks.
 
-Who uses it: catalog authors, skill authors, prompt authors, PRA authors, and validators.
+Who uses it: catalog authors, skill authors, prompt authors, PRA authors, adapter authors, validators, SAS reviewers, and operators checking why a controlled value normalized a certain way.
 
-Allowed file types: Markdown README in Build Package 01; later Markdown/YAML catalog content when Build Package 07 authorizes it.
+Allowed file types: YAML catalogs and Markdown READMEs only. Layout: `catalogs/README.md`, `catalogs/catalog-registry.yaml`, plus 7 family folders (`components/`, `interactions/`, `boundaries/`, `identity-access/`, `data-protection/`, `security-stacks/`, `review/`) each with a `README.md` and the listed YAML catalog files. Total: 24 controlled-vocabulary YAML catalogs, 1 catalog registry, 8 READMEs (33 files).
 
-Belongs here: controlled component types, interaction types, auth labels, data classes, boundary types, finding categories, and related vocabularies.
+Belongs here: closed-list controlled vocabulary covering component types and roles, interaction types, flow directions, boundary types and crossings, trust zones, authentication marker families and authorization values, identity evidence rules, data class and protection markers, transport and at-rest protection, confidence levels (cross-cutting), security-stack markers, control signals, the global proof-vs-signal rule catalog, finding categories, severity, recommendation types, AI Action Levels (definitions only), and review status.
 
-Does not belong here: invented one-off vocabulary, outputs, runtime code, schemas, or release artifacts.
+Does not belong here: invented one-off vocabulary, runtime code, schemas, release artifacts, prompt bodies, skill contracts, PRA specs, `.agent.md` adapters, blueprint identifiers (`BP-*`), recommendation prose, handoff text, template language, scripted remediation language, or severity/scoring/AI Action Level computation.
 
 Populated by: Build Package 07.
 
-Build Package 01 status: reserved with README only.
+Build Package 07 status: active. 24 controlled-vocabulary YAML catalogs across 7 families plus the catalog registry and 8 READMEs are present. Two catalogs are cross-cutting: `catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml` (`global_rule: true`) and `catalogs/data-protection/confidence-level-catalog.yaml` (`cross_cutting_catalog: true`, `primary_family: data-protection`).
 
 ## Root Area 10 — `blueprints/`
 

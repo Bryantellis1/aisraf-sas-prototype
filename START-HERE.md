@@ -2,7 +2,7 @@
 
 Package: AISRAF SAS Prototype v0.1.2
 
-This workspace has Build Packages 01–06 active. Build Package 06 (prototype agents, PRA specs, and `.agent.md` adapter model) is the most recent.
+This workspace has Build Packages 01–07 active. Build Package 07 (catalogs) is the most recent.
 
 ## Operator Steps
 
@@ -14,14 +14,16 @@ This workspace has Build Packages 01–06 active. Build Package 06 (prototype ag
 6. Browse [prompts/README.md](prompts/README.md) to see the 23 canonical prompt cards available in Build Package 04.
 7. Browse [skills/README.md](skills/README.md) to see the 26 canonical skill contracts available in Build Package 05.
 8. Browse [prototype-agents/README.md](prototype-agents/README.md) to see the 8 PRA specs introduced in Build Package 06, and [.agents/README.md](.agents/README.md) for the 7 local Copilot adapter wrappers.
+9. Browse [catalogs/README.md](catalogs/README.md) to see the 24 controlled-vocabulary catalogs introduced in Build Package 07 across 7 families (components, interactions, boundaries, identity-access, data-protection, security-stacks, review), and [catalogs/catalog-registry.yaml](catalogs/catalog-registry.yaml) for the consumer mapping.
 
 ## Stop For Now
 
 - Do not create diagrams yet (Build Package 13).
 - Do not create release artifacts yet (Build Package 15).
-- Do not create catalogs (Build Package 07), blueprints (Build Package 08), templates beyond authoring-agent templates (Build Package 09), samples (Build Package 10), run outputs (Build Package 11), runtime code, schemas outside `config/`, or cloud resources.
-- Do not modify the Build Package 04 prompt registry, the Build Package 05 skill registry, any prompt card, or any skill contract.
+- Do not create blueprints (Build Package 08), templates beyond authoring-agent templates (Build Package 09), samples (Build Package 10), run outputs (Build Package 11), runtime code, schemas outside `config/`, or cloud resources.
+- Do not modify the Build Package 04 prompt registry, the Build Package 05 skill registry, the Build Package 06 prototype-agent registry, any prompt card, any skill contract, any PRA spec, or any `.agent.md` adapter.
+- Do not invent new catalog vocabulary inline. Catalog extension requires a future governed catalog update.
 
 ## Next Build Package
 
-The next allowed Build Package is **Build Package 07 — Catalogs**.
+The next allowed Build Package is **Build Package 08 — Blueprints**.

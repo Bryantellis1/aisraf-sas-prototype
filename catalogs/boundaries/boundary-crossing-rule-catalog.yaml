@@ -1,0 +1,152 @@
+catalog_id: boundary-crossing-rule-catalog
+catalog_name: Boundary Crossing Rule Catalog
+schema_version: aisraf_boundary_crossing_rule_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Define the closed list of rules that determine whether a flow crosses a
+  boundary, what evidence is required to claim a crossing, and what
+  downstream review is required when a crossing is recorded. Crossings drive
+  internet-exposure assessment, authentication review, transit-protection
+  review, and tool/API authorization review.
+
+consumers:
+  prompts:
+    - prompts/dfd/07-boundary-crossing-detect.prompt.md
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+  skills:
+    - skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/dfd/SK-DFD-06-BOUNDARY-CROSSING-DETECT.md
+  pras:
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-BC-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-BC-02
+    rule: A boundary crossing is supported when source and destination of the flow occupy different boundaries per boundary-type-catalog.yaml. The crossing is named by the boundary type at which the divergence occurs.
+  - rule_id: ER-BC-03
+    rule: Internet exposure is a boundary-crossing condition when the source is external_context (Internet, customer environment, third party) and the destination is inside the reviewed system.
+  - rule_id: ER-BC-04
+    rule: A crossing does not declare network controls, gateway enforcement, or transport encryption. Those values come from their own catalogs.
+
+prohibited_claims:
+  - firewall_enforcement_from_crossing_alone
+  - gateway_policy_enforcement_from_crossing_alone
+  - transport_encryption_from_crossing_alone
+  - private_routing_from_crossing_alone
+  - approved_security_stack_from_crossing_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Boundary crossing does not declare enforcement, encryption, or gateway policy.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/boundaries/boundary-crossing-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/boundaries/internet-exposure-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/boundaries/security-stack-placement-rules.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: BC-CROSSED-TRUE
+    label: crossed_true
+    description: The flow's source and destination occupy different boundaries; a crossing is recorded with the boundary type at which the divergence occurs.
+    when_to_use: Both endpoints' boundaries are supported and they differ at one or more boundary types.
+    when_not_to_use: Both endpoints are inside the same boundary at every recorded level.
+    evidence_required: supported boundary types for source and destination per boundary-type-catalog.yaml
+    confidence_guidance: High when both boundaries are clear; medium when one boundary is inferred; unknown when either boundary is unknown.
+    notes: Record the crossing's boundary type (e.g., crosses VPC, crosses project, crosses provider).
+
+  - id: BC-CROSSED-FALSE
+    label: crossed_false
+    description: The flow stays inside the same boundary at every recorded level; no crossing is recorded.
+    when_to_use: Source and destination occupy the same supported boundary set.
+    when_not_to_use: Either endpoint is unknown or the boundaries differ.
+    evidence_required: supported boundary types matching for source and destination
+    confidence_guidance: High when both boundaries are clear; medium when one boundary is inferred; unknown when either boundary is unknown.
+    notes: Inside-zone flows still receive flow-level evidence review.
+
+  - id: BC-INTERNET-EXPOSURE
+    label: internet_exposure
+    description: The flow crosses from external_context (Internet, customer environment, third party) into a reviewed-system boundary.
+    when_to_use: The flow's source is external_context and the destination is inside the reviewed system.
+    when_not_to_use: Both endpoints are inside the reviewed system, or both are external.
+    evidence_required: source labeled external_context plus reviewed-system destination
+    confidence_guidance: High when external label is clear; medium when inferred; unknown when source zone is ambiguous.
+    notes: Internet exposure triggers customer-auth, approved-stack, transit-encryption, and finding review under their respective catalogs.
+
+  - id: BC-MODEL-ENDPOINT-CROSSING
+    label: model_endpoint_crossing
+    description: The flow crosses into or out of a model_endpoint component, often crossing a provider boundary as well.
+    when_to_use: The destination or source is a model_endpoint and a boundary divergence is supported.
+    when_not_to_use: Neither endpoint is a model_endpoint.
+    evidence_required: model_endpoint at one endpoint plus supported boundary divergence
+    confidence_guidance: High when both elements are clear; medium when inferred; unknown when ambiguous.
+    notes: Model-endpoint crossings drive AI Action Level reasoning and provider-approval review.
+
+  - id: BC-TOOL-API-SURFACE-CROSSING
+    label: tool_api_surface_crossing
+    description: The flow crosses into or out of a tool_or_api_surface, often crossing a project, account, or provider boundary.
+    when_to_use: The destination or source is a tool_or_api_surface and a boundary divergence is supported.
+    when_not_to_use: The flow is a generic data flow without a tool/API surface.
+    evidence_required: tool_or_api_surface at one endpoint plus supported boundary divergence
+    confidence_guidance: High when both elements are clear; medium when inferred; unknown when ambiguous.
+    notes: Tool/API crossings drive authorization and policy-checkpoint review.
+
+  - id: BC-DATA-STORE-CROSSING
+    label: data_store_crossing
+    description: The flow crosses into or out of a data_store, object_storage, vector_or_retrieval_store, or observability_store.
+    when_to_use: The destination or source is one of those store types and a boundary divergence is supported.
+    when_not_to_use: Neither endpoint is a store.
+    evidence_required: store-type endpoint plus supported boundary divergence
+    confidence_guidance: High when both elements are clear; medium when inferred; unknown when ambiguous.
+    notes: Store crossings drive at-rest, retention, and key-management review.
+
+  - id: BC-HUMAN-OPERATOR-CROSSING
+    label: human_operator_crossing
+    description: The flow crosses into or out of an internal_human_actor, often involving a HITL approval gate.
+    when_to_use: The destination or source is an internal_human_actor and a boundary divergence is supported.
+    when_not_to_use: No human actor is on the flow.
+    evidence_required: internal_human_actor at one endpoint plus supported boundary divergence
+    confidence_guidance: High when explicitly labeled; medium when inferred; unknown when ambiguous.
+    notes: HITL approval scope is reviewed under review/recommendation-type-catalog.yaml.
+
+  - id: BC-UNKNOWN
+    label: unknown
+    description: A boundary crossing is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When at least one endpoint's boundary is unknown.
+    when_not_to_use: When both endpoints' boundaries are supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Materiality drives whether a question is generated.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured the old v0.01
+  boundary-crossing prose into a closed list of crossing rules. Internet
+  exposure is recorded as a crossing condition rather than as a separate
+  boundary type.

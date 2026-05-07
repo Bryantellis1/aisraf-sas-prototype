@@ -1,0 +1,165 @@
+catalog_id: flow-evidence-rule-catalog
+catalog_name: Flow Evidence Rule Catalog
+schema_version: aisraf_flow_evidence_rule_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Define the evidence rules that govern when a flow-level claim is
+  supported, when fields must remain unknown, when a missing-fact question
+  is generated, and when a validation-note ticket is the right route. This
+  catalog is consumed by extraction, review-table build, missing-fact
+  identification, and accuracy scoring.
+
+consumers:
+  prompts:
+    - prompts/dfd/05-flow-extract.prompt.md
+    - prompts/rs/04-design-fact-extract.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+    - prompts/rs/07-missing-fact-question-generate.prompt.md
+    - prompts/rs/13-accuracy-score.prompt.md
+  skills:
+    - skills/rs/SK-FLOW-EXTRACT.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+    - skills/rs/SK-ACCURACY-SCORE.md
+    - skills/dfd/SK-DFD-04-FLOW-EXTRACT.md
+  pras:
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-handoff-qa-scorer.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-FER-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-FER-02
+    rule: A flow claim is supported only by visible flow elements, source-supported note, or another catalog-supported derivation. Otherwise the field is unknown.
+  - rule_id: ER-FER-03
+    rule: One material flow is classified once. Annotation tokens attached to that flow are parsed per data-protection, identity-access, and security-stacks catalogs and recorded as flow-row evidence.
+  - rule_id: ER-FER-04
+    rule: An artifact-level data class header (e.g., a DFD cover-page C5 label) does not classify any flow. Each material flow is classified independently from supporting flow-level evidence.
+
+prohibited_claims:
+  - artifact_class_propagated_to_flows
+  - authorization_from_authentication_marker_alone
+  - implementation_evidence_from_visible_label_alone
+  - approved_security_stack_from_flow_marker_alone
+  - per_flow_coverage_from_component_marker_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Artifact class header does not classify any flow; each flow is classified independently.
+  - Component-level marker does not propagate to every connected flow.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/data-flow-interactions.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/interaction-catalog.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: FER-VISIBLE-FLOW-SUPPORTS-ROW
+    label: visible_flow_supports_row
+    description: A flow row is supported when source, destination, direction, and (optionally) annotations are visible on the DFD.
+    when_to_use: All four basic flow elements are plainly visible.
+    when_not_to_use: At least one element is missing or unreadable.
+    evidence_required: visible flow line with at least source, destination, and direction
+    confidence_guidance: High when all elements are clear; medium when one element requires inference; unknown when multiple elements are missing.
+    notes: Annotations on the flow are parsed per their owning catalog.
+
+  - id: FER-NOTE-SUPPORTS-ROW
+    label: note_supports_row
+    description: A flow row is supported by a triage note, transcript, or intake ticket that explicitly identifies source, destination, direction, or annotations.
+    when_to_use: The DFD is partially missing flow detail but a source note explicitly fills it.
+    when_not_to_use: No source note exists, or the note is interpreted rather than direct.
+    evidence_required: pointer to the supporting source note (file/section/quote)
+    confidence_guidance: Medium when note is unambiguous; low when interpretation is required; unknown when no note exists.
+    notes: Record the pointer in the flow row's evidence_summary, not in this catalog.
+
+  - id: FER-ONE-FLOW-ONE-CLASS
+    label: one_flow_one_class
+    description: One material flow gets exactly one data_class value. Multiple class candidates must be resolved to the highest-precedence supported class or marked unknown.
+    when_to_use: Conflicting class indicators appear on a single flow.
+    when_not_to_use: Only one class indicator is visible, or the flow has no class indicators.
+    evidence_required: per-flow data class indicator (visible token or note)
+    confidence_guidance: High when one supported indicator; medium with paired-but-consistent indicators; unknown when conflicting.
+    notes: Refer to data-class-catalog.yaml for class precedence.
+
+  - id: FER-ARTIFACT-CLASS-DOES-NOT-PROPAGATE
+    label: artifact_class_does_not_propagate
+    description: An artifact-level (DFD-cover, document-header) data class label does not classify any flow. Each material flow is classified independently from flow-level evidence.
+    when_to_use: A document or DFD cover bears a class header (e.g., "C5") that could be misread as a flow class.
+    when_not_to_use: A flow has its own visible class indicator.
+    evidence_required: per-flow class indicator
+    confidence_guidance: When this rule applies, flow class is unknown unless flow-level evidence is present.
+    notes: This is the most common incorrect catalog use.
+
+  - id: FER-COMPONENT-MARKER-DOES-NOT-PROPAGATE
+    label: component_marker_does_not_propagate
+    description: A marker attached to a component box does not propagate to every connected flow. Per-flow coverage requires per-flow support.
+    when_to_use: A component-level marker is visible.
+    when_not_to_use: A marker is attached to the flow arrow.
+    evidence_required: per-flow marker or per-flow source note for flow-level coverage claims
+    confidence_guidance: Component-level signal can be high confidence; flow-level coverage remains unknown without per-flow support.
+    notes: Common error: SA# on actor box propagated to all outbound flows.
+
+  - id: FER-ANNOTATION-TOKEN-PER-CATALOG
+    label: annotation_token_per_catalog
+    description: Annotation tokens (C5, C5P, C5E1P, T#, R#, SA#, CA#, IA#, GSA#, S#, Enc, Tok, Trun, NoCC, Clr, etc.) are parsed per the relevant data-protection, identity-access, or security-stacks catalog. The flow-evidence rule catalog does not duplicate the parsing semantics; it records that token-driven fields exist as evidence inputs.
+    when_to_use: The flow carries one or more annotation tokens.
+    when_not_to_use: The flow has no annotations.
+    evidence_required: pointer to the relevant token in its owning catalog
+    confidence_guidance: Confidence on each token-derived field is governed by the owning catalog's confidence_guidance.
+    notes: The token-to-field mapping is split across catalogs to keep each catalog focused.
+
+  - id: FER-MISSING-FACT-IF-MATERIAL
+    label: missing_fact_if_material
+    description: When a flow field is unknown and the unknown materially changes a finding, recommendation, route, validation note, AI Action Level, or score, the missing-fact identification skill must generate a targeted question.
+    when_to_use: An unknown flow-row field is discovered.
+    when_not_to_use: The unknown is immaterial to any downstream review outcome.
+    evidence_required: documented downstream impact of the unknown
+    confidence_guidance: Materiality determination is a review judgment; record reasoning in the flow row's evidence_summary.
+    notes: Materiality routing is the responsibility of skills/rs/SK-MISSING-FACT-IDENTIFY.md.
+
+  - id: FER-VALIDATION-ROUTE-IF-PROOF-NEEDED
+    label: validation_route_if_proof_needed
+    description: When a flow claim requires implementation proof and only design-review evidence is available, the validation-note skill routes the gap to a separate validation ticket.
+    when_to_use: A flow-level proof claim is required and only design evidence exists.
+    when_not_to_use: A signal is sufficient for the review's purpose.
+    evidence_required: validation-note pointer or ticket reference
+    confidence_guidance: Proof remains unknown until the ticket returns.
+    notes: Routing is the responsibility of skills/rs/SK-VALIDATION-NOTE-WRITE.md.
+
+  - id: FER-UNKNOWN
+    label: unknown
+    description: A flow evidence claim is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other rule above has supported applicability.
+    when_not_to_use: When at least one rule above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown drives the materiality check that decides whether a question or validation note is generated.
+
+version_notes: >
+  Initial Build Package 07 release. New v0.1.2 design that separates flow
+  evidence rules from interaction-type and direction catalogs.

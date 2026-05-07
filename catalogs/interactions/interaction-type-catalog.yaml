@@ -1,0 +1,168 @@
+catalog_id: interaction-type-catalog
+catalog_name: Interaction Type Catalog
+schema_version: aisraf_interaction_type_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of interaction types used to classify flows in the
+  reviewed-system DFD: data flow, model call, tool/API call, write-back,
+  agent-to-agent, HITL approval, observability, control-plane action, and
+  unknown. Interaction type drives downstream review (AI Action Level,
+  blueprint match, finding category, recommendation type).
+
+consumers:
+  prompts:
+    - prompts/dfd/05-flow-extract.prompt.md
+    - prompts/rs/04-design-fact-extract.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+    - prompts/rs/08-ai-action-level-classify.prompt.md
+  skills:
+    - skills/rs/SK-FLOW-EXTRACT.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+    - skills/dfd/SK-DFD-04-FLOW-EXTRACT.md
+  pras:
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-blueprint-questioner.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-IT-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-IT-02
+    rule: An interaction-type claim is supported by visible flow label, source/destination component types, or an explicit source note. Otherwise the interaction type is unknown.
+  - rule_id: ER-IT-03
+    rule: Interaction type does not declare authorization, control coverage, or implementation. Authorization, transport, and at-rest values come from their own catalogs.
+  - rule_id: ER-IT-04
+    rule: A reviewed flow gets exactly one interaction type. Multiple candidate types must be resolved via the highest-precedence supported type or marked unknown.
+
+prohibited_claims:
+  - authorization_from_interaction_type_alone
+  - implementation_evidence_from_interaction_type_alone
+  - approved_security_stack_from_interaction_type_alone
+  - blueprint_match_from_interaction_type_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Interaction type does not imply approval authority, blueprint match, or scoring outcome.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/interaction-catalog.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/interaction-type-map.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/data-flow-interactions.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/model-call-interactions.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/tool-api-call-interactions.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/agent-to-agent-interactions.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/hitl-approval-interactions.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/observability-interactions.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: IT-DATA-FLOW
+    label: data_flow
+    description: A material data transfer between two components inside the reviewed system or across a boundary.
+    when_to_use: The flow moves data and is not better classified as model_call, tool_call, write_back, agent_to_agent, hitl_approval, observability, or control_plane_action.
+    when_not_to_use: The flow is a model invocation, tool/API invocation, write-back, agent handoff, approval gate, or telemetry/log path.
+    evidence_required: visible flow line with data label or source note
+    confidence_guidance: High when label and direction are clear; medium when inferred from component types; unknown when ambiguous.
+    notes: Default interaction type for ordinary data movement.
+
+  - id: IT-MODEL-CALL
+    label: model_call
+    description: A flow that invokes an AI model, LLM, reasoning service, or grounded model endpoint.
+    when_to_use: At least one endpoint is a model_endpoint or the flow label explicitly names a model invocation.
+    when_not_to_use: The flow is a generic API call to a non-model surface.
+    evidence_required: visible model-call label or model_endpoint at one endpoint
+    confidence_guidance: High when explicitly labeled; medium when inferred from endpoint type; unknown when ambiguous.
+    notes: Model calls drive AI Action Level reasoning steps.
+
+  - id: IT-TOOL-CALL
+    label: tool_call
+    description: A flow that invokes a tool, plugin, connector, action API, or third-party integration API.
+    when_to_use: At least one endpoint is a tool_or_api_surface and the flow is not a write-back action.
+    when_not_to_use: The flow is a model invocation, a write-back action, or a generic data flow.
+    evidence_required: visible tool/API label or tool_or_api_surface at one endpoint
+    confidence_guidance: High when explicitly labeled; medium when inferred from endpoint type; unknown when ambiguous.
+    notes: Tool calls require authorization scope review even when authentication is visible.
+
+  - id: IT-WRITE-BACK
+    label: write_back
+    description: A flow that performs a write or state-changing action on an external system, ticket, document store, or operational tool.
+    when_to_use: The flow explicitly writes to an external surface (Jira ticket update, Confluence write, ServiceNow change, partner API write).
+    when_not_to_use: The flow only reads or only triggers a model invocation.
+    evidence_required: visible write-back label or source note describing state change
+    confidence_guidance: High when explicitly labeled; medium when inferred; unknown when ambiguous.
+    notes: Write-back flows are a primary source of authorization and HITL review.
+
+  - id: IT-AGENT-TO-AGENT
+    label: agent_to_agent
+    description: A flow between two agents, services-acting-as-agents, or autonomous components handing off intent or state.
+    when_to_use: The flow is plainly an agent-to-agent handoff or one component delegates to another agent.
+    when_not_to_use: The flow is a generic data flow between non-agent services.
+    evidence_required: visible agent-to-agent label, agent endpoints, or source note
+    confidence_guidance: High when labeled; medium when inferred from agent components; unknown when ambiguous.
+    notes: Agent-to-agent flows require explicit authorization review.
+
+  - id: IT-HITL-APPROVAL
+    label: hitl_approval
+    description: A flow that crosses a human-in-the-loop gate where a human approves, rejects, or modifies an action.
+    when_to_use: A human approver is present on the flow path with explicit approval/rejection semantics.
+    when_not_to_use: A human is present without an approval gate (use a generic actor + data_flow instead).
+    evidence_required: visible HITL/approval label or source note describing the gate
+    confidence_guidance: High when explicitly labeled; medium when inferred from operator role; unknown when ambiguous.
+    notes: HITL gates are reviewed for authority, scope, and rejection handling.
+
+  - id: IT-OBSERVABILITY
+    label: observability
+    description: A flow that emits logs, metrics, traces, audit events, or telemetry to an observability sink.
+    when_to_use: The destination is an observability_store or the flow is plainly a telemetry/log path.
+    when_not_to_use: The flow is a generic data flow that happens to terminate at a database.
+    evidence_required: visible log/telemetry label or observability_store at the destination
+    confidence_guidance: High when labeled; medium when inferred from sink type; unknown when ambiguous.
+    notes: Logging payload class is unknown unless separately recorded.
+
+  - id: IT-CONTROL-PLANE-ACTION
+    label: control_plane_action
+    description: A management-plane flow that issues policy, configuration, or governance change to another component.
+    when_to_use: The flow is plainly a config-push, policy-deploy, IAM grant, or governance signal.
+    when_not_to_use: The flow is data-plane traffic between application components.
+    evidence_required: visible control-plane label or source note describing the management action
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Control-plane action is a review label, not enforcement proof.
+
+  - id: IT-UNKNOWN
+    label: unknown
+    description: The interaction type is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Materiality of the unknown drives whether a question is generated.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured the old v0.01 prose
+  interaction catalogs into a closed YAML list of nine controlled values
+  (eight typed + unknown).
