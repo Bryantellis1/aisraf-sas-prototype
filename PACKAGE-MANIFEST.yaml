@@ -14,13 +14,14 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "11"
-  build_package_name: Runs and execution evidence model
-  build_package_status: active
-next_build_package:
   build_package_number: "12"
   build_package_name: Validation
-  build_package_status: next_allowed
+  build_package_status: active
+next_build_package:
+  build_package_number: "13"
+  build_package_name: Diagrams
+  build_package_status: next_allowed_pending_blocker_resolution
+  pending_blocker: BP12-SAMPLE-DFD-BLOCKER
 build_packages:
   - build_package_number: "01"
     build_package_name: Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent standard
@@ -878,6 +879,88 @@ build_package_11_allowed_writes:
     - any executed_by_operator claim inside RUN-001 (postback_execution_status remains deferred under folder_first_test)
     - lowering expected_score_threshold inside any run artefact to force a pass
     - committing additional runs/RUN-* folders alongside RUN-001 (smoke runs must be removed before commit)
+build_package_12_allowed_writes:
+  validation_files:
+    - validation/package-12-validation-checklist.md
+    - validation/scoring-rubric-checklist.md
+    - validation/package-lint-master-checklist.md
+    - validation/expected-output-lint-checklist.md
+    - validation/prompt-skill-pra-parity-checklist.md
+    - validation/sample-input-readiness-checklist.md
+    - validation/local-run-readiness-checklist.md
+    - validation/prototype-execution-readiness-checklist.md
+    - validation/diagram-readiness-pre-render-checklist.md
+    - validation/docs-readiness-pre-render-checklist.md
+    - validation/final-qa-checklist.md
+  run_fixture_files:
+    - runs/RUN-001/dfd/.gitkeep   # Build Package 12 fresh-clone reservation marker for the empty governed folder runs/RUN-001/dfd/
+  governance_updates:
+    - validation/README.md          # rebuilt as the validation taxonomy index with top-of-file BLOCKERS section
+    - validation/no-drift-rules.md  # appended Build Package 12 numbered rules (1-14)
+    - PACKAGE-MANIFEST.yaml
+    - FOLDER-CONTRACTS.md
+    - README.md
+    - START-HERE.md
+    - .github/copilot-instructions.md
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1   # surgical: synopsis "Build Package 01-12"; Check 08i .gitkeep allowance in runs/RUN-001/dfd/; Check 11 allow-list extended with the 10 new BP12 validation filenames
+  validation_file_count_added: 10
+  test_aisraf_package_patch_count: 3   # synopsis update + Check 08i .gitkeep allowance + Check 11 allow-list extension
+  founder_decisions:
+    q1_final_qa_human_review_approval_points: confirm_per_package_checklist_verdict_signed_off_default
+    q2_self_assert_only_allowed_writes: package_12_validation_checklist_verifies_via_git_status_diff_against_allowed_writes
+    q3_release_readiness_checklist: leave_untouched_owned_by_build_package_15
+    q4_post_correction_revalidation_owner: include_revalidation_inside_package_10a_11a_scope_no_separate_package_12b
+  carried_forward_blockers:
+    - blocker_id: BP12-SAMPLE-DFD-BLOCKER
+      severity: HARD
+      owner: founder
+      blocks: Build Package 13 entry
+      resolution_options:
+        - founder-approved Package 10A / 11A corrective patch to samples/sample-001-dfd-crop/inputs/dfd-crop.png and dfd-crop.mmd
+        - founder-approved sample-002 with a clean canonical DFD
+      cross_referenced_in:
+        - validation/sample-input-readiness-checklist.md
+        - validation/expected-output-lint-checklist.md
+        - validation/diagram-readiness-pre-render-checklist.md
+        - validation/no-drift-rules.md
+        - validation/package-12-validation-checklist.md
+        - validation/final-qa-checklist.md
+        - PACKAGE-MANIFEST.yaml
+      defect_statement: |
+        The current DFD is not acceptable as the canonical AISRAF sample DFD because it
+        mixes extraction IDs with visual architecture notation, uses artificial BND-/CMP-/F-style
+        labels as primary diagram language, has weak/incorrect boundary semantics, and does not
+        consistently follow AISRAF flow-label grammar or data-store annotation rules.
+      bp12_disposition: record_validate_surface_in_every_relevant_gate_do_not_correct
+      bp12_does_not_modify:
+        - samples/sample-001-dfd-crop/inputs/dfd-crop.png
+        - samples/sample-001-dfd-crop/inputs/dfd-crop.mmd
+        - runs/RUN-001/inputs/dfd-crop.png
+        - runs/RUN-001/inputs/dfd-crop.mmd
+        - samples/sample-001-dfd-crop/expected/   # all 26 baselines remain byte-stable in BP12
+        - samples-002 (no folder created in BP12)
+  prohibited:
+    - any modification to a sealed Build Package 01-11 surface (validation files 01-11, registries, prompts, skills, prototype-agents, .agents adapters, catalogs, blueprints, templates, samples inputs/expected, config, runs/RUN-001/run-profile.yaml, runs/RUN-001/00-run-log.md, runs/RUN-001/README.md, runs/RUN-001/inputs/, tools/New-AisrafRun.ps1, tools/Test-AisrafRunProfile.ps1)
+    - modifying samples/sample-001-dfd-crop/inputs/dfd-crop.png or dfd-crop.mmd
+    - modifying runs/RUN-001/inputs/dfd-crop.png or dfd-crop.mmd
+    - modifying any expected baseline under samples/sample-001-dfd-crop/expected/
+    - authoring sample-002 or any new sample folder
+    - silently validating the sample DFD as canonical without citing BP12-SAMPLE-DFD-BLOCKER
+    - producing diagrams (Build Package 13)
+    - producing runbooks, practitioner guides, or docs/ content beyond docs/README.md (Build Package 14)
+    - producing release artefacts, ZIP, DOCX, PDF, PPTX, or release/ binaries (Build Package 15)
+    - producing the 17 RS or 9 DFD chain outputs in runs/RUN-001/
+    - producing a numeric accuracy score for runs/RUN-001/
+    - claims of runtime / cloud / ADK / Vertex / GCP / MCP / Jira post-back / Confluence publication / Rovo / database / Terraform / executed_by_operator execution
+    - introducing non-schema run-profile placeholders ({{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, {{validation_root}})
+    - .gitkeep allowance outside runs/RUN-001/dfd/
+    - introducing a second carried-forward blocker without founder approval
+    - tools/New-AisrafRun.ps1 or tools/Test-AisrafRunProfile.ps1 modifications
+    - new tools beyond the surgical Test-AisrafPackage.ps1 patch
+    - .github/prompts/ wrappers
+    - tools/Export-AisrafRelease.ps1 or any new release-export tool
+    - runtime services, cloud assets, deployed agents, MCP/Jira/Confluence/Rovo execution proof, ADK or Vertex/GCP code, database jobs, Terraform, release-export tools, or release binaries
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
@@ -885,7 +968,7 @@ run_test_status: first_governed_fixture_active_no_chain_execution
 cloud_runtime_status: not_started
 mcp_status: not_required_for_build_package_01
 adk_status: future
-validation_status: build_package_01_self_check_required
+validation_status: build_package_12_framework_active_pending_human_review
 folder_first_model_status: reserved_not_implemented
 prompt_status: active
 skill_status: active

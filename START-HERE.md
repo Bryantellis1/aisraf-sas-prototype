@@ -2,7 +2,9 @@
 
 Package: AISRAF SAS Prototype v0.1.2
 
-This workspace has Build Packages 01–11 active. Build Package 11 (runs and execution evidence model) is the most recent.
+This workspace has Build Packages 01–12 active. Build Package 12 (validation framework) is the most recent.
+
+> **Carried-forward blocker.** `BP12-SAMPLE-DFD-BLOCKER` (severity HARD, owner founder) records a defect in the canonical sample DFD (`samples/sample-001-dfd-crop/inputs/dfd-crop.png`/`.mmd` and the byte-copies under `runs/RUN-001/inputs/`). Build Package 13 (Diagrams) is BLOCKED until founder-approved Package 10A / 11A correction lands OR sample-002 with a clean DFD is authorized. See [validation/sample-input-readiness-checklist.md](validation/sample-input-readiness-checklist.md) for the full defect statement and gate verdicts.
 
 ## Operator Steps
 
@@ -19,6 +21,7 @@ This workspace has Build Packages 01–11 active. Build Package 11 (runs and exe
 11. Browse [templates/README.md](templates/README.md) to see the 31 reusable output-shape templates introduced in Build Package 09 across four family folders ([templates/output/](templates/output/) — 27 templates, [templates/jira/](templates/jira/) — 1 template, [templates/confluence/](templates/confluence/) — 1 template, [templates/run/](templates/run/) — 2 row templates), and [templates/template-registry.yaml](templates/template-registry.yaml) for the template→prompt, template→skill, template→PRA, template→adapter, template→blueprint, and template→catalog consumer maps.
 12. Browse [samples/README.md](samples/README.md) and [samples/sample-001-dfd-crop/README.md](samples/sample-001-dfd-crop/README.md) to see the Build Package 10 sample set: one active gold-standard scored sample (`sample-001-dfd-crop` — AI SaaS Security Review Portal), six synthetic inputs, and 26 Markdown expected baselines (17 RS + 9 DFD) mirroring Package 09 templates. Samples 002–008 are recorded as `planned_or_deferred_samples` entries inside [samples/sample-registry.yaml](samples/sample-registry.yaml) only — no folders or files exist for them. Samples are test fixtures, not runs; numeric scoring is qualitative (`PASS_READY_FOR_REVIEW`) until the chain executes against the Build Package 11 run fixture and numeric scoring activates.
 13. Browse [runs/README.md](runs/README.md) and [runs/RUN-001/README.md](runs/RUN-001/README.md) to see the Build Package 11 run-evidence model: the first canonical governed run fixture `runs/RUN-001/` for `sample-001-dfd-crop`, with [runs/RUN-001/run-profile.yaml](runs/RUN-001/run-profile.yaml) (Build Package 02 schema-compliant), [runs/RUN-001/00-run-log.md](runs/RUN-001/00-run-log.md) (Build Package 09 file-shape compliant), 6 byte-copies of the sample-001 inputs under `runs/RUN-001/inputs/`, and an empty governed `runs/RUN-001/dfd/` folder reserved for the 9 DFD subskill outputs. The 17 RS chain outputs at the run-folder root and the 9 DFD outputs under `dfd/` are reserved future paths — Build Package 11 does NOT execute the chain and does NOT produce any of the 26 outputs. The run-folder shape is pinned in [validation/run-folder-shape-checklist.md](validation/run-folder-shape-checklist.md), the run-log shape in [validation/run-log-checklist.md](validation/run-log-checklist.md), and the comparison/scoring procedure in [validation/run-comparison-checklist.md](validation/run-comparison-checklist.md). Other `runs/RUN-*` folders are smoke runs and must be removed before human git stage.
+14. Read [validation/README.md](validation/README.md) — the Build Package 12 validation taxonomy index — for the 8-category gate model (package, registry, chain, sample, run, cross-cutting hygiene, forward, final QA), the run order (1 → 2 → 3 → 4 → 5 → 6 → 7 → 8), and the BLOCKERS section naming `BP12-SAMPLE-DFD-BLOCKER`. Build Package 12 added 10 new validation files plus 14 numbered amendments in [validation/no-drift-rules.md](validation/no-drift-rules.md). The empty governed folder `runs/RUN-001/dfd/` now carries `.gitkeep` as a fresh-clone reservation marker. Build Package 13 (Diagrams) is BLOCKED behind `BP12-SAMPLE-DFD-BLOCKER` resolution.
 
 ## Stop For Now
 
@@ -39,4 +42,4 @@ This workspace has Build Packages 01–11 active. Build Package 11 (runs and exe
 
 ## Next Build Package
 
-The next allowed Build Package is **Build Package 12 — Validation**.
+The next allowed Build Package is **Build Package 13 — Diagrams**, but Build Package 13 is **BLOCKED** until `BP12-SAMPLE-DFD-BLOCKER` is resolved via founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD is authorized. See [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md) for the hard precondition.

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-11 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-12 surface of AISRAF SAS Prototype v0.1.2.
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -53,6 +53,9 @@
         when the operator executes the chain but are NOT required by
         Build Package 11);
       - Build Package 11 validation files exist;
+      - Build Package 12 validation framework files exist (10 new
+        BP12 checklists added to validation/ allow-list; runs/RUN-001/dfd/
+        permits .gitkeep as a fresh-clone reservation marker);
       - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP,
         diagram/docs/release content beyond folder README placeholders);
       - the old reference workspace path is acknowledged as read-only.
@@ -904,15 +907,15 @@ if (Test-Path -LiteralPath $run001Abs -PathType Container) {
     else {
         Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Required Build Package 11 inputs/ folder missing: runs/RUN-001/inputs/"
     }
-    # dfd/ — empty (Build Package 11) or 9 DFD chain outputs (post-execution)
+    # dfd/ — empty (Build Package 11/12) or 9 DFD chain outputs (post-execution); .gitkeep is permitted as a fresh-clone reservation marker (Build Package 12)
     $run001Dfd = Join-Path $run001Abs 'dfd'
     if (Test-Path -LiteralPath $run001Dfd -PathType Container) {
         foreach ($d in @(Get-ChildItem -LiteralPath $run001Dfd -Force -Directory)) {
             Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden subfolder in runs/RUN-001/dfd/ (Build Package 11 disallows nested folders): $($d.Name)/"
         }
         foreach ($c in @(Get-ChildItem -LiteralPath $run001Dfd -Force -File)) {
-            if ($c.Name -notmatch $run001DfdOutputPattern) {
-                Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden file in runs/RUN-001/dfd/: $($c.Name). Build Package 11 reserves dfd/ empty (or post-chain DFD outputs matching '$run001DfdOutputPattern')."
+            if ($c.Name -notmatch $run001DfdOutputPattern -and $c.Name -ne '.gitkeep') {
+                Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden file in runs/RUN-001/dfd/: $($c.Name). Build Package 11 reserves dfd/ empty (or post-chain DFD outputs matching '$run001DfdOutputPattern'); the only allowed non-DFD-output filename is '.gitkeep' (Build Package 12 fresh-clone reservation marker)."
             }
         }
     }
@@ -921,7 +924,7 @@ if (Test-Path -LiteralPath $run001Abs -PathType Container) {
     }
     $run001Fails = @($results | Where-Object { $_.Check -eq '08i-runs-content-limits' -and $_.Status -eq 'FAIL' }).Count
     if ($run001Fails -eq 0) {
-        Add-Result -Status PASS -Check '08i-runs-content-limits' -Detail "runs/RUN-001/ surface matches Build Package 11 contract (README.md, run-profile.yaml, 00-run-log.md, inputs/ with 6 byte-copied files, and dfd/ as empty governed reservation)."
+        Add-Result -Status PASS -Check '08i-runs-content-limits' -Detail "runs/RUN-001/ surface matches Build Package 11 contract (README.md, run-profile.yaml, 00-run-log.md, inputs/ with 6 byte-copied files, and dfd/ as empty governed reservation; .gitkeep permitted in dfd/ as a fresh-clone reservation marker per Build Package 12)."
     }
 }
 else {
@@ -948,7 +951,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md', 'package-09-templates-checklist.md', 'template-registry-checklist.md', 'template-consumption-checklist.md', 'package-10-samples-checklist.md', 'sample-registry-checklist.md', 'sample-baseline-checklist.md', 'package-11-runs-checklist.md', 'run-folder-shape-checklist.md', 'run-log-checklist.md', 'run-comparison-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md', 'package-09-templates-checklist.md', 'template-registry-checklist.md', 'template-consumption-checklist.md', 'package-10-samples-checklist.md', 'sample-registry-checklist.md', 'sample-baseline-checklist.md', 'package-11-runs-checklist.md', 'run-folder-shape-checklist.md', 'run-log-checklist.md', 'run-comparison-checklist.md', 'package-12-validation-checklist.md', 'scoring-rubric-checklist.md', 'package-lint-master-checklist.md', 'expected-output-lint-checklist.md', 'prompt-skill-pra-parity-checklist.md', 'sample-input-readiness-checklist.md', 'local-run-readiness-checklist.md', 'prototype-execution-readiness-checklist.md', 'diagram-readiness-pre-render-checklist.md', 'docs-readiness-pre-render-checklist.md', 'final-qa-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -958,10 +961,10 @@ if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     }
 }
 if ($validationFails.Count -gt 0) {
-    foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 03: $s" }
+    foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 12: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-11 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-12 documents."
 }
 
 # 12. tools/ — Build Package 03 expected file set

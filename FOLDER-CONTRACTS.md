@@ -321,19 +321,34 @@ Path: `validation/`
 
 Owning Build Package: Build Package 12.
 
-Purpose: package checklists, gates, and validation rules.
+Purpose: package checklists, gates, validation rules, and the canonical home of carried-forward blockers across the prototype build sequence.
 
 Who uses it: validators, package maintainers, future build agents, and release owners.
 
-Allowed file types: Markdown validation documents in Build Package 01; later validation artifacts when Build Package 12 authorizes them.
+Allowed file types: Markdown validation documents only. The single index file `validation/README.md` is the taxonomy index with a top-of-file BLOCKERS section; `validation/no-drift-rules.md` carries the cross-package no-drift contract (Build Package 01 baseline plus Build Package 12 amendments). All other files are governed checklists for one specific gate (per package, per registry, per chain stage, per sample, per run, per cross-cutting concern, per forward-looking pre-render gate, or per final-QA closure).
 
-Belongs here: Build Package 01 foundation checklist, no-drift rules, and release-readiness placeholder in this package.
+Allowed file list (Build Package 01–12, fixed at 39 files until a future package amends):
+- `README.md` (validation taxonomy index; rebuilt by Build Package 12)
+- `no-drift-rules.md` (Build Package 01 baseline; Build Package 12 amendments appended)
+- `release-readiness-checklist.md` (Build Package 15 placeholder; not in scope for Build Package 12 framework deliverable)
+- 11 package gates: `package-01-foundation-checklist.md` through `package-12-validation-checklist.md`
+- 7 registry gates: `prompt-registry-checklist.md`, `skill-registry-checklist.md`, `agent-registry-checklist.md`, `catalog-registry-checklist.md`, `blueprint-registry-checklist.md`, `template-registry-checklist.md`, `sample-registry-checklist.md`
+- 7 chain gates: `prompt-skill-agent-mapping-checklist.md`, `catalog-consumption-checklist.md`, `blueprint-catalog-consumption-checklist.md`, `template-consumption-checklist.md`, `prompt-skill-pra-parity-checklist.md`, `prototype-execution-readiness-checklist.md`, `expected-output-lint-checklist.md`, `scoring-rubric-checklist.md`
+- 1 sample gate: `sample-input-readiness-checklist.md`, `sample-baseline-checklist.md`
+- 4 run gates: `run-folder-shape-checklist.md`, `run-log-checklist.md`, `run-comparison-checklist.md`, `local-run-readiness-checklist.md`
+- 1 cross-cutting hygiene roll-up: `package-lint-master-checklist.md`
+- 2 forward gates: `diagram-readiness-pre-render-checklist.md`, `docs-readiness-pre-render-checklist.md`
+- 1 final QA: `final-qa-checklist.md`
 
-Does not belong here: generated run outputs, hidden reports, release binaries, runtime validators, or lowered standards.
+Belongs here: Build Package 01 foundation checklist, Build Package 01 no-drift rules, Build Package 02–11 per-package and per-registry checklists, Build Package 12 framework gates (10 new files plus the rebuilt `README.md` and amended `no-drift-rules.md`), and the carried-forward `BP12-SAMPLE-DFD-BLOCKER` cross-references.
 
-Populated by: Build Package 01 for foundation checks; Build Package 12 for full validation model.
+Does not belong here: generated run outputs, hidden reports, release binaries, runtime validators, lowered standards, runbook prose, operator-walkthrough narratives, scripted remediation language, sample DFD redraws, or any executable validator code (validators live under `tools/`, not `validation/`).
 
-Build Package 01 status: active for Build Package 01 checklists only.
+Populated by: Build Package 01 for foundation checks; Build Package 02–11 for per-package and per-registry checklists; Build Package 12 for the full validation framework (10 new files plus the rebuilt taxonomy index and amended no-drift rules) and the carried-forward `BP12-SAMPLE-DFD-BLOCKER` blocker.
+
+Carried-forward blockers note: The `validation/` folder is the canonical home of carried-forward blockers across the prototype build sequence. `BP12-SAMPLE-DFD-BLOCKER` (severity HARD, owner founder) is recorded in 6 validation files (`sample-input-readiness-checklist.md`, `expected-output-lint-checklist.md`, `diagram-readiness-pre-render-checklist.md`, `no-drift-rules.md`, `package-12-validation-checklist.md`, `final-qa-checklist.md`) plus `PACKAGE-MANIFEST.yaml`. The blocker pins Build Package 13 entry until a founder-approved Package 10A / 11A correction lands or sample-002 with a clean DFD is authorized.
+
+Build Package 12 status: active for Build Package 01–12 validation files plus the carried-forward `BP12-SAMPLE-DFD-BLOCKER`.
 
 ## Root Area 17 — `release/`
 
