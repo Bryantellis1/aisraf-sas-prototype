@@ -1,6 +1,6 @@
 package_name: AISRAF SAS Prototype
 package_version: v0.1.2
-package_state: config_variable_model_active
+package_state: tools_active
 active_workspace: D:/E-Way 2/AISRAF- SAS Prototype v0.1.2
 reference_workspace: D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01
 old_workspace_policy:
@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "02"
-  build_package_name: Config and run-profile variable model
-  build_package_status: active
-next_build_package:
   build_package_number: "03"
   build_package_name: Tools and setup/test/export scripts
+  build_package_status: active
+next_build_package:
+  build_package_number: "04"
+  build_package_name: Prompts and prompt registry
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -217,6 +217,33 @@ build_package_02_allowed_writes:
     - release/* release artifacts
     - schemas outside config/
     - runtime code, cloud assets, MCP/Jira/Confluence proof, release binaries
+build_package_03_allowed_writes:
+  tool_files:
+    - tools/New-AisrafRun.ps1
+    - tools/Test-AisrafRunProfile.ps1
+    - tools/Test-AisrafPackage.ps1
+  validation_files:
+    - validation/package-03-tools-checklist.md
+  governance_updates:
+    - tools/README.md
+    - PACKAGE-MANIFEST.yaml
+    - validation/no-drift-rules.md
+  prohibited:
+    - tools/Export-AisrafRelease.ps1
+    - prompts/* prompt cards
+    - skills/* skill contracts
+    - prototype-agents/* PRA specs
+    - .agents/* .agent.md adapters
+    - catalogs/* catalog content
+    - blueprints/* blueprint content
+    - templates/* template content beyond authoring-agent templates
+    - samples/* sample inputs or expected baselines
+    - runs/* committed run outputs (smoke run folders must be removed before human git stage)
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides
+    - release/* release artifacts
+    - schemas outside config/
+    - runtime services, cloud assets, MCP/Jira/Confluence/Rovo execution proof, release binaries
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
