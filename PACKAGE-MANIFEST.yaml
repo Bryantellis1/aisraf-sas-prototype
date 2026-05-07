@@ -1,6 +1,6 @@
 package_name: AISRAF SAS Prototype
 package_version: v0.1.2
-package_state: foundation_reconciled
+package_state: config_variable_model_active
 active_workspace: D:/E-Way 2/AISRAF- SAS Prototype v0.1.2
 reference_workspace: D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01
 old_workspace_policy:
@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "01"
-  build_package_name: Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent standard
-  build_package_status: foundation_reconciled
-next_build_package:
   build_package_number: "02"
   build_package_name: Config and run-profile variable model
+  build_package_status: active
+next_build_package:
+  build_package_number: "03"
+  build_package_name: Tools and setup/test/export scripts
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -185,6 +185,38 @@ build_package_01_allowed_writes:
     - validation/package-01-foundation-checklist.md
     - validation/no-drift-rules.md
     - validation/release-readiness-checklist.md
+build_package_02_allowed_writes:
+  config_files:
+    - config/run-profile.schema.yaml
+    - config/run-profile.template.yaml
+    - config/run-profile.sample.folder-first.yaml
+    - config/run-profile.sample.integration.yaml
+    - config/run-profile.field-catalog.md
+    - config/run-profile.validation-rules.md
+    - config/path-resolution-rules.md
+    - config/integration-fields.md
+    - config/sensitive-data-rules.md
+  validation_files:
+    - validation/package-02-config-checklist.md
+  governance_updates:
+    - config/README.md
+    - PACKAGE-MANIFEST.yaml
+    - validation/no-drift-rules.md
+  prohibited:
+    - tools/* scripts
+    - prompts/* prompt cards
+    - skills/* skill contracts
+    - prototype-agents/* PRA specs
+    - .agents/* .agent.md adapters
+    - catalogs/* catalog content
+    - blueprints/* blueprint content
+    - samples/* sample inputs or expected baselines
+    - runs/* run outputs
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides
+    - release/* release artifacts
+    - schemas outside config/
+    - runtime code, cloud assets, MCP/Jira/Confluence proof, release binaries
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started

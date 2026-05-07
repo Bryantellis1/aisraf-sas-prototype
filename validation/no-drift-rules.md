@@ -18,3 +18,5 @@ These rules apply to AISRAF SAS Prototype v0.1.2 unless a later Build Package co
 - No cloud, GCP, ADK, database, Terraform, runtime, or deployed-agent claims.
 - No modification to the old reference workspace.
 - No copying old stale release artifacts, failed diagrams, run proof, temporary reports, or generated outputs into this clean rebuild.
+- No Build Package may invent a run-profile field outside `config/run-profile.schema.yaml`. Adding, removing, or renaming a field requires a Build Package 02 schema change in the same change set, with matching updates to `config/run-profile.template.yaml`, the samples, `config/run-profile.field-catalog.md`, and `config/run-profile.validation-rules.md`.
+- No artifact, prompt, skill, PRA, runbook, scoring report, manifest entry, evidence record, diagram, or message may claim Jira post-back, Confluence publication, MCP execution, or connector use unless `postback_execution_status: executed_by_operator` (or the equivalent connector or MCP `executed_by_operator` value) is set AND `output_root/00-run-log.md` records timestamp, destination URL, and operator role for that action.

@@ -1,0 +1,79 @@
+# Run Profile Template
+#
+# Package: AISRAF SAS Prototype v0.1.2
+# Owning Build Package: Build Package 02 — Config and run-profile variable model.
+# Schema authority: config/run-profile.schema.yaml
+#
+# Purpose: canonical template for runs/<run_id>/run-profile.yaml. Build
+# Package 03 tools copy this file into a new run folder, replace
+# placeholder values for run_id, sample_id, paths, identity, mode, and
+# created_at, and verify the result against config/run-profile.schema.yaml.
+#
+# Operators edit only the operator-edited fields documented in
+# config/run-profile.field-catalog.md. schema_version, package_version,
+# and old_reference_workspace are constants; tools manage created_at.
+#
+# Sensitive-data prohibitions apply to every string field. See
+# config/sensitive-data-rules.md.
+
+schema_version: run_profile.v0_1_2
+package_version: v0.1.2
+
+# ── Run identity ──────────────────────────────────────────────────────────────
+run_id: "RUN-PLACEHOLDER"
+sample_id: "sample-001-dfd-crop"
+
+# ── Mode ──────────────────────────────────────────────────────────────────────
+# Allowed: folder_first_test, folder_first_review, integration_assisted_intake,
+# integration_assisted_postback, dry_run_revalidation, live_reviewer_run.
+mode: "folder_first_test"
+
+# ── Path roots ────────────────────────────────────────────────────────────────
+# Relative to the active workspace root. No drive letters, no leading "/",
+# no parent traversal ("..") components. See config/path-resolution-rules.md.
+workspace_root: "."
+input_root: "runs/RUN-PLACEHOLDER/inputs"
+expected_root: "samples/sample-001-dfd-crop/expected"
+output_root: "runs/RUN-PLACEHOLDER"
+old_reference_workspace: "D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01"
+
+# ── Source / destination references ───────────────────────────────────────────
+# Optional integration metadata only. Empty in folder-first modes. URL only —
+# no tokens, query credentials, or session identifiers. See
+# config/integration-fields.md and config/sensitive-data-rules.md.
+source_ticket_url: ""
+destination_ticket_url: ""
+destination_confluence_url: ""
+
+# ── Connector and post-back posture ───────────────────────────────────────────
+# output_destination_mode declares INTENT only. postback_execution_status
+# governs whether a human actually posted or published. See
+# config/integration-fields.md.
+output_destination_mode: "local_only"
+postback_execution_status: "deferred"
+jira_connector_status: "not_required"
+confluence_connector_status: "not_required"
+rovo_mcp_available: false
+mcp_execution_status: "not_required"
+
+# ── Operator and reviewer identity ────────────────────────────────────────────
+# Role labels or short display names. No PII, no credentials, no email
+# addresses, no full legal names tied to a real customer.
+operator_name: "SAS reviewer"
+reviewer_name: "SAS reviewer"
+
+# ── Safety and scoring flags ──────────────────────────────────────────────────
+# sensitive_data_confirmed_redacted MUST be true before any run begins.
+# Operators flip this from false to true after confirming inputs are clean.
+# expected_baseline_required and scoring_enabled are operator declarations
+# about whether scoring will run for this profile.
+sensitive_data_confirmed_redacted: false
+expected_baseline_required: true
+scoring_enabled: true
+
+# ── Metadata ──────────────────────────────────────────────────────────────────
+# created_at is populated by Build Package 03 tools at run-folder creation.
+created_at: "0000-00-00T00:00:00Z"
+
+# Free operator notes. Sensitive-data prohibition applies.
+notes: ""

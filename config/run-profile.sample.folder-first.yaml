@@ -1,0 +1,47 @@
+# Run Profile Sample — folder-first
+#
+# Package: AISRAF SAS Prototype v0.1.2
+# Owning Build Package: Build Package 02.
+# Schema authority: config/run-profile.schema.yaml
+#
+# Purpose: concrete folder-first example for local testing without Jira,
+# Confluence, Rovo, or MCP. Demonstrates the canonical safe defaults the
+# folder_first_test conditional pins. Read alongside
+# config/run-profile.field-catalog.md and config/integration-fields.md.
+
+schema_version: run_profile.v0_1_2
+package_version: v0.1.2
+
+run_id: "RUN-SAMPLE-FOLDER-FIRST"
+sample_id: "sample-001-dfd-crop"
+
+mode: "folder_first_test"
+
+workspace_root: "."
+input_root: "runs/RUN-SAMPLE-FOLDER-FIRST/inputs"
+expected_root: "samples/sample-001-dfd-crop/expected"
+output_root: "runs/RUN-SAMPLE-FOLDER-FIRST"
+old_reference_workspace: "D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01"
+
+# Folder-first mode: integration surface is empty and connectors are not_required.
+source_ticket_url: ""
+destination_ticket_url: ""
+destination_confluence_url: ""
+
+output_destination_mode: "local_only"
+postback_execution_status: "deferred"
+jira_connector_status: "not_required"
+confluence_connector_status: "not_required"
+rovo_mcp_available: false
+mcp_execution_status: "not_required"
+
+operator_name: "SAS reviewer"
+reviewer_name: "SAS reviewer"
+
+sensitive_data_confirmed_redacted: true
+expected_baseline_required: true
+scoring_enabled: true
+
+created_at: "2026-05-06T12:00:00Z"
+
+notes: "Folder-first sample profile. No Jira, Confluence, Rovo, or MCP activity expected or claimed."

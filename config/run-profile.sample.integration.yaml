@@ -1,0 +1,66 @@
+# Run Profile Sample — integration-assisted intake
+#
+# Package: AISRAF SAS Prototype v0.1.2
+# Owning Build Package: Build Package 02.
+# Schema authority: config/run-profile.schema.yaml
+#
+# Purpose: concrete example for an integration-assisted intake scenario
+# where a Jira source ticket and an optional Confluence destination are
+# referenced but no external write has happened. Post-back stays deferred
+# until a human operator actually posts and records evidence in
+# output_root/00-run-log.md (recorded by Build Package 11). Read alongside
+# config/integration-fields.md.
+#
+# Honest posture rules followed in this sample:
+#   - URLs are placeholders for an internal Atlassian instance — replace
+#     with your actual ticket / page when running.
+#   - No connector is claimed working. Connectors are configured_not_tested
+#     until Build Package 03 records a verified status.
+#   - Rovo MCP is not available and MCP execution is not_required.
+#   - postback_execution_status remains deferred. No post-back claim.
+
+schema_version: run_profile.v0_1_2
+package_version: v0.1.2
+
+run_id: "RUN-SAMPLE-INTEGRATION"
+sample_id: "sample-001-dfd-crop"
+
+mode: "integration_assisted_intake"
+
+workspace_root: "."
+input_root: "runs/RUN-SAMPLE-INTEGRATION/inputs"
+expected_root: "samples/sample-001-dfd-crop/expected"
+output_root: "runs/RUN-SAMPLE-INTEGRATION"
+old_reference_workspace: "D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01"
+
+# Integration intake: source ticket may be referenced. Destination URLs may
+# point at a draft target but post-back is NOT executed in this sample.
+source_ticket_url: "https://example.atlassian.net/browse/SAS-PLACEHOLDER"
+destination_ticket_url: ""
+destination_confluence_url: ""
+
+# local_only is honest because no external write has happened. The operator
+# may later switch this to jira_draft, confluence_draft, or
+# jira_and_confluence_draft after staging a draft, and to
+# external_postback_executed only with run-log evidence.
+output_destination_mode: "local_only"
+postback_execution_status: "deferred"
+
+# Connectors are referenced honestly. configured_not_tested is the right
+# value when the operator has set up the connector locally but has not
+# yet executed any read or write through it for this run.
+jira_connector_status: "configured_not_tested"
+confluence_connector_status: "not_required"
+rovo_mcp_available: false
+mcp_execution_status: "not_required"
+
+operator_name: "SAS reviewer"
+reviewer_name: "SAS reviewer"
+
+sensitive_data_confirmed_redacted: true
+expected_baseline_required: true
+scoring_enabled: true
+
+created_at: "2026-05-06T12:00:00Z"
+
+notes: "Integration-assisted intake sample. Source ticket referenced for traceability only; no external write or post-back has happened."
