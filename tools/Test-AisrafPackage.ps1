@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-05 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-06 surface of AISRAF SAS Prototype v0.1.2.
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -18,9 +18,14 @@
         and match the approved naming pattern under skills/rs/ (17 files) and
         skills/dfd/ (9 files);
       - Build Package 05 validation files exist;
-      - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP, .agent.md,
-        PRA/catalog/blueprint/template/sample/diagram/docs/release
-        content beyond folder README placeholders);
+      - Build Package 06 prototype-agents/ surface matches the approved layout
+        (README.md, prototype-agent-registry.yaml, prototype-agent-template.md,
+        and 8 PRA-0[1-8]-*.md files) and .agents/ contains exactly the 7
+        approved aisraf-*.agent.md files plus README.md;
+      - Build Package 06 validation files exist;
+      - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP,
+        catalog/blueprint/template/sample/diagram/docs/release content beyond
+        folder README placeholders);
       - the old reference workspace path is acknowledged as read-only.
 
     The test does not run prompts, skills, PRAs, .agent.md adapters, Jira,
@@ -147,25 +152,65 @@ else {
     Add-Result -Status PASS -Check '06-no-release-binaries' -Detail "No DOCX/PDF/PPTX/ZIP artifacts found."
 }
 
-# 7. Forbidden .agent.md adapters anywhere
+# 7. Build Package 06 .agent.md adapter surface.
+# Allowed under .agents/: README.md plus exactly 7 approved aisraf-*.agent.md adapter files.
+# FAIL: any other *.agent.md anywhere in the workspace; any file under .agents/ that
+# is not in the approved adapter list or README.md; any approved adapter file missing.
+$approvedAdapters = @(
+    'aisraf-orchestrator.agent.md',
+    'aisraf-input-reader.agent.md',
+    'aisraf-dfd-extractor.agent.md',
+    'aisraf-review-table-builder.agent.md',
+    'aisraf-blueprint-questioner.agent.md',
+    'aisraf-finding-recommender.agent.md',
+    'aisraf-handoff-qa-scorer.agent.md'
+)
 $agentMd = @(Get-ChildItem -LiteralPath $packageRoot -Recurse -Force -File -Filter '*.agent.md' -ErrorAction SilentlyContinue |
     Where-Object { $_.FullName -notlike "*\.git\*" })
-if ($agentMd.Count -gt 0) {
-    foreach ($a in $agentMd) {
+$agentsAbs = Resolve-PackagePath '.agents'
+$agentsAbsNormalized = $agentsAbs.TrimEnd('\','/')
+foreach ($a in $agentMd) {
+    $parent = Split-Path -Parent $a.FullName
+    $parentNormalized = $parent.TrimEnd('\','/')
+    if ($parentNormalized -ieq $agentsAbsNormalized) {
+        if (-not ($approvedAdapters -contains $a.Name)) {
+            Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden adapter in .agents/ (not in the 7 approved Build Package 06 adapters): .agents/$($a.Name)"
+        }
+    }
+    else {
         $rel = $a.FullName.Substring($packageRoot.Length + 1)
-        Add-Result -Status FAIL -Check '07-no-agent-md' -Detail "Forbidden .agent.md adapter: $rel"
+        Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden *.agent.md outside .agents/ (Build Package 06 reserves adapter content for .agents/): $rel"
     }
 }
-else {
-    Add-Result -Status PASS -Check '07-no-agent-md' -Detail "No .agent.md adapter files exist before Build Package 06."
+foreach ($name in $approvedAdapters) {
+    $expected = Join-Path $agentsAbs $name
+    if (-not (Test-Path -LiteralPath $expected -PathType Leaf)) {
+        Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Required Build Package 06 adapter missing: .agents/$name"
+    }
+}
+if (Test-Path -LiteralPath $agentsAbs -PathType Container) {
+    foreach ($child in @(Get-ChildItem -LiteralPath $agentsAbs -Force)) {
+        if ($child.PSIsContainer) {
+            Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden subfolder in .agents/ (Build Package 06 disallows nested folders): .agents/$($child.Name)/"
+            continue
+        }
+        if ($child.Name -eq 'README.md') { continue }
+        if (-not ($approvedAdapters -contains $child.Name)) {
+            Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden file in .agents/ (only README.md and the 7 approved aisraf-*.agent.md adapters are allowed): .agents/$($child.Name)"
+        }
+    }
+}
+$adapterFails = @($results | Where-Object { $_.Check -eq '07-package-06-adapters' -and $_.Status -eq 'FAIL' }).Count
+if ($adapterFails -eq 0) {
+    Add-Result -Status PASS -Check '07-package-06-adapters' -Detail ".agents/ contains exactly the 7 approved Build Package 06 adapters plus README.md."
 }
 
 # 8. Folder content limits — only README.md allowed before owning Build Package
 # prompts/ is owned by Build Package 04 (active); see Check 08b for the prompts/ allowed surface.
 # skills/ is owned by Build Package 05 (active); see Check 08c for the skills/ allowed surface.
+# prototype-agents/ is owned by Build Package 06 (active); see Check 08d for the prototype-agents/ allowed surface.
+# .agents/ is owned by Build Package 06 (active); see Check 07 for the adapter surface.
 $readmeOnlyFolders = @{
-    'prototype-agents' = 'Build Package 06'
-    '.agents'          = 'Build Package 06'
     'catalogs'         = 'Build Package 07'
     'blueprints'       = 'Build Package 08'
     'templates'        = 'Build Package 09'
@@ -299,6 +344,61 @@ else {
     Add-Result -Status FAIL -Check '08c-skills-content-limits' -Detail "skills/ folder is missing."
 }
 
+# 8d. Build Package 06 prototype-agents content limits.
+# Allowed under prototype-agents/: README.md, prototype-agent-registry.yaml,
+# prototype-agent-template.md, and exactly 8 PRA-0[1-8]-*.md files matching
+# ^PRA-0[1-8]-[A-Z0-9-]+\.md$.
+# FAIL: unexpected subfolders, unexpected file extensions, missing required PRAs,
+# extra PRA files outside the 8 approved IDs.
+$praAbs = Resolve-PackagePath 'prototype-agents'
+$praTopAllowedFiles = @('README.md', 'prototype-agent-registry.yaml', 'prototype-agent-template.md')
+$approvedPraFiles = @(
+    'PRA-01-SAS-REVIEW-ORCHESTRATOR.md',
+    'PRA-02-INPUT-READER.md',
+    'PRA-03-DFD-EXTRACTOR.md',
+    'PRA-04-LEGEND-NORMALIZER.md',
+    'PRA-05-REVIEW-TABLE-BUILDER.md',
+    'PRA-06-BLUEPRINT-QUESTIONER.md',
+    'PRA-07-FINDING-RECOMMENDER.md',
+    'PRA-08-HANDOFF-QA-SCORER.md'
+)
+$praPattern = '^PRA-0[1-8]-[A-Z0-9-]+\.md$'
+if (Test-Path -LiteralPath $praAbs -PathType Container) {
+    foreach ($entry in @(Get-ChildItem -LiteralPath $praAbs -Force)) {
+        if ($entry.PSIsContainer) {
+            Add-Result -Status FAIL -Check '08d-prototype-agents-content-limits' -Detail "Forbidden subfolder in prototype-agents/ (Build Package 06 disallows nested folders): prototype-agents/$($entry.Name)/"
+            continue
+        }
+        if ($praTopAllowedFiles -contains $entry.Name) { continue }
+        if ($entry.Name -notmatch $praPattern) {
+            Add-Result -Status FAIL -Check '08d-prototype-agents-content-limits' -Detail "Forbidden file in prototype-agents/ (only README.md, prototype-agent-registry.yaml, prototype-agent-template.md, and PRA-0[1-8]-*.md files allowed): prototype-agents/$($entry.Name)"
+            continue
+        }
+        if (-not ($approvedPraFiles -contains $entry.Name)) {
+            Add-Result -Status FAIL -Check '08d-prototype-agents-content-limits' -Detail "Forbidden PRA file in prototype-agents/ (Build Package 06 fixes the PRA inventory at 8 named files): prototype-agents/$($entry.Name)"
+        }
+    }
+    foreach ($name in $approvedPraFiles) {
+        $expected = Join-Path $praAbs $name
+        if (-not (Test-Path -LiteralPath $expected -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '08d-prototype-agents-content-limits' -Detail "Required Build Package 06 PRA spec missing: prototype-agents/$name"
+        }
+    }
+    foreach ($name in $praTopAllowedFiles) {
+        $expected = Join-Path $praAbs $name
+        if (-not (Test-Path -LiteralPath $expected -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '08d-prototype-agents-content-limits' -Detail "Required Build Package 06 file missing: prototype-agents/$name"
+        }
+    }
+    $praFails = @($results | Where-Object { $_.Check -eq '08d-prototype-agents-content-limits' -and $_.Status -eq 'FAIL' }).Count
+    if ($praFails -eq 0) {
+        Add-Result -Status PASS -Check '08d-prototype-agents-content-limits' -Detail "prototype-agents/ surface matches Build Package 06 contract (README.md, prototype-agent-registry.yaml, prototype-agent-template.md, and 8 PRA-0[1-8]-*.md files)."
+    }
+}
+else {
+    Add-Result -Status FAIL -Check '08d-prototype-agents-content-limits' -Detail "prototype-agents/ folder is missing."
+}
+
 # 9. samples/ — only README.md at top, no sample-* subfolders before Build Package 10
 $samplesAbs = Resolve-PackagePath 'samples'
 $samplesFails = @()
@@ -336,7 +436,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -349,7 +449,7 @@ if ($validationFails.Count -gt 0) {
     foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 03: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-05 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-06 documents."
 }
 
 # 12. tools/ — Build Package 03 expected file set

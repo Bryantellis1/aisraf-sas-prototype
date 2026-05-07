@@ -12,15 +12,16 @@ The package is designed to test prompts, skills, adapters, DFD extraction, struc
 
 ## Current State
 
-Build Packages 01–05 are committed (Build Package 05 is active and pending human review before commit):
+Build Packages 01–06 are committed (Build Package 06 is active and pending human review before commit):
 
 - **Build Package 01** — Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent instruction standard.
 - **Build Package 02** — Config and run-profile variable model (`config/`).
 - **Build Package 03** — Tools and setup/test/export scripts (`tools/`).
 - **Build Package 04** — Prompts and prompt registry (`prompts/`): 23 canonical prompt cards (14 RS, 9 DFD) plus [prompts/prompt-registry.yaml](prompts/prompt-registry.yaml).
 - **Build Package 05** — Skills and skill registry (`skills/`): 26 canonical skill contracts (17 RS, 9 DFD) plus [skills/skill-registry.yaml](skills/skill-registry.yaml). Each skill contract wraps one Build Package 04 prompt card with a 14-section reusable work contract.
+- **Build Package 06** — Prototype agents, PRA specs, and `.agent.md` adapter model (`prototype-agents/`, `.agents/`): 8 canonical Prototype Review Agent specs (PRA-01..PRA-08) plus [prototype-agents/prototype-agent-registry.yaml](prototype-agents/prototype-agent-registry.yaml), and 7 thin local `.agent.md` adapter wrappers under [.agents/](.agents/) (orchestrator, input-reader, dfd-extractor, review-table-builder, blueprint-questioner, finding-recommender, handoff-qa-scorer). PRA-04-LEGEND-NORMALIZER has no dedicated adapter; it is wrapped jointly with PRA-03 by [.agents/aisraf-dfd-extractor.agent.md](.agents/aisraf-dfd-extractor.agent.md). PRAs and adapters are specifications/wrappers, not deployed runtime agents.
 
-These five packages do not create PRA specifications, `.agent.md` adapters, catalogs, blueprints, templates beyond authoring-agent templates, samples, run outputs, diagrams, docs/runbooks, DOCX/PDF/PPTX/ZIP artifacts, runtime code, schemas outside `config/`, cloud resources, MCP proof, or ADK proof.
+These six packages do not create catalogs, blueprints, templates beyond authoring-agent templates, samples, run outputs, diagrams, docs/runbooks, DOCX/PDF/PPTX/ZIP artifacts, runtime code, schemas outside `config/`, cloud resources, MCP proof, or ADK proof.
 
 Build Package numbers define the implementation sequence. Root Area numbers define visible package-tree rows and folder ownership. Root Area 01 is Root & Top-Level Files, followed by the 17 actual root folders.
 
@@ -37,7 +38,7 @@ The old package at `D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01` is r
 
 ## Build Order
 
-The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md). The next allowed Build Package after Build Package 05 is **Build Package 06 — Prototype agents, PRA specs, and `.agent.md` adapter model**.
+The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md). The next allowed Build Package after Build Package 06 is **Build Package 07 — Catalogs**.
 
 ## Not Yet Created
 

@@ -1,0 +1,590 @@
+schema_version: aisraf_prototype_agent_registry.v0_1_2
+registry_id: prototype-agent-registry
+title: AISRAF SAS Prototype Agent Registry
+package_version: v0.1.2
+owning_build_package: "06"
+status: active
+pra_count: 8
+adapter_count: 7
+prompt_count_mapped: 23
+skill_count_mapped: 26
+
+purpose: >
+  Index the 8 canonical Prototype Review Agent (PRA) specifications and the 7
+  local VS Code/GitHub Copilot adapter wrappers for AISRAF SAS Prototype
+  v0.1.2. Each PRA spec groups Build Package 04 prompts and Build Package 05
+  skills into a role-oriented review responsibility. Each adapter is a thin
+  wrapper that points to one or more PRA specs and to the canonical prompt and
+  skill artefacts they own. PRAs are specifications, not deployed runtime
+  agents. Adapters are local Copilot dropdown entries, not deployed runtime
+  agents. The registry resolves the future_pra_owner placeholder strings used
+  by the Build Package 04 prompt registry and the Build Package 05 skill
+  registry without editing those frozen registries.
+
+scope:
+  canonical_pra_root: prototype-agents
+  canonical_adapter_root: .agents
+  pra_specs_are_runtime_agents: false
+  adapters_are_runtime_agents: false
+  adapters_duplicate_full_prompt_or_skill_bodies: false
+  adapters_claim_external_postback: false
+  adapters_claim_runtime_or_cloud_execution: false
+  adapters_claim_release_or_diagram_export: false
+
+parameter_contract:
+  run_profile_source: runs/{{run_id}}/run-profile.yaml
+  required_run_profile_fields:
+    - "{{run_id}}"
+    - "{{input_root}}"
+    - "{{expected_root}}"
+    - "{{output_root}}"
+    - "{{mode}}"
+    - "{{postback_execution_status}}"
+    - "{{output_destination_mode}}"
+  rejected_non_schema_variables:
+    - "{{catalog_root}}"
+    - "{{prompt_root}}"
+    - "{{skill_root}}"
+    - "{{template_root}}"
+    - "{{diagram_root}}"
+    - "{{validation_root}}"
+  output_root_rule: every_pra_and_adapter_write_path_must_resolve_under_output_root
+  schema_authority: config/run-profile.schema.yaml
+  field_catalog: config/run-profile.field-catalog.md
+  validation_rules: config/run-profile.validation-rules.md
+  path_resolution_rules: config/path-resolution-rules.md
+  sensitive_data_rules: config/sensitive-data-rules.md
+  canonical_artefact_paths_are_literal: true
+  canonical_artefact_path_examples:
+    - prompts/rs/01-input-package-read.prompt.md
+    - skills/rs/SK-INPUT-PACKAGE-READ.md
+    - prototype-agents/PRA-02-INPUT-READER.md
+
+required_pra_sections:
+  - "1. Identity"
+  - "2. Purpose"
+  - "3. Owned Prompts"
+  - "4. Owned Skills"
+  - "5. Inputs"
+  - "6. Outputs"
+  - "7. Procedure"
+  - "8. Human Gates"
+  - "9. Stop Conditions"
+  - "10. Unknown Handling"
+  - "11. Evidence and Run-Log Guidance"
+  - "12. Direct Adapter Test"
+  - "13. Not in Scope"
+
+required_adapter_sections:
+  - "1. Adapter Identity"
+  - "2. Display Name"
+  - "3. Purpose"
+  - "4. Canonical PRA Reference"
+  - "5. Prompt References"
+  - "6. Skill References"
+  - "7. Run-Profile Variables Required"
+  - "8. Allowed Writes"
+  - "9. Prohibited Writes"
+  - "10. Operator Test Prompt"
+  - "11. Stop Conditions"
+  - "12. Not in Scope"
+
+forbidden_claims:
+  - runtime_or_cloud_execution
+  - google_adk_execution
+  - vertex_or_gcp_execution
+  - mcp_execution
+  - jira_postback_execution
+  - confluence_publication_execution
+  - rovo_execution
+  - database_execution
+  - terraform_or_iac_execution
+  - release_or_zip_export
+  - diagram_generation_from_a_pra_or_adapter
+  - scoring_proof_outside_sk_accuracy_score
+  - hardcoded_run_id_paths_or_urls
+  - prompt_card_modification
+  - skill_contract_modification
+  - prompt_or_skill_registry_modification
+  - baseline_modification_under_expected_root
+  - duplication_of_full_prompt_or_skill_body_inside_an_adapter
+
+placeholder_resolution_notes:
+  notes: >
+    The Build Package 04 prompt registry and the Build Package 05 skill
+    registry both record future_pra_owner strings such as "PRA-INTAKE", "PRA-
+    DFD-READER", "PRA-DESIGN-FACT-EXTRACTOR", "PRA-REVIEW-TABLE-BUILDER",
+    "PRA-MISSING-FACT-INTERVIEWER", "PRA-AI-CLASSIFIER", "PRA-BLUEPRINT-
+    MATCHER", "PRA-RISK-WRITER", "PRA-HANDOFF-BUILDER", "PRA-VALIDATION-NOTE-
+    WRITER", "PRA-VALIDATION-SCORER", "PRA-DFD-EXTRACTOR", and "PRA-RS-
+    REVIEW", each suffixed "(planned; defined in Build Package 06)". Build
+    Package 06 does not edit those registries (founder decision Q2). The
+    concrete PRA mapping below is authoritative.
+  placeholder_to_pra_map:
+    PRA-RS-REVIEW: PRA-01-SAS-REVIEW-ORCHESTRATOR
+    PRA-INTAKE: PRA-02-INPUT-READER
+    PRA-DFD-READER: PRA-03-DFD-EXTRACTOR + PRA-04-LEGEND-NORMALIZER
+    PRA-DESIGN-FACT-EXTRACTOR_components_and_flows: PRA-03-DFD-EXTRACTOR
+    PRA-DESIGN-FACT-EXTRACTOR_boundary_and_stack: PRA-05-REVIEW-TABLE-BUILDER
+    PRA-REVIEW-TABLE-BUILDER: PRA-05-REVIEW-TABLE-BUILDER
+    PRA-MISSING-FACT-INTERVIEWER: PRA-06-BLUEPRINT-QUESTIONER
+    PRA-AI-CLASSIFIER: PRA-06-BLUEPRINT-QUESTIONER
+    PRA-BLUEPRINT-MATCHER: PRA-06-BLUEPRINT-QUESTIONER
+    PRA-RISK-WRITER: PRA-07-FINDING-RECOMMENDER
+    PRA-HANDOFF-BUILDER: PRA-08-HANDOFF-QA-SCORER
+    PRA-VALIDATION-NOTE-WRITER: PRA-08-HANDOFF-QA-SCORER
+    PRA-VALIDATION-SCORER: PRA-08-HANDOFF-QA-SCORER
+    PRA-DFD-EXTRACTOR: PRA-03-DFD-EXTRACTOR
+
+prototype_agents:
+
+  - pra_id: PRA-01-SAS-REVIEW-ORCHESTRATOR
+    pra_name: SAS Review Orchestrator
+    pra_file: prototype-agents/PRA-01-SAS-REVIEW-ORCHESTRATOR.md
+    status: active
+    owned_prompts:
+      - prompts/rs/00-run-full-chain.prompt.md
+    owned_skills: []
+    coordinated_prompts:
+      - prompts/rs/01-input-package-read.prompt.md
+      - prompts/rs/02-dfd-visual-read.prompt.md
+      - prompts/rs/03-legend-normalization.prompt.md
+      - prompts/rs/04-design-fact-extract.prompt.md
+      - prompts/rs/05-boundary-stack-detect.prompt.md
+      - prompts/rs/06-review-table-build.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+      - prompts/rs/11-handoff-pack-build.prompt.md
+      - prompts/rs/12-validation-note-write.prompt.md
+      - prompts/rs/13-accuracy-score.prompt.md
+      - prompts/dfd/02-dfd-intake-quality-check.prompt.md
+      - prompts/dfd/03-boundary-extract.prompt.md
+      - prompts/dfd/04-component-extract.prompt.md
+      - prompts/dfd/05-flow-extract.prompt.md
+      - prompts/dfd/06-annotation-resolve.prompt.md
+      - prompts/dfd/07-boundary-crossing-detect.prompt.md
+      - prompts/dfd/08-control-signal-detect.prompt.md
+      - prompts/dfd/09-confidence-score.prompt.md
+      - prompts/dfd/10-dfd-extraction-summarize.prompt.md
+    output_artifacts:
+      - "{{output_root}}/00-run-log.md"
+    mapped_adapter: .agents/aisraf-orchestrator.agent.md
+    drift_risk: medium
+    notes: >
+      Coordinates the chain. Writes only the run log and orchestration status
+      entries. Does not perform extraction. PRA-01 owns no skill; the 26
+      skills are owned by PRA-02 through PRA-08.
+
+  - pra_id: PRA-02-INPUT-READER
+    pra_name: Input Reader
+    pra_file: prototype-agents/PRA-02-INPUT-READER.md
+    status: active
+    owned_prompts:
+      - prompts/rs/01-input-package-read.prompt.md
+    owned_skills:
+      - skills/rs/SK-INPUT-PACKAGE-READ.md
+    output_artifacts:
+      - "{{output_root}}/01-input-inventory.md"
+    mapped_adapter: .agents/aisraf-input-reader.agent.md
+    drift_risk: low
+
+  - pra_id: PRA-03-DFD-EXTRACTOR
+    pra_name: DFD Extractor
+    pra_file: prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    status: active
+    owned_prompts:
+      - prompts/rs/02-dfd-visual-read.prompt.md
+      - prompts/rs/04-design-fact-extract.prompt.md
+      - prompts/dfd/02-dfd-intake-quality-check.prompt.md
+      - prompts/dfd/03-boundary-extract.prompt.md
+      - prompts/dfd/04-component-extract.prompt.md
+      - prompts/dfd/05-flow-extract.prompt.md
+      - prompts/dfd/06-annotation-resolve.prompt.md
+      - prompts/dfd/07-boundary-crossing-detect.prompt.md
+      - prompts/dfd/08-control-signal-detect.prompt.md
+      - prompts/dfd/09-confidence-score.prompt.md
+      - prompts/dfd/10-dfd-extraction-summarize.prompt.md
+    owned_skills:
+      - skills/rs/SK-DFD-VISUAL-READ.md
+      - skills/rs/SK-COMPONENT-EXTRACT.md
+      - skills/rs/SK-FLOW-EXTRACT.md
+      - skills/dfd/SK-DFD-01-INTAKE-QUALITY-CHECK.md
+      - skills/dfd/SK-DFD-02-BOUNDARY-EXTRACT.md
+      - skills/dfd/SK-DFD-03-COMPONENT-EXTRACT.md
+      - skills/dfd/SK-DFD-04-FLOW-EXTRACT.md
+      - skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md
+      - skills/dfd/SK-DFD-06-BOUNDARY-CROSSING-DETECT.md
+      - skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+      - skills/dfd/SK-DFD-08-CONFIDENCE-SCORE.md
+      - skills/dfd/SK-DFD-09-EXTRACTION-SUMMARIZE.md
+    output_artifacts:
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+      - "{{output_root}}/dfd/07-control-signals.md"
+      - "{{output_root}}/dfd/08-confidence-score.md"
+      - "{{output_root}}/dfd/09-extraction-summary.md"
+    mapped_adapter: .agents/aisraf-dfd-extractor.agent.md
+    drift_risk: high
+
+  - pra_id: PRA-04-LEGEND-NORMALIZER
+    pra_name: Legend Normalizer
+    pra_file: prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+    status: active
+    owned_prompts:
+      - prompts/rs/03-legend-normalization.prompt.md
+    owned_skills:
+      - skills/rs/SK-LEGEND-NORMALIZE.md
+    output_artifacts:
+      - "{{output_root}}/03-legend-normalization.md"
+    mapped_adapter: .agents/aisraf-dfd-extractor.agent.md
+    has_dedicated_adapter: false
+    adapter_consolidation_note: >
+      Founder decision Q1: PRA-04 retains its own canonical specification but
+      no dedicated .agent.md adapter. Operators test legend normalization
+      through the AISRAF DFD Extractor adapter, which jointly wraps PRA-03
+      and PRA-04 in one local Copilot session.
+    drift_risk: high
+
+  - pra_id: PRA-05-REVIEW-TABLE-BUILDER
+    pra_name: Review Table Builder
+    pra_file: prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    status: active
+    owned_prompts:
+      - prompts/rs/05-boundary-stack-detect.prompt.md
+      - prompts/rs/06-review-table-build.prompt.md
+    owned_skills:
+      - skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+      - skills/rs/SK-SECURITY-STACK-ASSESS.md
+      - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    output_artifacts:
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+    mapped_adapter: .agents/aisraf-review-table-builder.agent.md
+    drift_risk: high
+
+  - pra_id: PRA-06-BLUEPRINT-QUESTIONER
+    pra_name: Blueprint Questioner
+    pra_file: prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+    status: active
+    owned_prompts:
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/09-blueprint-match.prompt.md
+    owned_skills:
+      - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+      - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+    output_artifacts:
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+    mapped_adapter: .agents/aisraf-blueprint-questioner.agent.md
+    drift_risk: high
+
+  - pra_id: PRA-07-FINDING-RECOMMENDER
+    pra_name: Finding Recommender
+    pra_file: prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+    status: active
+    owned_prompts:
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+    owned_skills:
+      - skills/rs/SK-FINDING-CLASSIFY.md
+      - skills/rs/SK-RECOMMENDATION-WRITE.md
+    output_artifacts:
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+    mapped_adapter: .agents/aisraf-finding-recommender.agent.md
+    drift_risk: high
+
+  - pra_id: PRA-08-HANDOFF-QA-SCORER
+    pra_name: Handoff QA Scorer
+    pra_file: prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+    status: active
+    owned_prompts:
+      - prompts/rs/11-handoff-pack-build.prompt.md
+      - prompts/rs/12-validation-note-write.prompt.md
+      - prompts/rs/13-accuracy-score.prompt.md
+    owned_skills:
+      - skills/rs/SK-HANDOFF-PACK-BUILD.md
+      - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+      - skills/rs/SK-ACCURACY-SCORE.md
+    output_artifacts:
+      - "{{output_root}}/15-handoff-pack.md"
+      - "{{output_root}}/16-validation-notes.md"
+      - "{{output_root}}/17-accuracy-score.md"
+    mapped_adapter: .agents/aisraf-handoff-qa-scorer.agent.md
+    drift_risk: high
+
+adapters:
+
+  - adapter_id: aisraf-orchestrator
+    display_name: AISRAF Orchestrator
+    adapter_file: .agents/aisraf-orchestrator.agent.md
+    wraps_pras:
+      - PRA-01-SAS-REVIEW-ORCHESTRATOR
+    user_invocable: true
+    tools_allowed: [read, search, edit]
+    handoffs:
+      - AISRAF Input Reader
+      - AISRAF Handoff QA Scorer
+    notes: >
+      Single orchestrator adapter. Replaces the old v0.01 split between
+      aisraf-orchestrator and aisraf-review-orchestrator.
+
+  - adapter_id: aisraf-input-reader
+    display_name: AISRAF Input Reader
+    adapter_file: .agents/aisraf-input-reader.agent.md
+    wraps_pras:
+      - PRA-02-INPUT-READER
+    user_invocable: true
+    tools_allowed: [read, search, edit]
+    handoffs:
+      - AISRAF DFD Extractor
+
+  - adapter_id: aisraf-dfd-extractor
+    display_name: AISRAF DFD Extractor
+    adapter_file: .agents/aisraf-dfd-extractor.agent.md
+    wraps_pras:
+      - PRA-03-DFD-EXTRACTOR
+      - PRA-04-LEGEND-NORMALIZER
+    user_invocable: true
+    tools_allowed: [read, search, edit]
+    handoffs:
+      - AISRAF Review Table Builder
+    notes: >
+      Founder decision Q1: this adapter jointly wraps PRA-03 and PRA-04. There
+      is no separate aisraf-legend-normalizer adapter in v0.1.2.
+
+  - adapter_id: aisraf-review-table-builder
+    display_name: AISRAF Review Table Builder
+    adapter_file: .agents/aisraf-review-table-builder.agent.md
+    wraps_pras:
+      - PRA-05-REVIEW-TABLE-BUILDER
+    user_invocable: true
+    tools_allowed: [read, search, edit]
+    handoffs:
+      - AISRAF Blueprint Questioner
+    notes: >
+      Replaces the old v0.01 split between aisraf-boundary-stack-reviewer and
+      aisraf-review-table-builder. PRA-05 owns boundary, stack, and table
+      outputs together.
+
+  - adapter_id: aisraf-blueprint-questioner
+    display_name: AISRAF Blueprint Questioner
+    adapter_file: .agents/aisraf-blueprint-questioner.agent.md
+    wraps_pras:
+      - PRA-06-BLUEPRINT-QUESTIONER
+    user_invocable: true
+    tools_allowed: [read, search, edit]
+    handoffs:
+      - AISRAF Finding Recommender
+
+  - adapter_id: aisraf-finding-recommender
+    display_name: AISRAF Finding Recommender
+    adapter_file: .agents/aisraf-finding-recommender.agent.md
+    wraps_pras:
+      - PRA-07-FINDING-RECOMMENDER
+    user_invocable: true
+    tools_allowed: [read, search, edit]
+    handoffs:
+      - AISRAF Handoff QA Scorer
+
+  - adapter_id: aisraf-handoff-qa-scorer
+    display_name: AISRAF Handoff QA Scorer
+    adapter_file: .agents/aisraf-handoff-qa-scorer.agent.md
+    wraps_pras:
+      - PRA-08-HANDOFF-QA-SCORER
+    user_invocable: true
+    tools_allowed: [read, search, edit]
+    handoffs:
+      - AISRAF Orchestrator
+
+prompt_skill_agent_crosswalk:
+
+  rs_family:
+    - prompt_id: PR-RS-00
+      prompt_file: prompts/rs/00-run-full-chain.prompt.md
+      skills: []
+      pra: PRA-01-SAS-REVIEW-ORCHESTRATOR
+      adapter: .agents/aisraf-orchestrator.agent.md
+      notes: >
+        Wrapper prompt; owns no skill. Counted as 1 of the 23 mapped prompts.
+        Skill count contribution = 0 (consistent with planned_future_skills
+        SK-CHAIN-WRAPPER deferral in skills/skill-registry.yaml).
+    - prompt_id: PR-RS-01
+      prompt_file: prompts/rs/01-input-package-read.prompt.md
+      skills:
+        - skills/rs/SK-INPUT-PACKAGE-READ.md
+      pra: PRA-02-INPUT-READER
+      adapter: .agents/aisraf-input-reader.agent.md
+    - prompt_id: PR-RS-02
+      prompt_file: prompts/rs/02-dfd-visual-read.prompt.md
+      skills:
+        - skills/rs/SK-DFD-VISUAL-READ.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-RS-03
+      prompt_file: prompts/rs/03-legend-normalization.prompt.md
+      skills:
+        - skills/rs/SK-LEGEND-NORMALIZE.md
+      pra: PRA-04-LEGEND-NORMALIZER
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+      notes: >
+        PRA-04 has no dedicated adapter; legend normalization is exercised
+        through the AISRAF DFD Extractor adapter (founder decision Q1).
+    - prompt_id: PR-RS-04
+      prompt_file: prompts/rs/04-design-fact-extract.prompt.md
+      skills:
+        - skills/rs/SK-COMPONENT-EXTRACT.md
+        - skills/rs/SK-FLOW-EXTRACT.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-RS-05
+      prompt_file: prompts/rs/05-boundary-stack-detect.prompt.md
+      skills:
+        - skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+        - skills/rs/SK-SECURITY-STACK-ASSESS.md
+      pra: PRA-05-REVIEW-TABLE-BUILDER
+      adapter: .agents/aisraf-review-table-builder.agent.md
+    - prompt_id: PR-RS-06
+      prompt_file: prompts/rs/06-review-table-build.prompt.md
+      skills:
+        - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+      pra: PRA-05-REVIEW-TABLE-BUILDER
+      adapter: .agents/aisraf-review-table-builder.agent.md
+    - prompt_id: PR-RS-07
+      prompt_file: prompts/rs/07-missing-fact-question-generate.prompt.md
+      skills:
+        - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+        - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+      pra: PRA-06-BLUEPRINT-QUESTIONER
+      adapter: .agents/aisraf-blueprint-questioner.agent.md
+    - prompt_id: PR-RS-08
+      prompt_file: prompts/rs/08-ai-action-level-classify.prompt.md
+      skills:
+        - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+      pra: PRA-06-BLUEPRINT-QUESTIONER
+      adapter: .agents/aisraf-blueprint-questioner.agent.md
+    - prompt_id: PR-RS-09
+      prompt_file: prompts/rs/09-blueprint-match.prompt.md
+      skills:
+        - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+      pra: PRA-06-BLUEPRINT-QUESTIONER
+      adapter: .agents/aisraf-blueprint-questioner.agent.md
+    - prompt_id: PR-RS-10
+      prompt_file: prompts/rs/10-finding-recommendation-write.prompt.md
+      skills:
+        - skills/rs/SK-FINDING-CLASSIFY.md
+        - skills/rs/SK-RECOMMENDATION-WRITE.md
+      pra: PRA-07-FINDING-RECOMMENDER
+      adapter: .agents/aisraf-finding-recommender.agent.md
+    - prompt_id: PR-RS-11
+      prompt_file: prompts/rs/11-handoff-pack-build.prompt.md
+      skills:
+        - skills/rs/SK-HANDOFF-PACK-BUILD.md
+      pra: PRA-08-HANDOFF-QA-SCORER
+      adapter: .agents/aisraf-handoff-qa-scorer.agent.md
+    - prompt_id: PR-RS-12
+      prompt_file: prompts/rs/12-validation-note-write.prompt.md
+      skills:
+        - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+      pra: PRA-08-HANDOFF-QA-SCORER
+      adapter: .agents/aisraf-handoff-qa-scorer.agent.md
+    - prompt_id: PR-RS-13
+      prompt_file: prompts/rs/13-accuracy-score.prompt.md
+      skills:
+        - skills/rs/SK-ACCURACY-SCORE.md
+      pra: PRA-08-HANDOFF-QA-SCORER
+      adapter: .agents/aisraf-handoff-qa-scorer.agent.md
+
+  dfd_family:
+    - prompt_id: PR-DFD-02
+      prompt_file: prompts/dfd/02-dfd-intake-quality-check.prompt.md
+      skills:
+        - skills/dfd/SK-DFD-01-INTAKE-QUALITY-CHECK.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-DFD-03
+      prompt_file: prompts/dfd/03-boundary-extract.prompt.md
+      skills:
+        - skills/dfd/SK-DFD-02-BOUNDARY-EXTRACT.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-DFD-04
+      prompt_file: prompts/dfd/04-component-extract.prompt.md
+      skills:
+        - skills/dfd/SK-DFD-03-COMPONENT-EXTRACT.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-DFD-05
+      prompt_file: prompts/dfd/05-flow-extract.prompt.md
+      skills:
+        - skills/dfd/SK-DFD-04-FLOW-EXTRACT.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-DFD-06
+      prompt_file: prompts/dfd/06-annotation-resolve.prompt.md
+      skills:
+        - skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-DFD-07
+      prompt_file: prompts/dfd/07-boundary-crossing-detect.prompt.md
+      skills:
+        - skills/dfd/SK-DFD-06-BOUNDARY-CROSSING-DETECT.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-DFD-08
+      prompt_file: prompts/dfd/08-control-signal-detect.prompt.md
+      skills:
+        - skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-DFD-09
+      prompt_file: prompts/dfd/09-confidence-score.prompt.md
+      skills:
+        - skills/dfd/SK-DFD-08-CONFIDENCE-SCORE.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+    - prompt_id: PR-DFD-10
+      prompt_file: prompts/dfd/10-dfd-extraction-summarize.prompt.md
+      skills:
+        - skills/dfd/SK-DFD-09-EXTRACTION-SUMMARIZE.md
+      pra: PRA-03-DFD-EXTRACTOR
+      adapter: .agents/aisraf-dfd-extractor.agent.md
+
+planned_future_adk_alignment:
+  status: future_only
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false
+  notes: >
+    Records the intended future alignment of each PRA with a Google ADK or
+    similar runtime layer. Build Package 06 makes no runtime, ADK, cloud,
+    database, MCP, Jira, or Confluence claim. Future packages will decide
+    whether and how PRAs are promoted into deployable agents; that decision
+    is out of scope for v0.1.2.
+  pra_intent:
+    PRA-01-SAS-REVIEW-ORCHESTRATOR: future orchestrator agent (deferred)
+    PRA-02-INPUT-READER: future intake agent (deferred)
+    PRA-03-DFD-EXTRACTOR: future DFD extraction agent (deferred)
+    PRA-04-LEGEND-NORMALIZER: future legend normalization agent (deferred)
+    PRA-05-REVIEW-TABLE-BUILDER: future review-table agent (deferred)
+    PRA-06-BLUEPRINT-QUESTIONER: future questioner/classifier agent (deferred)
+    PRA-07-FINDING-RECOMMENDER: future risk-writer agent (deferred)
+    PRA-08-HANDOFF-QA-SCORER: future handoff/QA agent (deferred)

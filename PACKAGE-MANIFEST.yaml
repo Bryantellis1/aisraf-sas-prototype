@@ -1,6 +1,6 @@
 package_name: AISRAF SAS Prototype
 package_version: v0.1.2
-package_state: skills_active
+package_state: agents_active
 active_workspace: D:/E-Way 2/AISRAF- SAS Prototype v0.1.2
 reference_workspace: D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01
 old_workspace_policy:
@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "05"
-  build_package_name: Skills and skill registry
-  build_package_status: active
-next_build_package:
   build_package_number: "06"
   build_package_name: Prototype agents, PRA specs, and .agent.md adapter model
+  build_package_status: active
+next_build_package:
+  build_package_number: "07"
+  build_package_name: Catalogs
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -382,6 +382,76 @@ build_package_05_allowed_writes:
     - .github/prompts/ wrappers
     - tools/Export-AisrafRelease.ps1 or any new release-export tool
     - runtime services, cloud assets, MCP/Jira/Confluence/Rovo execution proof, release binaries
+build_package_06_allowed_writes:
+  prototype_agent_files:
+    - prototype-agents/prototype-agent-registry.yaml
+    - prototype-agents/prototype-agent-template.md
+    - prototype-agents/PRA-01-SAS-REVIEW-ORCHESTRATOR.md
+    - prototype-agents/PRA-02-INPUT-READER.md
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+    - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  adapter_files:
+    - .agents/aisraf-orchestrator.agent.md
+    - .agents/aisraf-input-reader.agent.md
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-blueprint-questioner.agent.md
+    - .agents/aisraf-finding-recommender.agent.md
+    - .agents/aisraf-handoff-qa-scorer.agent.md
+  validation_files:
+    - validation/package-06-agents-checklist.md
+    - validation/agent-registry-checklist.md
+    - validation/prompt-skill-agent-mapping-checklist.md
+  governance_updates:
+    - prototype-agents/README.md
+    - .agents/README.md
+    - PACKAGE-MANIFEST.yaml
+    - FOLDER-CONTRACTS.md
+    - README.md
+    - START-HERE.md
+    - .github/copilot-instructions.md
+    - validation/no-drift-rules.md
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1
+  pra_count: 8
+  adapter_count: 7
+  prompt_count_mapped: 23
+  skill_count_mapped: 26
+  founder_decisions:
+    q1_pra_04_legend_normalizer_adapter: consolidated_into_aisraf_dfd_extractor_adapter_no_dedicated_legend_adapter
+    q2_prompt_skill_registry_placeholder_reconciliation: conservative_no_edits_resolved_in_package_06_registry_and_validation_checklist
+    q3_old_docs_mappings_files: collapsed_into_package_06_registry_and_validation_checklist_no_docs_files_created
+    q4_test_aisraf_package_patch: surgical_six_change_patch_approved
+    q5_adapter_yaml_frontmatter: name_description_tools_read_search_edit_user_invocable_handoffs_no_model_pin
+    q6_run_profile_variable_set: seven_authoritative_variables_only_repo_relative_literals_for_artefact_paths
+    q7_planned_future_adk_alignment: future_only_block_with_six_false_flags_no_runtime_or_external_claim
+    q8_registry_schema_version: aisraf_prototype_agent_registry_v0_1_2
+  prohibited:
+    - prompts/* prompt cards or registry edits
+    - skills/* skill contracts or registry edits
+    - skills/skill-registry.yaml
+    - prompts/prompt-registry.yaml
+    - catalogs/* catalog content
+    - blueprints/* blueprint content
+    - templates/* template content beyond authoring-agent templates
+    - samples/* sample inputs or expected baselines
+    - runs/* committed run outputs
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides (including docs/mappings/* — collapsed into Package 06 registry/validation checklist per founder decision Q3)
+    - release/* release artifacts
+    - schemas outside config/
+    - .github/prompts/ wrappers
+    - tools/Export-AisrafRelease.ps1 or any new release-export tool
+    - any new tool beyond the surgical Test-AisrafPackage.ps1 patch
+    - any 8th .agent.md adapter (adapter count is fixed at 7)
+    - aisraf-legend-normalizer.agent.md (founder decision Q1)
+    - duplication of full prompt or skill body inside an adapter
+    - introduction of {{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, or {{validation_root}} variables anywhere in PRA specs or adapters
+    - runtime services, cloud assets, ADK/Vertex/GCP, MCP/Jira/Confluence/Rovo execution proof, database jobs, Terraform, release binaries
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
@@ -393,8 +463,8 @@ validation_status: build_package_01_self_check_required
 folder_first_model_status: reserved_not_implemented
 prompt_status: active
 skill_status: active
-pra_status: deferred_to_build_package_06
-agent_adapter_status: deferred_to_build_package_06
+pra_status: active
+agent_adapter_status: active
 catalog_status: deferred_to_build_package_07
 blueprint_status: deferred_to_build_package_08
 template_status: deferred_to_build_package_09_except_authoring_agent_templates

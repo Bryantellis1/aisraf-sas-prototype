@@ -61,19 +61,19 @@ Path: `.agents/`
 
 Owning Build Package: Build Package 06.
 
-Purpose: reserved local adapter surface for future VS Code/GitHub Copilot agent wrappers.
+Purpose: local VS Code/GitHub Copilot adapter surface. Each `.agent.md` file is a thin wrapper that points to canonical PRA, prompt, and skill artefacts and appears in the local Copilot Chat agent dropdown when this workspace is open.
 
-Who uses it: future PRA/adapter authors and local operators.
+Who uses it: PRA/adapter authors and local operators.
 
-Allowed file types: Markdown README in Build Package 01; future `.agent.md` files only if Build Package 06 authorizes them.
+Allowed file types: Markdown README and Markdown `.agent.md` adapter files only. Layout: `.agents/README.md` plus exactly seven `.agents/aisraf-*.agent.md` files (orchestrator, input-reader, dfd-extractor, review-table-builder, blueprint-questioner, finding-recommender, handoff-qa-scorer).
 
-Belongs here: adapter guidance and future thin wrappers that point to canonical PRA, prompt, and skill artifacts.
+Belongs here: thin adapter wrappers with YAML frontmatter (`name`, `description`, `tools: [read, search, edit]`, `user-invocable: true`, `handoffs`) pointing to canonical PRA, prompt, and skill paths. Each adapter declares Allowed Writes under `{{output_root}}` only and Prohibited Writes covering every other folder.
 
-Does not belong here: canonical PRA specs, prompt bodies, skill contracts, runtime agents, cloud agents, or post-back claims.
+Does not belong here: canonical PRA specs (those live under `prototype-agents/`), prompt bodies, skill contracts, runtime/cloud/ADK agents, MCP/Jira/Confluence/Rovo post-back claims, model pins, terminal/web/cloud/database tool declarations, or duplicated prompt or skill bodies.
 
-Populated by: Build Package 06 after Build Package 01 reserves the folder.
+Populated by: Build Package 06.
 
-Build Package 01 status: reserved with README only.
+Build Package 06 status: active. 7 canonical `.agent.md` adapters plus the README are present.
 
 ## Root Area 04 — `config/`
 
@@ -161,19 +161,19 @@ Path: `prototype-agents/`
 
 Owning Build Package: Build Package 06.
 
-Purpose: future PRA specifications.
+Purpose: canonical Prototype Review Agent (PRA) specifications. Each PRA spec is a 13-section governed document (Identity, Purpose, Owned Prompts, Owned Skills, Inputs, Outputs, Procedure, Human Gates, Stop Conditions, Unknown Handling, Evidence and Run-Log Guidance, Direct Adapter Test, Not in Scope) that groups Build Package 04 prompts and Build Package 05 skills into a role-oriented review responsibility.
 
-Who uses it: PRA authors, prompt authors, skill authors, validators, and operators.
+Who uses it: PRA authors, prompt authors, skill authors, adapter authors, validators, SAS reviewers, and local operators.
 
-Allowed file types: Markdown README in Build Package 01; later Markdown/YAML PRA specs and registry when Build Package 06 authorizes them.
+Allowed file types: Markdown PRA specs and a single YAML registry only. Layout: `prototype-agents/README.md`, `prototype-agents/prototype-agent-registry.yaml`, `prototype-agents/prototype-agent-template.md`, and 8 `prototype-agents/PRA-0[1-8]-*.md` files.
 
-Belongs here: Prototype Review Agent specifications that group skills and prompt cards into role-oriented responsibilities.
+Belongs here: identity, purpose, owned prompts, owned skills, inputs, outputs, procedure, human gates, stop conditions, unknown handling, evidence guidance, direct adapter test, and out-of-scope claims for each PRA. The registry indexes the 8 PRAs, the 7 adapters, the prompt-skill-agent crosswalk, and a future-only ADK alignment block.
 
-Does not belong here: deployed agents, `.agent.md` adapter wrappers, runtime code, cloud code, or post-back claims.
+Does not belong here: deployed runtime agents, `.agent.md` adapter wrappers (those live under `.agents/`), cloud/ADK/Vertex/GCP integration code, MCP/Jira/Confluence/Rovo execution code, generated outputs, catalogs, blueprints, templates beyond authoring-agent templates, samples, runs, diagrams, docs/runbooks, release artefacts, schemas outside `config/`.
 
 Populated by: Build Package 06.
 
-Build Package 01 status: reserved with README only.
+Build Package 06 status: active. 8 canonical PRA specs plus the registry, template, and README are present.
 
 ## Root Area 09 — `catalogs/`
 

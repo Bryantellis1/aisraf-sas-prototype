@@ -11,7 +11,7 @@ This workspace is the clean rebuild root for **AISRAF SAS Prototype v0.1.2**. Co
 
 ## Current State
 
-Build Packages 01–05 are active. Build Package 05 added the skill registry and 26 canonical skill contracts (`skills/skill-registry.yaml`, 17 RS skills under `skills/rs/`, 9 DFD subskills under `skills/dfd/`). Each skill contract wraps one Build Package 04 prompt card with a 14-section reusable work contract. Later Build Packages must follow their own build contracts before adding PRA specs, `.agent.md` adapters, catalogs, blueprints, templates beyond authoring-agent templates, samples, runs, diagrams, documentation, release packaging, or final QA artifacts. The next allowed Build Package is Build Package 06 — Prototype agents, PRA specs, and `.agent.md` adapter model.
+Build Packages 01–06 are active. Build Package 06 added 8 canonical Prototype Review Agent (PRA) specifications under `prototype-agents/`, the prototype-agent registry (`prototype-agents/prototype-agent-registry.yaml`), the PRA authoring template, and 7 thin local `.agent.md` adapter wrappers under `.agents/` (orchestrator, input-reader, dfd-extractor, review-table-builder, blueprint-questioner, finding-recommender, handoff-qa-scorer). Each adapter is a thin wrapper that points to canonical PRA, prompt, and skill paths and uses only the seven authoritative run-profile variables. PRA-04-LEGEND-NORMALIZER has no dedicated adapter; it is wrapped jointly with PRA-03 by `.agents/aisraf-dfd-extractor.agent.md`. PRAs are specifications, not deployed runtime agents; adapters are local Copilot dropdown entries, not deployed runtime agents. Later Build Packages must follow their own build contracts before adding catalogs, blueprints, templates beyond authoring-agent templates, samples, runs, diagrams, documentation, release packaging, or final QA artifacts. The next allowed Build Package is Build Package 07 — Catalogs.
 
 ## Foundation Rules
 
@@ -29,10 +29,10 @@ Build Packages 01–05 are active. Build Package 05 added the skill registry and
 
 ## Artifact Boundaries
 
-- Prompt: reusable instruction file for Copilot or an agent, deferred to Build Package 04.
+- Prompt: reusable instruction file for Copilot or an agent, active in Build Package 04 (`prompts/prompt-registry.yaml`, `prompts/rs/*.prompt.md`, `prompts/dfd/*.prompt.md`).
 - Skill: reusable work contract, not an executable tool, active in Build Package 05 (`skills/skill-registry.yaml`, `skills/rs/SK-*.md`, `skills/dfd/SK-DFD-0[1-9]-*.md`).
-- PRA: Prototype Review Agent specification, not a deployed runtime agent, deferred to Build Package 06.
-- `.agent.md` adapter: local VS Code/GitHub Copilot wrapper around canonical PRA/prompt/skill artifacts, deferred to Build Package 06.
+- PRA: Prototype Review Agent specification, not a deployed runtime agent, active in Build Package 06 (`prototype-agents/prototype-agent-registry.yaml`, 8 `prototype-agents/PRA-0[1-8]-*.md` files, `prototype-agents/prototype-agent-template.md`).
+- `.agent.md` adapter: local VS Code/GitHub Copilot thin wrapper around canonical PRA/prompt/skill artifacts, active in Build Package 06 (7 `.agents/aisraf-*.agent.md` files; PRA-04 has no dedicated adapter and is wrapped jointly by `.agents/aisraf-dfd-extractor.agent.md`).
 - Catalog: controlled vocabulary source, deferred to Build Package 07.
 - Blueprint: reusable review pattern, deferred to Build Package 08.
 - Template: reusable output shape, deferred to Build Package 09 except Build Package 01 authoring-agent templates.
@@ -42,7 +42,7 @@ Build Packages 01–05 are active. Build Package 05 added the skill registry and
 
 ## Evidence And Claims
 
-Do not claim tests, external post-back, live Copilot adapter selection, cloud runtime, MCP execution, ADK execution, release packaging, or final QA unless the correct package authorizes the action and evidence exists in the governed location.
+Do not claim tests, external post-back, live Copilot adapter execution, cloud runtime, MCP execution, ADK execution, Vertex/GCP execution, Jira/Confluence/Rovo execution, database execution, Terraform execution, release packaging, diagram generation, or final QA unless the correct package authorizes the action and evidence exists in the governed location. Build Package 06 PRA specs and `.agent.md` adapters are local-only specifications and wrappers; selecting an adapter from the Copilot Chat dropdown is not equivalent to runtime execution.
 
 ## Stop Conditions
 
