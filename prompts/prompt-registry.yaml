@@ -1,0 +1,793 @@
+schema_version: aisraf_prompt_registry.v0_1_2
+registry_id: prompt-registry
+title: AISRAF SAS Prompt Registry
+package_version: v0.1.2
+owning_build_package: "04"
+status: active
+prompt_count: 23
+prompt_family_counts:
+  rs: 14
+  dfd: 9
+prompt_families:
+  - rs
+  - dfd
+
+purpose: >
+  Register the canonical, reusable, parameterized prompt cards for AISRAF SAS
+  Prototype v0.1.2. Each prompt card is an operator-facing instruction that
+  Copilot or a future adapter/agent can open in VS Code, run against a
+  resolved run profile, and use to write structured outputs only under the
+  resolved {{output_root}}. Prompt cards are not runtime tools; they declare
+  inputs, outputs, stop conditions, unknown handling, and a direct operator
+  test. Skill contracts (Build Package 05) and PRA specifications (Build
+  Package 06) will later wrap these prompts.
+
+scope:
+  canonical_prompt_root: prompts
+  prompt_subfolders:
+    - prompts/rs
+    - prompts/dfd
+  prompt_cards_are_runtime_tools: false
+  prompt_cards_claim_skill_execution: false
+  prompt_cards_claim_pra_execution: false
+  prompt_cards_claim_adapter_execution: false
+  prompt_cards_claim_external_postback: false
+  prompt_cards_claim_scoring_proof: false
+  prompt_cards_claim_release_or_diagram_export: false
+
+parameter_contract:
+  run_profile_source: runs/{{run_id}}/run-profile.yaml
+  required_run_profile_fields:
+    - "{{run_id}}"
+    - "{{input_root}}"
+    - "{{expected_root}}"
+    - "{{output_root}}"
+    - "{{mode}}"
+    - "{{postback_execution_status}}"
+    - "{{output_destination_mode}}"
+  no_hardcoded_values:
+    - run_id
+    - sample_id
+    - input_root
+    - expected_root
+    - output_root
+    - source_ticket_url
+    - destination_ticket_url
+    - destination_confluence_url
+    - output_destination_mode
+    - postback_execution_status
+  output_root_rule: every_write_path_must_resolve_under_output_root
+  schema_authority: config/run-profile.schema.yaml
+  field_catalog: config/run-profile.field-catalog.md
+  validation_rules: config/run-profile.validation-rules.md
+  path_resolution_rules: config/path-resolution-rules.md
+  sensitive_data_rules: config/sensitive-data-rules.md
+
+required_prompt_sections:
+  - "1. Identity"
+  - "2. Purpose"
+  - "3. Run Profile Inputs"
+  - "4. Required Read Paths"
+  - "5. Required Output"
+  - "6. Instructions"
+  - "7. Stop Conditions"
+  - "8. Unknown Handling"
+  - "9. Evidence / Run-Log Guidance"
+  - "10. Direct Prompt Test"
+  - "11. Not In Scope"
+
+forbidden_claims:
+  - skill_execution
+  - pra_execution
+  - agent_md_adapter_execution
+  - jira_postback_execution
+  - confluence_publication_execution
+  - rovo_execution
+  - mcp_execution
+  - runtime_or_cloud_execution
+  - database_execution
+  - terraform_or_adk_execution
+  - release_or_zip_export_from_a_prompt
+  - diagram_generation_from_a_prompt
+  - scoring_proof_outside_13_accuracy_score
+  - hardcoded_run_id_paths_or_urls
+
+placeholder_conventions:
+  future_skill_id_suffix: "(planned; defined in Build Package 05)"
+  future_pra_owner_suffix: "(planned; defined in Build Package 06)"
+  notes: >
+    The future_skill_id and future_pra_owner values in this registry are
+    non-binding placeholders. Build Package 05 will replace each
+    future_skill_id with a concrete SK-* contract path. Build Package 06 will
+    replace each future_pra_owner with a concrete PRA-* specification path.
+    A prompt card may not depend on a Package 05+ artifact as a hard read.
+
+compatibility_notes:
+  rs_output_12_targeted_questions:
+    decision: retained
+    decided_by: founder
+    detail: >
+      Build Package 04 keeps the v0.01 RS output 12-targeted-questions.md.
+      The RS-07 prompt (07-missing-fact-question-generate.prompt.md) writes
+      both {{output_root}}/09-missing-facts.md and
+      {{output_root}}/12-targeted-questions.md. No separate targeted-question
+      prompt is created; the total prompt count remains 23.
+  rs_full_chain_wrapper:
+    decision: planned_only
+    decided_by: founder
+    detail: >
+      00-run-full-chain.prompt.md has status: planned in Package 04. It
+      writes no output of its own. It enumerates the prompt chain order and
+      records that orchestration, skill execution, PRA execution, adapter
+      execution, scoring, Jira/Confluence/Rovo/MCP/runtime/release execution
+      are out of Package 04 scope.
+  dfd_prompt_numbering:
+    decision: preserved_02_through_10
+    decided_by: founder
+    detail: >
+      The DFD prompt family preserves the v0.01 numbering 02 through 10
+      (nine cards, no DFD-01 card). Output files under {{output_root}}/dfd/
+      are renumbered 01-intake-quality-check.md through 09-extraction-summary.md.
+
+prompts:
+
+  - prompt_id: PR-RS-00
+    prompt_file: prompts/rs/00-run-full-chain.prompt.md
+    prompt_family: rs
+    review_step: RS-CHAIN
+    status: planned
+    future_skill_id: "SK-CHAIN-WRAPPER (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-RS-REVIEW (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - prompts/rs/01-input-package-read.prompt.md
+      - prompts/rs/02-dfd-visual-read.prompt.md
+      - prompts/rs/03-legend-normalization.prompt.md
+      - prompts/rs/04-design-fact-extract.prompt.md
+      - prompts/rs/05-boundary-stack-detect.prompt.md
+      - prompts/rs/06-review-table-build.prompt.md
+      - prompts/rs/07-missing-fact-question-generate.prompt.md
+      - prompts/rs/08-ai-action-level-classify.prompt.md
+      - prompts/rs/09-blueprint-match.prompt.md
+      - prompts/rs/10-finding-recommendation-write.prompt.md
+      - prompts/rs/11-handoff-pack-build.prompt.md
+      - prompts/rs/12-validation-note-write.prompt.md
+      - prompts/rs/13-accuracy-score.prompt.md
+    output_artifact: []
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/00-run-full-chain.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: >
+      Wrapper card. Writes nothing on its own; enumerates the RS chain order
+      so an operator can open prompts/rs/01..13 in order. No claim of
+      orchestration, automation, or execution.
+
+  - prompt_id: PR-RS-01
+    prompt_file: prompts/rs/01-input-package-read.prompt.md
+    prompt_family: rs
+    review_step: RS-01
+    status: active
+    future_skill_id: "SK-INPUT-PACKAGE-READ (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-INTAKE (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{input_root}}/"
+    output_artifact:
+      - "{{output_root}}/01-input-inventory.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/01-input-package-read.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Inventory existing review materials staged under input_root.
+
+  - prompt_id: PR-RS-02
+    prompt_file: prompts/rs/02-dfd-visual-read.prompt.md
+    prompt_family: rs
+    review_step: RS-02
+    status: active
+    future_skill_id: "SK-DFD-VISUAL-READ (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-READER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{input_root}}/"
+    output_artifact:
+      - "{{output_root}}/02-visible-dfd-objects.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/02-dfd-visual-read.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Identify visible DFD objects from staged inputs.
+
+  - prompt_id: PR-RS-03
+    prompt_file: prompts/rs/03-legend-normalization.prompt.md
+    prompt_family: rs
+    review_step: RS-03
+    status: active
+    future_skill_id: "SK-DFD-LEGEND-NORMALIZE (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-READER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{input_root}}/"
+    output_artifact:
+      - "{{output_root}}/03-legend-normalization.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/03-legend-normalization.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Normalize visible legend, label, and annotation meanings.
+
+  - prompt_id: PR-RS-04
+    prompt_file: prompts/rs/04-design-fact-extract.prompt.md
+    prompt_family: rs
+    review_step: RS-04
+    status: active
+    future_skill_id: "SK-COMPONENT-EXTRACT and SK-FLOW-EXTRACT (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DESIGN-FACT-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{input_root}}/"
+    output_artifact:
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/04-design-fact-extract.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Extract components and flows from supported visible/read evidence.
+
+  - prompt_id: PR-RS-05
+    prompt_file: prompts/rs/05-boundary-stack-detect.prompt.md
+    prompt_family: rs
+    review_step: RS-05
+    status: active
+    future_skill_id: "SK-BOUNDARY-CROSSING-DETECT and SK-SECURITY-STACK-DETECT (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DESIGN-FACT-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+    output_artifact:
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/05-boundary-stack-detect.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Identify boundaries and visible security-stack signals only.
+
+  - prompt_id: PR-RS-06
+    prompt_file: prompts/rs/06-review-table-build.prompt.md
+    prompt_family: rs
+    review_step: RS-06
+    status: active
+    future_skill_id: "SK-DATA-FLOW-TABLE-BUILD (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-REVIEW-TABLE-BUILDER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+    output_artifact:
+      - "{{output_root}}/08-internal-review-table.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/06-review-table-build.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Build internal review table from prior RS outputs only.
+
+  - prompt_id: PR-RS-07
+    prompt_file: prompts/rs/07-missing-fact-question-generate.prompt.md
+    prompt_family: rs
+    review_step: RS-07-and-RS-12
+    status: active
+    future_skill_id: "SK-MISSING-FACT-IDENTIFY and SK-TARGETED-QUESTION-GENERATE (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-MISSING-FACT-INTERVIEWER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+    output_artifact:
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/12-targeted-questions.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/07-missing-fact-question-generate.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: >
+      Single prompt covering RS-07 and RS-12. Writes both
+      {{output_root}}/09-missing-facts.md and
+      {{output_root}}/12-targeted-questions.md per founder decision.
+
+  - prompt_id: PR-RS-08
+    prompt_file: prompts/rs/08-ai-action-level-classify.prompt.md
+    prompt_family: rs
+    review_step: RS-08
+    status: active
+    future_skill_id: "SK-AI-ACTION-LEVEL-CLASSIFY (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-AI-CLASSIFIER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/08-internal-review-table.md"
+    output_artifact:
+      - "{{output_root}}/10-ai-action-level.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/08-ai-action-level-classify.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Classify AI Action Level from supported flow and table evidence.
+
+  - prompt_id: PR-RS-09
+    prompt_file: prompts/rs/09-blueprint-match.prompt.md
+    prompt_family: rs
+    review_step: RS-09
+    status: active
+    future_skill_id: "SK-REVIEW-BLUEPRINT-MATCH (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-BLUEPRINT-MATCHER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/10-ai-action-level.md"
+    output_artifact:
+      - "{{output_root}}/11-blueprint-match.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/09-blueprint-match.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: >
+      Match candidate blueprint pattern. Build Package 08 will provide
+      blueprint content; Package 04 prompt records the match attempt and
+      records "unknown" when no blueprint is yet available.
+
+  - prompt_id: PR-RS-10
+    prompt_file: prompts/rs/10-finding-recommendation-write.prompt.md
+    prompt_family: rs
+    review_step: RS-10
+    status: active
+    future_skill_id: "SK-FINDING-CLASSIFY and SK-RECOMMENDATION-WRITE (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-RISK-WRITER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+    output_artifact:
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/10-finding-recommendation-write.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Write findings and recommendations bound to supported evidence.
+
+  - prompt_id: PR-RS-11
+    prompt_file: prompts/rs/11-handoff-pack-build.prompt.md
+    prompt_family: rs
+    review_step: RS-11
+    status: active
+    future_skill_id: "SK-HANDOFF-PACK-BUILD (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-HANDOFF-BUILDER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+    output_artifact:
+      - "{{output_root}}/15-handoff-pack.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/11-handoff-pack-build.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Assemble handoff pack from prior RS outputs only.
+
+  - prompt_id: PR-RS-12
+    prompt_file: prompts/rs/12-validation-note-write.prompt.md
+    prompt_family: rs
+    review_step: RS-13
+    status: active
+    future_skill_id: "SK-VALIDATION-NOTE-WRITE (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-VALIDATION-NOTE-WRITER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+    output_artifact:
+      - "{{output_root}}/16-validation-notes.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/12-validation-note-write.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Write validation notes separately from findings and recommendations.
+
+  - prompt_id: PR-RS-13
+    prompt_file: prompts/rs/13-accuracy-score.prompt.md
+    prompt_family: rs
+    review_step: RS-14-through-RS-17
+    status: active
+    future_skill_id: "SK-ACCURACY-SCORE (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-VALIDATION-SCORER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{expected_root}}/"
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+      - "{{output_root}}/15-handoff-pack.md"
+      - "{{output_root}}/16-validation-notes.md"
+    output_artifact:
+      - "{{output_root}}/17-accuracy-score.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/rs/13-accuracy-score.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: >
+      Conditional scoring prompt. Runs only when scoring_enabled is true,
+      expected_baseline_required is true, and {{expected_root}} is non-empty
+      and populated. Otherwise stops cleanly and records that scoring is not
+      applicable for this run.
+
+  - prompt_id: PR-DFD-02
+    prompt_file: prompts/dfd/02-dfd-intake-quality-check.prompt.md
+    prompt_family: dfd
+    dfd_step: DFD-01
+    status: active
+    future_skill_id: "SK-DFD-01-INTAKE-QUALITY-CHECK (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{input_root}}/"
+    output_artifact:
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/dfd/02-dfd-intake-quality-check.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: First DFD subskill; checks DFD input readability and material gaps.
+
+  - prompt_id: PR-DFD-03
+    prompt_file: prompts/dfd/03-boundary-extract.prompt.md
+    prompt_family: dfd
+    dfd_step: DFD-02
+    status: active
+    future_skill_id: "SK-DFD-02-BOUNDARY-EXTRACT (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{input_root}}/"
+    output_artifact:
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/dfd/03-boundary-extract.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Extract boundary catalog from supported DFD evidence only.
+
+  - prompt_id: PR-DFD-04
+    prompt_file: prompts/dfd/04-component-extract.prompt.md
+    prompt_family: dfd
+    dfd_step: DFD-03
+    status: active
+    future_skill_id: "SK-DFD-03-COMPONENT-EXTRACT (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{input_root}}/"
+    output_artifact:
+      - "{{output_root}}/dfd/03-component-catalog.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/dfd/04-component-extract.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Extract DFD component catalog from supported evidence only.
+
+  - prompt_id: PR-DFD-05
+    prompt_file: prompts/dfd/05-flow-extract.prompt.md
+    prompt_family: dfd
+    dfd_step: DFD-04
+    status: active
+    future_skill_id: "SK-DFD-04-FLOW-EXTRACT (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{input_root}}/"
+    output_artifact:
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/dfd/05-flow-extract.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Extract raw and normalized flow inventory from supported evidence.
+
+  - prompt_id: PR-DFD-06
+    prompt_file: prompts/dfd/06-annotation-resolve.prompt.md
+    prompt_family: dfd
+    dfd_step: DFD-05
+    status: active
+    future_skill_id: "SK-DFD-05-ANNOTATION-RESOLVE (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{input_root}}/"
+    output_artifact:
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/dfd/06-annotation-resolve.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Resolve visible legend, data, auth, transport, rest, and confidence annotations.
+
+  - prompt_id: PR-DFD-07
+    prompt_file: prompts/dfd/07-boundary-crossing-detect.prompt.md
+    prompt_family: dfd
+    dfd_step: DFD-06
+    status: active
+    future_skill_id: "SK-DFD-06-BOUNDARY-CROSSING-DETECT (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+    output_artifact:
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/dfd/07-boundary-crossing-detect.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Detect boundary crossings derived from boundary, component, and flow evidence.
+
+  - prompt_id: PR-DFD-08
+    prompt_file: prompts/dfd/08-control-signal-detect.prompt.md
+    prompt_family: dfd
+    dfd_step: DFD-07
+    status: active
+    future_skill_id: "SK-DFD-07-CONTROL-SIGNAL-DETECT (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+    output_artifact:
+      - "{{output_root}}/dfd/07-control-signals.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/dfd/08-control-signal-detect.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Identify visible control and security-stack signals only; do not assert hidden controls.
+
+  - prompt_id: PR-DFD-09
+    prompt_file: prompts/dfd/09-confidence-score.prompt.md
+    prompt_family: dfd
+    dfd_step: DFD-08
+    status: active
+    future_skill_id: "SK-DFD-08-CONFIDENCE-SCORE (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+      - "{{output_root}}/dfd/07-control-signals.md"
+    output_artifact:
+      - "{{output_root}}/dfd/08-confidence-score.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/dfd/09-confidence-score.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Assign per-row extraction confidence to visible facts; not an accuracy score.
+
+  - prompt_id: PR-DFD-10
+    prompt_file: prompts/dfd/10-dfd-extraction-summarize.prompt.md
+    prompt_family: dfd
+    dfd_step: DFD-09
+    status: active
+    future_skill_id: "SK-DFD-09-EXTRACTION-SUMMARIZE (planned; defined in Build Package 05)"
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+      - "{{output_root}}/dfd/07-control-signals.md"
+      - "{{output_root}}/dfd/08-confidence-score.md"
+    output_artifact:
+      - "{{output_root}}/dfd/09-extraction-summary.md"
+    uses_run_profile_fields:
+      - "{{run_id}}"
+      - "{{input_root}}"
+      - "{{expected_root}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    stop_conditions_ref: "prompts/dfd/10-dfd-extraction-summarize.prompt.md#7-stop-conditions"
+    direct_test_supported: true
+    notes: Summarize DFD extraction state and residual gaps; no scoring claim.

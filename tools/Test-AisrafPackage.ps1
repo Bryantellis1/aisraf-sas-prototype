@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-03 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-04 surface of AISRAF SAS Prototype v0.1.2.
 
 .DESCRIPTION
-    Test-AisrafPackage is a Build Package 03 validator. It confirms:
+    Test-AisrafPackage is the active package validator. It confirms:
 
       - required root files exist;
       - required root folders and folder READMEs exist;
@@ -11,8 +11,11 @@
       - Build Package 02 validation file exists;
       - Build Package 03 tool files exist;
       - Build Package 03 validation file exists;
+      - Build Package 04 prompt registry, family READMEs, and prompt cards exist
+        and match the approved naming pattern under prompts/rs/ and prompts/dfd/;
+      - Build Package 04 validation files exist;
       - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP, .agent.md,
-        prompt/skill/PRA/catalog/blueprint/template/sample/diagram/docs/release
+        skill/PRA/catalog/blueprint/template/sample/diagram/docs/release
         content beyond folder README placeholders);
       - the old reference workspace path is acknowledged as read-only.
 
@@ -154,8 +157,8 @@ else {
 }
 
 # 8. Folder content limits — only README.md allowed before owning Build Package
+# prompts/ is owned by Build Package 04 (active); see Check 08b for the prompts/ allowed surface.
 $readmeOnlyFolders = @{
-    'prompts'          = 'Build Package 04'
     'skills'           = 'Build Package 05'
     'prototype-agents' = 'Build Package 06'
     '.agents'          = 'Build Package 06'
@@ -180,6 +183,52 @@ foreach ($folder in $readmeOnlyFolders.Keys) {
 $folderLimitFails = @($results | Where-Object { $_.Check -eq '08-folder-content-limits' -and $_.Status -eq 'FAIL' }).Count
 if ($folderLimitFails -eq 0) {
     Add-Result -Status PASS -Check '08-folder-content-limits' -Detail "Read-me-only folders contain only README.md."
+}
+
+# 8b. Build Package 04 prompts content limits.
+# Allowed under prompts/: README.md, prompt-registry.yaml, rs/, dfd/.
+# Allowed under prompts/rs/: README.md plus *.prompt.md matching ^[0-9]{2}-[a-z0-9-]+\.prompt\.md$.
+# Allowed under prompts/dfd/: same naming rule.
+# FAIL anything else: unexpected subfolders, unexpected file extensions,
+# .agent.md files, generated outputs, run artifacts, diagrams, binaries.
+$promptsAbs = Resolve-PackagePath 'prompts'
+$promptsTopAllowedFiles = @('README.md', 'prompt-registry.yaml')
+$promptsTopAllowedDirs  = @('rs', 'dfd')
+$promptCardPattern      = '^[0-9]{2}-[a-z0-9-]+\.prompt\.md$'
+if (Test-Path -LiteralPath $promptsAbs -PathType Container) {
+    foreach ($entry in @(Get-ChildItem -LiteralPath $promptsAbs -Force)) {
+        if ($entry.PSIsContainer) {
+            if (-not ($promptsTopAllowedDirs -contains $entry.Name)) {
+                Add-Result -Status FAIL -Check '08b-prompts-content-limits' -Detail "Forbidden subfolder in prompts/ (Build Package 04 allows only rs/ and dfd/): prompts/$($entry.Name)/"
+            }
+        }
+        else {
+            if (-not ($promptsTopAllowedFiles -contains $entry.Name)) {
+                Add-Result -Status FAIL -Check '08b-prompts-content-limits' -Detail "Forbidden file at prompts/ root (Build Package 04 allows only README.md and prompt-registry.yaml here): prompts/$($entry.Name)"
+            }
+        }
+    }
+    foreach ($family in $promptsTopAllowedDirs) {
+        $familyAbs = Join-Path $promptsAbs $family
+        if (-not (Test-Path -LiteralPath $familyAbs -PathType Container)) { continue }
+        foreach ($child in @(Get-ChildItem -LiteralPath $familyAbs -Force)) {
+            if ($child.PSIsContainer) {
+                Add-Result -Status FAIL -Check '08b-prompts-content-limits' -Detail "Forbidden subfolder in prompts/$family/ (Build Package 04 disallows nested folders): prompts/$family/$($child.Name)/"
+                continue
+            }
+            if ($child.Name -eq 'README.md') { continue }
+            if ($child.Name -notmatch $promptCardPattern) {
+                Add-Result -Status FAIL -Check '08b-prompts-content-limits' -Detail "Forbidden file in prompts/$family/ (only README.md and *.prompt.md cards matching '$promptCardPattern' allowed): prompts/$family/$($child.Name)"
+            }
+        }
+    }
+    $promptFails = @($results | Where-Object { $_.Check -eq '08b-prompts-content-limits' -and $_.Status -eq 'FAIL' }).Count
+    if ($promptFails -eq 0) {
+        Add-Result -Status PASS -Check '08b-prompts-content-limits' -Detail "prompts/ surface matches Build Package 04 contract (README.md, prompt-registry.yaml, rs/, dfd/, with *.prompt.md cards under each family)."
+    }
+}
+else {
+    Add-Result -Status FAIL -Check '08b-prompts-content-limits' -Detail "prompts/ folder is missing."
 }
 
 # 9. samples/ — only README.md at top, no sample-* subfolders before Build Package 10
@@ -219,7 +268,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -232,7 +281,7 @@ if ($validationFails.Count -gt 0) {
     foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 03: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-03 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-04 documents."
 }
 
 # 12. tools/ — Build Package 03 expected file set

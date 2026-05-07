@@ -11,7 +11,7 @@ This workspace is the clean rebuild root for **AISRAF SAS Prototype v0.1.2**. Co
 
 ## Current State
 
-Build Package 01 foundation is the only implemented Build Package. Later Build Packages must follow their own build contracts before adding config, tools, prompts, skills, PRA specs, adapters, catalogs, blueprints, templates, samples, runs, diagrams, documentation, release packaging, or final QA artifacts.
+Build Packages 01–04 are committed. Build Package 04 added prompts and the prompt registry (`prompts/`, 23 cards). Later Build Packages must follow their own build contracts before adding skill contracts, PRA specs, `.agent.md` adapters, catalogs, blueprints, templates beyond authoring-agent templates, samples, runs, diagrams, documentation, release packaging, or final QA artifacts. The next allowed Build Package is Build Package 05 — Skills and skill registry.
 
 ## Foundation Rules
 

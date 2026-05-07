@@ -1,6 +1,6 @@
 package_name: AISRAF SAS Prototype
 package_version: v0.1.2
-package_state: tools_active
+package_state: prompts_active
 active_workspace: D:/E-Way 2/AISRAF- SAS Prototype v0.1.2
 reference_workspace: D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01
 old_workspace_policy:
@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "03"
-  build_package_name: Tools and setup/test/export scripts
-  build_package_status: active
-next_build_package:
   build_package_number: "04"
   build_package_name: Prompts and prompt registry
+  build_package_status: active
+next_build_package:
+  build_package_number: "05"
+  build_package_name: Skills and skill registry
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -244,6 +244,73 @@ build_package_03_allowed_writes:
     - release/* release artifacts
     - schemas outside config/
     - runtime services, cloud assets, MCP/Jira/Confluence/Rovo execution proof, release binaries
+build_package_04_allowed_writes:
+  prompt_files:
+    - prompts/prompt-registry.yaml
+    - prompts/rs/00-run-full-chain.prompt.md
+    - prompts/rs/01-input-package-read.prompt.md
+    - prompts/rs/02-dfd-visual-read.prompt.md
+    - prompts/rs/03-legend-normalization.prompt.md
+    - prompts/rs/04-design-fact-extract.prompt.md
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+    - prompts/rs/07-missing-fact-question-generate.prompt.md
+    - prompts/rs/08-ai-action-level-classify.prompt.md
+    - prompts/rs/09-blueprint-match.prompt.md
+    - prompts/rs/10-finding-recommendation-write.prompt.md
+    - prompts/rs/11-handoff-pack-build.prompt.md
+    - prompts/rs/12-validation-note-write.prompt.md
+    - prompts/rs/13-accuracy-score.prompt.md
+    - prompts/dfd/02-dfd-intake-quality-check.prompt.md
+    - prompts/dfd/03-boundary-extract.prompt.md
+    - prompts/dfd/04-component-extract.prompt.md
+    - prompts/dfd/05-flow-extract.prompt.md
+    - prompts/dfd/06-annotation-resolve.prompt.md
+    - prompts/dfd/07-boundary-crossing-detect.prompt.md
+    - prompts/dfd/08-control-signal-detect.prompt.md
+    - prompts/dfd/09-confidence-score.prompt.md
+    - prompts/dfd/10-dfd-extraction-summarize.prompt.md
+  validation_files:
+    - validation/package-04-prompts-checklist.md
+    - validation/prompt-registry-checklist.md
+  governance_updates:
+    - prompts/README.md
+    - prompts/rs/README.md
+    - prompts/dfd/README.md
+    - PACKAGE-MANIFEST.yaml
+    - validation/no-drift-rules.md
+    - README.md
+    - START-HERE.md
+    - .github/copilot-instructions.md
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1
+  prompt_count: 23
+  prompt_family_counts:
+    rs: 14
+    dfd: 9
+  founder_decisions:
+    q1_rs_output_12_targeted_questions: retained_under_pr_rs_07
+    q2_rs_full_chain_wrapper: planned_only_no_output
+    q3_entry_point_docs: status_correction_only
+    q4_dfd_numbering: preserved_02_through_10
+  prohibited:
+    - skills/* skill contracts
+    - skills/skill-registry.yaml
+    - prototype-agents/* PRA specs
+    - prototype-agents/prototype-agent-registry.yaml
+    - .agents/*.agent.md adapter files
+    - catalogs/* catalog content
+    - blueprints/* blueprint content
+    - templates/* template content beyond authoring-agent templates
+    - samples/* sample inputs or expected baselines
+    - runs/* committed run outputs
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides
+    - release/* release artifacts
+    - schemas outside config/
+    - .github/prompts/ wrappers
+    - tools/Export-AisrafRelease.ps1 or any new release-export tool
+    - runtime services, cloud assets, MCP/Jira/Confluence/Rovo execution proof, release binaries
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
@@ -253,7 +320,7 @@ mcp_status: not_required_for_build_package_01
 adk_status: future
 validation_status: build_package_01_self_check_required
 folder_first_model_status: reserved_not_implemented
-prompt_status: deferred_to_build_package_04
+prompt_status: active
 skill_status: deferred_to_build_package_05
 pra_status: deferred_to_build_package_06
 agent_adapter_status: deferred_to_build_package_06

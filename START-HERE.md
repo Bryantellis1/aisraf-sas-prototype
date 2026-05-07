@@ -2,7 +2,7 @@
 
 Package: AISRAF SAS Prototype v0.1.2
 
-This workspace is at Build Package 01 foundation state.
+This workspace has Build Packages 01–04 committed. Build Package 04 (prompts and prompt registry) is the most recent.
 
 ## Operator Steps
 
@@ -11,14 +11,14 @@ This workspace is at Build Package 01 foundation state.
 3. Read [PROTOTYPE-CHARTER.md](PROTOTYPE-CHARTER.md).
 4. Read [BUILD-ORDER.md](BUILD-ORDER.md).
 5. Read [FOLDER-CONTRACTS.md](FOLDER-CONTRACTS.md) before authoring later package content.
+6. Browse [prompts/README.md](prompts/README.md) to see the 23 canonical prompt cards available in Build Package 04.
 
 ## Stop For Now
 
-- Do not run tests yet.
-- Do not create diagrams yet.
-- Do not create release artifacts yet.
-- Do not create prompts, skills, PRA specs, adapters, catalogs, blueprints, samples, run outputs, runtime code, schemas, or cloud resources in Build Package 01.
+- Do not create diagrams yet (Build Package 13).
+- Do not create release artifacts yet (Build Package 15).
+- Do not create skill contracts (deferred to Build Package 05), PRA specs (Build Package 06), `.agent.md` adapters (Build Package 06), catalogs (Build Package 07), blueprints (Build Package 08), templates beyond authoring-agent templates (Build Package 09), samples (Build Package 10), run outputs (Build Package 11), runtime code, schemas outside `config/`, or cloud resources.
 
 ## Next Build Package
 
-The next allowed Build Package is **Build Package 02 — Config and run-profile variable model**.
+The next allowed Build Package is **Build Package 05 — Skills and skill registry**.
