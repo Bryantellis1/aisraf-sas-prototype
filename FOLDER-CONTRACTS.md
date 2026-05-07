@@ -141,19 +141,19 @@ Path: `skills/`
 
 Owning Build Package: Build Package 05.
 
-Purpose: future reusable skill contracts.
+Purpose: canonical reusable skill contracts wrapping the Build Package 04 prompt cards. Each skill contract is a 14-section governed work contract with explicit identity, purpose, inputs, outputs, procedure, stop conditions, unknown handling, confidence handling, critical misses, human review gate, validation/scoring relationship, direct skill test, and out-of-scope claims.
 
-Who uses it: skill authors, prompt authors, PRA authors, and validators.
+Who uses it: skill authors, prompt authors, PRA authors (Build Package 06), validators, SAS reviewers, and local operators troubleshooting the output contract for a review step.
 
-Allowed file types: Markdown README in Build Package 01; later Markdown/YAML contracts and registry when Build Package 05 authorizes them.
+Allowed file types: Markdown skill contracts and YAML registry only. Layout: `skills/README.md`, `skills/skill-registry.yaml`, `skills/rs/README.md`, `skills/dfd/README.md`, 17 `skills/rs/SK-*.md` files, and 9 `skills/dfd/SK-DFD-0[1-9]-*.md` files.
 
-Belongs here: purpose, inputs, outputs, stop conditions, scoring relationships, and expected behavior for reusable work contracts.
+Belongs here: identity, purpose, inputs, outputs, procedure, stop conditions, unknown handling, confidence handling, critical misses, human review gate, validation/scoring relationship, direct skill test, and out-of-scope claims for each reusable work contract.
 
-Does not belong here: executable tools, scripts, prompt bodies, adapters, runtime services, or generated outputs.
+Does not belong here: executable tools, scripts, prompt bodies, PRA specs, `.agent.md` adapters, runtime services, generated outputs, catalogs, blueprints, templates beyond authoring-agent templates, samples, runs, diagrams, docs/runbooks, release artifacts, schemas outside `config/`.
 
 Populated by: Build Package 05.
 
-Build Package 01 status: reserved with README only.
+Build Package 05 status: active. 26 canonical skill contracts (17 RS + 9 DFD) plus the registry and three READMEs are present.
 
 ## Root Area 08 — `prototype-agents/`
 

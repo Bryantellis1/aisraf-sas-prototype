@@ -1,6 +1,6 @@
 package_name: AISRAF SAS Prototype
 package_version: v0.1.2
-package_state: prompts_active
+package_state: skills_active
 active_workspace: D:/E-Way 2/AISRAF- SAS Prototype v0.1.2
 reference_workspace: D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01
 old_workspace_policy:
@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "04"
-  build_package_name: Prompts and prompt registry
-  build_package_status: active
-next_build_package:
   build_package_number: "05"
   build_package_name: Skills and skill registry
+  build_package_status: active
+next_build_package:
+  build_package_number: "06"
+  build_package_name: Prototype agents, PRA specs, and .agent.md adapter model
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -311,6 +311,77 @@ build_package_04_allowed_writes:
     - .github/prompts/ wrappers
     - tools/Export-AisrafRelease.ps1 or any new release-export tool
     - runtime services, cloud assets, MCP/Jira/Confluence/Rovo execution proof, release binaries
+build_package_05_allowed_writes:
+  skill_files:
+    - skills/skill-registry.yaml
+    - skills/rs/SK-INPUT-PACKAGE-READ.md
+    - skills/rs/SK-DFD-VISUAL-READ.md
+    - skills/rs/SK-LEGEND-NORMALIZE.md
+    - skills/rs/SK-COMPONENT-EXTRACT.md
+    - skills/rs/SK-FLOW-EXTRACT.md
+    - skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+    - skills/rs/SK-SECURITY-STACK-ASSESS.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+    - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+    - skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+    - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+    - skills/rs/SK-FINDING-CLASSIFY.md
+    - skills/rs/SK-RECOMMENDATION-WRITE.md
+    - skills/rs/SK-HANDOFF-PACK-BUILD.md
+    - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+    - skills/rs/SK-ACCURACY-SCORE.md
+    - skills/dfd/SK-DFD-01-INTAKE-QUALITY-CHECK.md
+    - skills/dfd/SK-DFD-02-BOUNDARY-EXTRACT.md
+    - skills/dfd/SK-DFD-03-COMPONENT-EXTRACT.md
+    - skills/dfd/SK-DFD-04-FLOW-EXTRACT.md
+    - skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md
+    - skills/dfd/SK-DFD-06-BOUNDARY-CROSSING-DETECT.md
+    - skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+    - skills/dfd/SK-DFD-08-CONFIDENCE-SCORE.md
+    - skills/dfd/SK-DFD-09-EXTRACTION-SUMMARIZE.md
+  validation_files:
+    - validation/package-05-skills-checklist.md
+    - validation/skill-registry-checklist.md
+  governance_updates:
+    - skills/README.md
+    - skills/rs/README.md
+    - skills/dfd/README.md
+    - PACKAGE-MANIFEST.yaml
+    - validation/no-drift-rules.md
+    - README.md
+    - START-HERE.md
+    - .github/copilot-instructions.md
+    - FOLDER-CONTRACTS.md
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1
+  skill_count: 26
+  skill_family_counts:
+    rs: 17
+    dfd: 9
+  founder_decisions:
+    q1_prompt_registry_naming_drift: documented_in_skill_registry_compatibility_notes_no_prompt_edits
+    q2_prompt_review_step_field_drift: skill_registry_owns_canonical_rs_step_no_prompt_edits
+    q3_pr_rs_00_chain_wrapper: deferred_not_counted_in_26
+    q4_catalog_references: planned_placeholders_only_no_hard_reads
+    q5_test_aisraf_package_patch: surgical_four_change_patch_approved
+  prohibited:
+    - prompts/* prompt cards or registry edits
+    - prototype-agents/* PRA specs
+    - prototype-agents/prototype-agent-registry.yaml
+    - .agents/*.agent.md adapter files
+    - catalogs/* catalog content
+    - blueprints/* blueprint content
+    - templates/* template content beyond authoring-agent templates
+    - samples/* sample inputs or expected baselines
+    - runs/* committed run outputs
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides
+    - release/* release artifacts
+    - schemas outside config/
+    - .github/prompts/ wrappers
+    - tools/Export-AisrafRelease.ps1 or any new release-export tool
+    - runtime services, cloud assets, MCP/Jira/Confluence/Rovo execution proof, release binaries
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
@@ -321,7 +392,7 @@ adk_status: future
 validation_status: build_package_01_self_check_required
 folder_first_model_status: reserved_not_implemented
 prompt_status: active
-skill_status: deferred_to_build_package_05
+skill_status: active
 pra_status: deferred_to_build_package_06
 agent_adapter_status: deferred_to_build_package_06
 catalog_status: deferred_to_build_package_07

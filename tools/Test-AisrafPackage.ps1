@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-04 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-05 surface of AISRAF SAS Prototype v0.1.2.
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -14,8 +14,12 @@
       - Build Package 04 prompt registry, family READMEs, and prompt cards exist
         and match the approved naming pattern under prompts/rs/ and prompts/dfd/;
       - Build Package 04 validation files exist;
+      - Build Package 05 skill registry, family READMEs, and skill contracts exist
+        and match the approved naming pattern under skills/rs/ (17 files) and
+        skills/dfd/ (9 files);
+      - Build Package 05 validation files exist;
       - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP, .agent.md,
-        skill/PRA/catalog/blueprint/template/sample/diagram/docs/release
+        PRA/catalog/blueprint/template/sample/diagram/docs/release
         content beyond folder README placeholders);
       - the old reference workspace path is acknowledged as read-only.
 
@@ -158,8 +162,8 @@ else {
 
 # 8. Folder content limits — only README.md allowed before owning Build Package
 # prompts/ is owned by Build Package 04 (active); see Check 08b for the prompts/ allowed surface.
+# skills/ is owned by Build Package 05 (active); see Check 08c for the skills/ allowed surface.
 $readmeOnlyFolders = @{
-    'skills'           = 'Build Package 05'
     'prototype-agents' = 'Build Package 06'
     '.agents'          = 'Build Package 06'
     'catalogs'         = 'Build Package 07'
@@ -231,6 +235,70 @@ else {
     Add-Result -Status FAIL -Check '08b-prompts-content-limits' -Detail "prompts/ folder is missing."
 }
 
+# 8c. Build Package 05 skills content limits.
+# Allowed under skills/: README.md, skill-registry.yaml, rs/, dfd/.
+# Allowed under skills/rs/: README.md plus 17 RS skill contracts matching ^SK-[A-Z0-9-]+\.md$ (excluding any SK-DFD-* prefix).
+# Allowed under skills/dfd/: README.md plus 9 DFD subskill contracts matching ^SK-DFD-0[1-9]-[A-Z0-9-]+\.md$.
+# FAIL anything else: unexpected subfolders, unexpected file extensions, .agent.md files, generated outputs.
+$skillsAbs = Resolve-PackagePath 'skills'
+$skillsTopAllowedFiles = @('README.md', 'skill-registry.yaml')
+$skillsTopAllowedDirs  = @('rs', 'dfd')
+$rsSkillPattern  = '^SK-[A-Z0-9-]+\.md$'
+$dfdSkillPattern = '^SK-DFD-0[1-9]-[A-Z0-9-]+\.md$'
+if (Test-Path -LiteralPath $skillsAbs -PathType Container) {
+    foreach ($entry in @(Get-ChildItem -LiteralPath $skillsAbs -Force)) {
+        if ($entry.PSIsContainer) {
+            if (-not ($skillsTopAllowedDirs -contains $entry.Name)) {
+                Add-Result -Status FAIL -Check '08c-skills-content-limits' -Detail "Forbidden subfolder in skills/ (Build Package 05 allows only rs/ and dfd/): skills/$($entry.Name)/"
+            }
+        }
+        else {
+            if (-not ($skillsTopAllowedFiles -contains $entry.Name)) {
+                Add-Result -Status FAIL -Check '08c-skills-content-limits' -Detail "Forbidden file at skills/ root (Build Package 05 allows only README.md and skill-registry.yaml here): skills/$($entry.Name)"
+            }
+        }
+    }
+    # skills/rs/ — README.md + 17 SK-*.md (excluding SK-DFD-* which belongs in skills/dfd/)
+    $rsAbs = Join-Path $skillsAbs 'rs'
+    if (Test-Path -LiteralPath $rsAbs -PathType Container) {
+        foreach ($child in @(Get-ChildItem -LiteralPath $rsAbs -Force)) {
+            if ($child.PSIsContainer) {
+                Add-Result -Status FAIL -Check '08c-skills-content-limits' -Detail "Forbidden subfolder in skills/rs/ (Build Package 05 disallows nested folders): skills/rs/$($child.Name)/"
+                continue
+            }
+            if ($child.Name -eq 'README.md') { continue }
+            if ($child.Name -match '^SK-DFD-0[1-9]-') {
+                Add-Result -Status FAIL -Check '08c-skills-content-limits' -Detail "Numbered DFD subskill belongs under skills/dfd/, not skills/rs/: skills/rs/$($child.Name)"
+                continue
+            }
+            if ($child.Name -notmatch $rsSkillPattern) {
+                Add-Result -Status FAIL -Check '08c-skills-content-limits' -Detail "Forbidden file in skills/rs/ (only README.md and SK-*.md matching '$rsSkillPattern' allowed): skills/rs/$($child.Name)"
+            }
+        }
+    }
+    # skills/dfd/ — README.md + 9 SK-DFD-0[1-9]-*.md
+    $dfdAbs = Join-Path $skillsAbs 'dfd'
+    if (Test-Path -LiteralPath $dfdAbs -PathType Container) {
+        foreach ($child in @(Get-ChildItem -LiteralPath $dfdAbs -Force)) {
+            if ($child.PSIsContainer) {
+                Add-Result -Status FAIL -Check '08c-skills-content-limits' -Detail "Forbidden subfolder in skills/dfd/ (Build Package 05 disallows nested folders): skills/dfd/$($child.Name)/"
+                continue
+            }
+            if ($child.Name -eq 'README.md') { continue }
+            if ($child.Name -notmatch $dfdSkillPattern) {
+                Add-Result -Status FAIL -Check '08c-skills-content-limits' -Detail "Forbidden file in skills/dfd/ (only README.md and SK-DFD-0[1-9]-*.md matching '$dfdSkillPattern' allowed): skills/dfd/$($child.Name)"
+            }
+        }
+    }
+    $skillFails = @($results | Where-Object { $_.Check -eq '08c-skills-content-limits' -and $_.Status -eq 'FAIL' }).Count
+    if ($skillFails -eq 0) {
+        Add-Result -Status PASS -Check '08c-skills-content-limits' -Detail "skills/ surface matches Build Package 05 contract (README.md, skill-registry.yaml, rs/, dfd/, with 17 SK-*.md under rs/ and 9 SK-DFD-0[1-9]-*.md under dfd/)."
+    }
+}
+else {
+    Add-Result -Status FAIL -Check '08c-skills-content-limits' -Detail "skills/ folder is missing."
+}
+
 # 9. samples/ — only README.md at top, no sample-* subfolders before Build Package 10
 $samplesAbs = Resolve-PackagePath 'samples'
 $samplesFails = @()
@@ -268,7 +336,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -281,7 +349,7 @@ if ($validationFails.Count -gt 0) {
     foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 03: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-04 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-05 documents."
 }
 
 # 12. tools/ — Build Package 03 expected file set

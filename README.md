@@ -12,14 +12,15 @@ The package is designed to test prompts, skills, adapters, DFD extraction, struc
 
 ## Current State
 
-Build Packages 01–04 are committed:
+Build Packages 01–05 are committed (Build Package 05 is active and pending human review before commit):
 
 - **Build Package 01** — Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent instruction standard.
 - **Build Package 02** — Config and run-profile variable model (`config/`).
 - **Build Package 03** — Tools and setup/test/export scripts (`tools/`).
 - **Build Package 04** — Prompts and prompt registry (`prompts/`): 23 canonical prompt cards (14 RS, 9 DFD) plus [prompts/prompt-registry.yaml](prompts/prompt-registry.yaml).
+- **Build Package 05** — Skills and skill registry (`skills/`): 26 canonical skill contracts (17 RS, 9 DFD) plus [skills/skill-registry.yaml](skills/skill-registry.yaml). Each skill contract wraps one Build Package 04 prompt card with a 14-section reusable work contract.
 
-These four packages do not create diagrams, skill contracts, PRA specifications, `.agent.md` adapters, catalogs, blueprints, templates beyond authoring-agent templates, samples, run outputs, DOCX/PDF/PPTX/ZIP artifacts, runtime code, schemas outside `config/`, cloud resources, MCP proof, or ADK proof.
+These five packages do not create PRA specifications, `.agent.md` adapters, catalogs, blueprints, templates beyond authoring-agent templates, samples, run outputs, diagrams, docs/runbooks, DOCX/PDF/PPTX/ZIP artifacts, runtime code, schemas outside `config/`, cloud resources, MCP proof, or ADK proof.
 
 Build Package numbers define the implementation sequence. Root Area numbers define visible package-tree rows and folder ownership. Root Area 01 is Root & Top-Level Files, followed by the 17 actual root folders.
 
@@ -36,7 +37,7 @@ The old package at `D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01` is r
 
 ## Build Order
 
-The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md). The next allowed Build Package after Build Package 04 is **Build Package 05 — Skills and skill registry**.
+The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md). The next allowed Build Package after Build Package 05 is **Build Package 06 — Prototype agents, PRA specs, and `.agent.md` adapter model**.
 
 ## Not Yet Created
 

@@ -11,7 +11,7 @@ This workspace is the clean rebuild root for **AISRAF SAS Prototype v0.1.2**. Co
 
 ## Current State
 
-Build Packages 01–04 are committed. Build Package 04 added prompts and the prompt registry (`prompts/`, 23 cards). Later Build Packages must follow their own build contracts before adding skill contracts, PRA specs, `.agent.md` adapters, catalogs, blueprints, templates beyond authoring-agent templates, samples, runs, diagrams, documentation, release packaging, or final QA artifacts. The next allowed Build Package is Build Package 05 — Skills and skill registry.
+Build Packages 01–05 are active. Build Package 05 added the skill registry and 26 canonical skill contracts (`skills/skill-registry.yaml`, 17 RS skills under `skills/rs/`, 9 DFD subskills under `skills/dfd/`). Each skill contract wraps one Build Package 04 prompt card with a 14-section reusable work contract. Later Build Packages must follow their own build contracts before adding PRA specs, `.agent.md` adapters, catalogs, blueprints, templates beyond authoring-agent templates, samples, runs, diagrams, documentation, release packaging, or final QA artifacts. The next allowed Build Package is Build Package 06 — Prototype agents, PRA specs, and `.agent.md` adapter model.
 
 ## Foundation Rules
 
@@ -30,7 +30,7 @@ Build Packages 01–04 are committed. Build Package 04 added prompts and the pro
 ## Artifact Boundaries
 
 - Prompt: reusable instruction file for Copilot or an agent, deferred to Build Package 04.
-- Skill: reusable work contract, not an executable tool, deferred to Build Package 05.
+- Skill: reusable work contract, not an executable tool, active in Build Package 05 (`skills/skill-registry.yaml`, `skills/rs/SK-*.md`, `skills/dfd/SK-DFD-0[1-9]-*.md`).
 - PRA: Prototype Review Agent specification, not a deployed runtime agent, deferred to Build Package 06.
 - `.agent.md` adapter: local VS Code/GitHub Copilot wrapper around canonical PRA/prompt/skill artifacts, deferred to Build Package 06.
 - Catalog: controlled vocabulary source, deferred to Build Package 07.

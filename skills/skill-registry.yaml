@@ -1,0 +1,880 @@
+schema_version: aisraf_skill_registry.v0_1_2
+registry_id: skill-registry
+title: AISRAF SAS Skill Registry
+package_version: v0.1.2
+owning_build_package: "05"
+status: active
+skill_count: 26
+skill_family_counts:
+  rs: 17
+  dfd: 9
+skill_families:
+  - rs
+  - dfd
+
+purpose: >
+  Register the canonical, reusable skill contracts for AISRAF SAS Prototype
+  v0.1.2. Each skill contract describes a discrete reusable work unit with
+  identity, purpose, required and optional inputs, required outputs, procedure,
+  stop conditions, unknown handling, confidence handling, critical misses,
+  human review gate, validation/scoring relationship, direct skill test, and
+  out-of-scope claims. Skills wrap the Build Package 04 prompt cards. They are
+  not executable runtime tools. Build Package 06 will wrap each skill in a PRA
+  specification and a thin local .agent.md adapter.
+
+scope:
+  canonical_skill_root: skills
+  skill_subfolders:
+    - skills/rs
+    - skills/dfd
+  skill_contracts_are_runtime_tools: false
+  skill_contracts_claim_pra_execution: false
+  skill_contracts_claim_adapter_execution: false
+  skill_contracts_claim_external_postback: false
+  skill_contracts_claim_scoring_proof_outside_sk_accuracy_score: false
+  skill_contracts_claim_release_or_diagram_export: false
+
+parameter_contract:
+  run_profile_source: runs/{{run_id}}/run-profile.yaml
+  required_run_profile_fields:
+    - "{{run_id}}"
+    - "{{input_root}}"
+    - "{{expected_root}}"
+    - "{{output_root}}"
+    - "{{mode}}"
+    - "{{postback_execution_status}}"
+    - "{{output_destination_mode}}"
+  no_hardcoded_values:
+    - run_id
+    - sample_id
+    - input_root
+    - expected_root
+    - output_root
+    - source_ticket_url
+    - destination_ticket_url
+    - destination_confluence_url
+    - output_destination_mode
+    - postback_execution_status
+  output_root_rule: every_skill_write_path_must_resolve_under_output_root
+  schema_authority: config/run-profile.schema.yaml
+  field_catalog: config/run-profile.field-catalog.md
+  validation_rules: config/run-profile.validation-rules.md
+  path_resolution_rules: config/path-resolution-rules.md
+  sensitive_data_rules: config/sensitive-data-rules.md
+
+required_skill_sections:
+  - "1. Identity"
+  - "2. Purpose"
+  - "3. Required Inputs"
+  - "4. Optional Inputs"
+  - "5. Required Outputs"
+  - "6. Procedure"
+  - "7. Stop Conditions"
+  - "8. Unknown Handling"
+  - "9. Confidence Handling"
+  - "10. Critical Misses"
+  - "11. Human Review Gate"
+  - "12. Validation / Scoring Relationship"
+  - "13. Direct Skill Test"
+  - "14. Not In Scope"
+
+forbidden_claims:
+  - pra_execution
+  - agent_md_adapter_execution
+  - jira_postback_execution
+  - confluence_publication_execution
+  - rovo_execution
+  - mcp_execution
+  - runtime_or_cloud_execution
+  - database_execution
+  - terraform_or_adk_execution
+  - release_or_zip_export_from_a_skill
+  - diagram_generation_from_a_skill
+  - scoring_proof_outside_sk_accuracy_score
+  - hardcoded_run_id_paths_or_urls
+  - prompt_card_modification
+  - baseline_modification_under_expected_root
+
+placeholder_conventions:
+  future_pra_owner_suffix: "(planned; defined in Build Package 06)"
+  future_catalog_suffix: "(planned; defined in Build Package 07)"
+  future_blueprint_suffix: "(planned; defined in Build Package 08)"
+  future_template_suffix: "(planned; defined in Build Package 09)"
+  future_baseline_suffix: "(planned; defined in Build Package 10)"
+  future_format_contract_suffix: "(planned; defined in Build Package 14)"
+  notes: >
+    The future_pra_owner values in this registry are non-binding placeholders.
+    Build Package 06 will replace each future_pra_owner with a concrete PRA-*
+    specification path. A skill contract may not depend on a Package 06+
+    artifact as a hard read.
+
+compatibility_notes:
+  prompt_registry_naming_drift:
+    detail: >
+      The Build Package 04 prompt registry (prompts/prompt-registry.yaml) uses
+      placeholder names for two skills that diverge from the canonical Package
+      05 names. The skill registry below is authoritative for SK-* names.
+      Build Package 05 does not edit the prompt registry. Founder approved
+      Q1 of the Package 05 plan.
+    drift_pairs:
+      - prompt_registry_placeholder: SK-DFD-LEGEND-NORMALIZE
+        canonical_package_05_skill: SK-LEGEND-NORMALIZE
+        prompt_id: PR-RS-03
+        rationale: >
+          The skill operates on RS-03 (Legend Normalize), an RS-family skill,
+          not a DFD-family subskill. The DFD- prefix is dropped to match the
+          RS family scope.
+      - prompt_registry_placeholder: SK-SECURITY-STACK-DETECT
+        canonical_package_05_skill: SK-SECURITY-STACK-ASSESS
+        prompt_id: PR-RS-05
+        rationale: >
+          The skill assesses presence/absence and gap state, not just
+          detection of stack markers. The verb is updated to "ASSESS".
+  prompt_review_step_field_vs_skill_review_step:
+    detail: >
+      Some Build Package 04 prompt registry entries label the prompt's
+      review_step using the prompt-sequence number (e.g. PR-RS-06 review_step
+      "RS-06") even though the prompt covers a different SAS RS step
+      (PR-RS-06 supports RS-08 / SK-DATA-FLOW-TABLE-BUILD). The skill
+      registry below is authoritative for the canonical SAS RS-01..RS-17
+      review-step semantic. The prompt registry is treated as a Package 04
+      prompt-chain label and is not edited in Build Package 05. Founder
+      approved Q2 of the Package 05 plan.
+    crosswalk:
+      - prompt_id: PR-RS-01
+        prompt_review_step_field: RS-01
+        canonical_skill_review_step: RS-01
+      - prompt_id: PR-RS-02
+        prompt_review_step_field: RS-02
+        canonical_skill_review_step: RS-02
+      - prompt_id: PR-RS-03
+        prompt_review_step_field: RS-03
+        canonical_skill_review_step: RS-03
+      - prompt_id: PR-RS-04
+        prompt_review_step_field: RS-04
+        canonical_skill_review_steps: [RS-04, RS-05]
+      - prompt_id: PR-RS-05
+        prompt_review_step_field: RS-05
+        canonical_skill_review_steps: [RS-06, RS-07]
+      - prompt_id: PR-RS-06
+        prompt_review_step_field: RS-06
+        canonical_skill_review_step: RS-08
+      - prompt_id: PR-RS-07
+        prompt_review_step_field: RS-07-and-RS-12
+        canonical_skill_review_steps: [RS-09, RS-12]
+      - prompt_id: PR-RS-08
+        prompt_review_step_field: RS-08
+        canonical_skill_review_step: RS-10
+      - prompt_id: PR-RS-09
+        prompt_review_step_field: RS-09
+        canonical_skill_review_step: RS-11
+      - prompt_id: PR-RS-10
+        prompt_review_step_field: RS-10
+        canonical_skill_review_steps: [RS-13, RS-14]
+      - prompt_id: PR-RS-11
+        prompt_review_step_field: RS-11
+        canonical_skill_review_step: RS-15
+      - prompt_id: PR-RS-12
+        prompt_review_step_field: RS-13
+        canonical_skill_review_step: RS-16
+      - prompt_id: PR-RS-13
+        prompt_review_step_field: RS-14-through-RS-17
+        canonical_skill_review_step: RS-17
+
+planned_future_skills:
+  notes: >
+    These entries are NOT counted in skill_count. They are recorded for
+    traceability against Package 04 prompt registry placeholders. Founder
+    approved Q3 of the Package 05 plan: do not create a 27th skill.
+  - planned_skill_id: SK-CHAIN-WRAPPER
+    referenced_by_prompt_id: PR-RS-00
+    referenced_by_prompt_file: prompts/rs/00-run-full-chain.prompt.md
+    status: deferred
+    detail: >
+      The Package 04 prompt registry records future_skill_id
+      "SK-CHAIN-WRAPPER (planned; defined in Build Package 05)" for the
+      planned full-chain wrapper prompt. Build Package 05 does not author
+      this skill contract. The wrapper prompt remains status: planned and
+      writes no output. Future packages may re-evaluate whether a wrapper
+      skill is needed; Build Package 05's 26-skill contract is fixed.
+
+skills:
+
+  # --- RS family (17 contracts) ---
+
+  - skill_id: SK-INPUT-PACKAGE-READ
+    skill_file: skills/rs/SK-INPUT-PACKAGE-READ.md
+    skill_family: rs
+    review_step: RS-01
+    mapped_prompt_id: PR-RS-01
+    mapped_prompt_file: prompts/rs/01-input-package-read.prompt.md
+    future_pra_owner: "PRA-INTAKE (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{input_root}}/"
+    output_artifacts:
+      - "{{output_root}}/01-input-inventory.md"
+    expected_baseline: "{{expected_root}}/expected-input-inventory.json (planned; defined in Build Package 10)"
+    scoring_category: input inventory completeness
+    critical_miss_refs:
+      - new_requester_form_created
+      - invented_input_listed_as_received
+      - write_outside_output_root
+      - rebaselined_expected_root
+    direct_test_supported: true
+    notes: Inventory existing review materials staged under input_root.
+
+  - skill_id: SK-DFD-VISUAL-READ
+    skill_file: skills/rs/SK-DFD-VISUAL-READ.md
+    skill_family: rs
+    review_step: RS-02
+    mapped_prompt_id: PR-RS-02
+    mapped_prompt_file: prompts/rs/02-dfd-visual-read.prompt.md
+    future_pra_owner: "PRA-DFD-READER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{input_root}}/"
+    output_artifacts:
+      - "{{output_root}}/02-visible-dfd-objects.md"
+    expected_baseline: "{{expected_root}}/expected-visible-dfd-objects.json (planned; defined in Build Package 10)"
+    scoring_category: visible DFD object extraction
+    critical_miss_refs:
+      - invented_dfd_object
+      - unsupported_precision_claimed
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Identify visible DFD objects from staged inputs without claiming unsupported precision.
+
+  - skill_id: SK-LEGEND-NORMALIZE
+    skill_file: skills/rs/SK-LEGEND-NORMALIZE.md
+    skill_family: rs
+    review_step: RS-03
+    mapped_prompt_id: PR-RS-03
+    mapped_prompt_file: prompts/rs/03-legend-normalization.prompt.md
+    future_pra_owner: "PRA-DFD-READER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{input_root}}/"
+    output_artifacts:
+      - "{{output_root}}/03-legend-normalization.md"
+    expected_baseline: "{{expected_root}}/expected-legend-normalization.json (planned; defined in Build Package 10)"
+    scoring_category: DFD legend normalization
+    critical_miss_refs:
+      - reinterpreted_token_semantics
+      - missed_pci_class5_or_security_token
+      - defaulted_unlabeled_flow_data_class
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: >
+      Compatibility note: Package 04 prompt registry uses placeholder
+      future_skill_id "SK-DFD-LEGEND-NORMALIZE" for this skill. The
+      canonical Package 05 name is SK-LEGEND-NORMALIZE.
+
+  - skill_id: SK-COMPONENT-EXTRACT
+    skill_file: skills/rs/SK-COMPONENT-EXTRACT.md
+    skill_family: rs
+    review_step: RS-04
+    mapped_prompt_id: PR-RS-04
+    mapped_prompt_file: prompts/rs/04-design-fact-extract.prompt.md
+    future_pra_owner: "PRA-DESIGN-FACT-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{output_root}}/03-legend-normalization.md"
+    output_artifacts:
+      - "{{output_root}}/04-components.md"
+    expected_baseline: "{{expected_root}}/expected-components.json (planned; defined in Build Package 10)"
+    scoring_category: component extraction
+    critical_miss_refs:
+      - invented_component
+      - missed_external_or_human_actor_or_model_or_tool_or_store
+      - claimed_runtime_from_label
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Shares prompt PR-RS-04 with SK-FLOW-EXTRACT; this skill owns 04-components.md.
+
+  - skill_id: SK-FLOW-EXTRACT
+    skill_file: skills/rs/SK-FLOW-EXTRACT.md
+    skill_family: rs
+    review_step: RS-05
+    mapped_prompt_id: PR-RS-04
+    mapped_prompt_file: prompts/rs/04-design-fact-extract.prompt.md
+    future_pra_owner: "PRA-DESIGN-FACT-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{output_root}}/04-components.md"
+    output_artifacts:
+      - "{{output_root}}/05-flows.md"
+    expected_baseline: "{{expected_root}}/expected-flows.json (planned; defined in Build Package 10)"
+    scoring_category: flow extraction
+    critical_miss_refs:
+      - missed_material_flow
+      - invented_flow
+      - parsed_annotations_before_raw_flow
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Shares prompt PR-RS-04 with SK-COMPONENT-EXTRACT; this skill owns 05-flows.md.
+
+  - skill_id: SK-BOUNDARY-CROSSING-DETECT
+    skill_file: skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+    skill_family: rs
+    review_step: RS-06
+    mapped_prompt_id: PR-RS-05
+    mapped_prompt_file: prompts/rs/05-boundary-stack-detect.prompt.md
+    future_pra_owner: "PRA-DESIGN-FACT-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+    output_artifacts:
+      - "{{output_root}}/06-boundaries.md"
+    expected_baseline: "{{expected_root}}/expected-boundaries.json (planned; defined in Build Package 10)"
+    scoring_category: boundary/security-stack detection
+    critical_miss_refs:
+      - missed_internet_or_customer_facing_boundary
+      - missed_model_tool_data_store_or_human_boundary
+      - claimed_controls_from_boundary_label
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Shares prompt PR-RS-05 with SK-SECURITY-STACK-ASSESS; this skill owns 06-boundaries.md.
+
+  - skill_id: SK-SECURITY-STACK-ASSESS
+    skill_file: skills/rs/SK-SECURITY-STACK-ASSESS.md
+    skill_family: rs
+    review_step: RS-07
+    mapped_prompt_id: PR-RS-05
+    mapped_prompt_file: prompts/rs/05-boundary-stack-detect.prompt.md
+    future_pra_owner: "PRA-DESIGN-FACT-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+    output_artifacts:
+      - "{{output_root}}/07-security-stack-assessment.md"
+    expected_baseline: "{{expected_root}}/expected-security-stack-assessment.json (planned; defined in Build Package 10)"
+    scoring_category: boundary/security-stack detection
+    critical_miss_refs:
+      - invented_security_stack_visibility
+      - treated_future_cloud_label_as_runtime_proof
+      - treated_transit_as_at_rest_or_vice_versa
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: >
+      Compatibility note: Package 04 prompt registry uses placeholder
+      future_skill_id "SK-SECURITY-STACK-DETECT" for this skill. The
+      canonical Package 05 name is SK-SECURITY-STACK-ASSESS.
+
+  - skill_id: SK-DATA-FLOW-TABLE-BUILD
+    skill_file: skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    skill_family: rs
+    review_step: RS-08
+    mapped_prompt_id: PR-RS-06
+    mapped_prompt_file: prompts/rs/06-review-table-build.prompt.md
+    future_pra_owner: "PRA-REVIEW-TABLE-BUILDER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+    output_artifacts:
+      - "{{output_root}}/08-internal-review-table.md"
+    expected_baseline: "{{expected_root}}/expected-review-table.json (planned; defined in Build Package 10)"
+    scoring_category: missing fact identification support
+    critical_miss_refs:
+      - hidden_material_unknown
+      - converted_table_into_requester_homework
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Internal SAS working material; not a requester form.
+
+  - skill_id: SK-MISSING-FACT-IDENTIFY
+    skill_file: skills/rs/SK-MISSING-FACT-IDENTIFY.md
+    skill_family: rs
+    review_step: RS-09
+    mapped_prompt_id: PR-RS-07
+    mapped_prompt_file: prompts/rs/07-missing-fact-question-generate.prompt.md
+    future_pra_owner: "PRA-MISSING-FACT-INTERVIEWER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+    output_artifacts:
+      - "{{output_root}}/09-missing-facts.md"
+    expected_baseline: "{{expected_root}}/expected-missing-facts.json (planned; defined in Build Package 10)"
+    scoring_category: missing fact identification
+    critical_miss_refs:
+      - broad_checklist_questions
+      - hidden_material_unknown
+      - closed_proof_gap_with_dfd_marker
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Shares prompt PR-RS-07 with SK-TARGETED-QUESTION-GENERATE; this skill owns 09-missing-facts.md.
+
+  - skill_id: SK-AI-ACTION-LEVEL-CLASSIFY
+    skill_file: skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+    skill_family: rs
+    review_step: RS-10
+    mapped_prompt_id: PR-RS-08
+    mapped_prompt_file: prompts/rs/08-ai-action-level-classify.prompt.md
+    future_pra_owner: "PRA-AI-CLASSIFIER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/08-internal-review-table.md"
+    output_artifacts:
+      - "{{output_root}}/10-ai-action-level.md"
+    expected_baseline: "{{expected_root}}/expected-ai-action-level.json (planned; defined in Build Package 10)"
+    scoring_category: AI Action Level classification
+    critical_miss_refs:
+      - unsupported_action_level_claim
+      - used_dfd_label_alone_to_claim_level
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Unknown AI Action Level is allowed and routes through RS-09/RS-12.
+
+  - skill_id: SK-REVIEW-BLUEPRINT-MATCH
+    skill_file: skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+    skill_family: rs
+    review_step: RS-11
+    mapped_prompt_id: PR-RS-09
+    mapped_prompt_file: prompts/rs/09-blueprint-match.prompt.md
+    future_pra_owner: "PRA-BLUEPRINT-MATCHER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/10-ai-action-level.md"
+    output_artifacts:
+      - "{{output_root}}/11-blueprint-match.md"
+    expected_baseline: "{{expected_root}}/expected-blueprint-match.json (planned; defined in Build Package 10)"
+    scoring_category: blueprint match
+    critical_miss_refs:
+      - claimed_runtime_approval
+      - invented_blueprint_or_design_shape
+      - hard_dependency_on_unbuilt_blueprint
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Until Build Package 08, primary_blueprint may be 'unknown' with the catalog-not-yet-available note.
+
+  - skill_id: SK-TARGETED-QUESTION-GENERATE
+    skill_file: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+    skill_family: rs
+    review_step: RS-12
+    mapped_prompt_id: PR-RS-07
+    mapped_prompt_file: prompts/rs/07-missing-fact-question-generate.prompt.md
+    future_pra_owner: "PRA-MISSING-FACT-INTERVIEWER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+    output_artifacts:
+      - "{{output_root}}/12-targeted-questions.md"
+    expected_baseline: "{{expected_root}}/expected-targeted-questions.json (planned; defined in Build Package 10)"
+    scoring_category: targeted question quality
+    critical_miss_refs:
+      - broad_checklist_question
+      - question_without_named_output_change
+      - pre_accepted_question_status
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Shares prompt PR-RS-07 with SK-MISSING-FACT-IDENTIFY; this skill owns 12-targeted-questions.md.
+
+  - skill_id: SK-FINDING-CLASSIFY
+    skill_file: skills/rs/SK-FINDING-CLASSIFY.md
+    skill_family: rs
+    review_step: RS-13
+    mapped_prompt_id: PR-RS-10
+    mapped_prompt_file: prompts/rs/10-finding-recommendation-write.prompt.md
+    future_pra_owner: "PRA-RISK-WRITER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+    output_artifacts:
+      - "{{output_root}}/13-findings.md"
+    expected_baseline: "{{expected_root}}/expected-findings.json (planned; defined in Build Package 10)"
+    scoring_category: finding/recommendation quality
+    critical_miss_refs:
+      - wrong_category_changes_owner
+      - finding_without_supported_evidence
+      - invented_evidence_reference
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Shares prompt PR-RS-10 with SK-RECOMMENDATION-WRITE; this skill owns 13-findings.md.
+
+  - skill_id: SK-RECOMMENDATION-WRITE
+    skill_file: skills/rs/SK-RECOMMENDATION-WRITE.md
+    skill_family: rs
+    review_step: RS-14
+    mapped_prompt_id: PR-RS-10
+    mapped_prompt_file: prompts/rs/10-finding-recommendation-write.prompt.md
+    future_pra_owner: "PRA-RISK-WRITER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/13-findings.md"
+    output_artifacts:
+      - "{{output_root}}/14-recommendations.md"
+    expected_baseline: "{{expected_root}}/expected-recommendations.json (planned; defined in Build Package 10)"
+    scoring_category: finding/recommendation quality
+    critical_miss_refs:
+      - invented_control_owner_or_evidence
+      - recommendation_not_citing_finding
+      - claimed_implementation_proof
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Shares prompt PR-RS-10 with SK-FINDING-CLASSIFY; this skill owns 14-recommendations.md.
+
+  - skill_id: SK-HANDOFF-PACK-BUILD
+    skill_file: skills/rs/SK-HANDOFF-PACK-BUILD.md
+    skill_family: rs
+    review_step: RS-15
+    mapped_prompt_id: PR-RS-11
+    mapped_prompt_file: prompts/rs/11-handoff-pack-build.prompt.md
+    future_pra_owner: "PRA-HANDOFF-BUILDER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+    output_artifacts:
+      - "{{output_root}}/15-handoff-pack.md"
+    expected_baseline: "{{expected_root}}/expected-handoff-pack.md (planned; defined in Build Package 10)"
+    scoring_category: handoff pack completeness
+    critical_miss_refs:
+      - mixed_validation_proof_into_closeout
+      - re_routed_ticket_without_supported_facts
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Design-review material only; validation proof routed to SK-VALIDATION-NOTE-WRITE.
+
+  - skill_id: SK-VALIDATION-NOTE-WRITE
+    skill_file: skills/rs/SK-VALIDATION-NOTE-WRITE.md
+    skill_family: rs
+    review_step: RS-16
+    mapped_prompt_id: PR-RS-12
+    mapped_prompt_file: prompts/rs/12-validation-note-write.prompt.md
+    future_pra_owner: "PRA-VALIDATION-NOTE-WRITER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+    output_artifacts:
+      - "{{output_root}}/16-validation-notes.md"
+    expected_baseline: "{{expected_root}}/expected-validation-notes.md (planned; defined in Build Package 10)"
+    scoring_category: validation-ticket routing
+    critical_miss_refs:
+      - merged_validation_with_design_review
+      - claimed_evidence_when_absent
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Validation ticket is separate from design-review closeout.
+
+  - skill_id: SK-ACCURACY-SCORE
+    skill_file: skills/rs/SK-ACCURACY-SCORE.md
+    skill_family: rs
+    review_step: RS-17
+    mapped_prompt_id: PR-RS-13
+    mapped_prompt_file: prompts/rs/13-accuracy-score.prompt.md
+    future_pra_owner: "PRA-VALIDATION-SCORER (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{expected_root}}/"
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+      - "{{output_root}}/15-handoff-pack.md"
+      - "{{output_root}}/16-validation-notes.md"
+    output_artifacts:
+      - "{{output_root}}/17-accuracy-score.md"
+    expected_baseline: "{{expected_root}}/expected-accuracy-score.json (planned; defined in Build Package 10)"
+    scoring_category: all scoring categories (160 points total)
+    critical_miss_refs:
+      - scored_before_structured_outputs_exist
+      - ignored_critical_miss
+      - claimed_accuracy_without_baseline_when_required
+      - score_inflation_by_hiding_unknowns
+      - edited_baseline_under_expected_root
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: >
+      Conditional scoring. Runs only when scoring_enabled is true,
+      expected_baseline_required is true, and {{expected_root}} is non-empty
+      and populated. Otherwise records 'not_applicable' and stops cleanly.
+      No other skill or prompt may produce an accuracy score.
+
+  # --- DFD family (9 contracts) ---
+
+  - skill_id: SK-DFD-01-INTAKE-QUALITY-CHECK
+    skill_file: skills/dfd/SK-DFD-01-INTAKE-QUALITY-CHECK.md
+    skill_family: dfd
+    dfd_step: DFD-01
+    mapped_prompt_id: PR-DFD-02
+    mapped_prompt_file: prompts/dfd/02-dfd-intake-quality-check.prompt.md
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{input_root}}/"
+    output_artifacts:
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+    expected_baseline: "{{expected_root}}/expected-visible-dfd-objects.json (planned; defined in Build Package 10)"
+    scoring_category: dfd intake readiness (feeds RS scoring indirectly)
+    critical_miss_refs:
+      - proceed_after_unreadable_dfd
+      - ignored_real_sensitive_material
+      - treated_input_availability_as_implementation_proof
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Gate for DFD-02..DFD-09 progression. No DFD facts extracted here.
+
+  - skill_id: SK-DFD-02-BOUNDARY-EXTRACT
+    skill_file: skills/dfd/SK-DFD-02-BOUNDARY-EXTRACT.md
+    skill_family: dfd
+    dfd_step: DFD-02
+    mapped_prompt_id: PR-DFD-03
+    mapped_prompt_file: prompts/dfd/03-boundary-extract.prompt.md
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{input_root}}/"
+    output_artifacts:
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+    expected_baseline: "{{expected_root}}/expected-boundaries.json (planned; defined in Build Package 10)"
+    scoring_category: feeds RS-06 boundary scoring
+    critical_miss_refs:
+      - missed_internet_or_customer_facing_boundary
+      - missed_model_tool_data_store_or_human_boundary
+      - claimed_controls_from_boundary_label
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Boundary catalog from visible DFD only.
+
+  - skill_id: SK-DFD-03-COMPONENT-EXTRACT
+    skill_file: skills/dfd/SK-DFD-03-COMPONENT-EXTRACT.md
+    skill_family: dfd
+    dfd_step: DFD-03
+    mapped_prompt_id: PR-DFD-04
+    mapped_prompt_file: prompts/dfd/04-component-extract.prompt.md
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{input_root}}/"
+    output_artifacts:
+      - "{{output_root}}/dfd/03-component-catalog.md"
+    expected_baseline: "{{expected_root}}/expected-components.json (planned; defined in Build Package 10)"
+    scoring_category: feeds RS-04 component scoring
+    critical_miss_refs:
+      - invented_component
+      - missed_external_or_human_actor_or_model_or_tool_or_store
+      - claimed_runtime_from_label
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Component catalog tied to DFD-02 boundaries.
+
+  - skill_id: SK-DFD-04-FLOW-EXTRACT
+    skill_file: skills/dfd/SK-DFD-04-FLOW-EXTRACT.md
+    skill_family: dfd
+    dfd_step: DFD-04
+    mapped_prompt_id: PR-DFD-05
+    mapped_prompt_file: prompts/dfd/05-flow-extract.prompt.md
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{input_root}}/"
+    output_artifacts:
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+    expected_baseline: "{{expected_root}}/expected-flows.json (planned; defined in Build Package 10)"
+    scoring_category: feeds RS-05 flow scoring
+    critical_miss_refs:
+      - missed_material_flow
+      - invented_flow
+      - parsed_annotations_before_raw_flow
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Raw flow inventory; annotation parsing is owned by DFD-05.
+
+  - skill_id: SK-DFD-05-ANNOTATION-RESOLVE
+    skill_file: skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md
+    skill_family: dfd
+    dfd_step: DFD-05
+    mapped_prompt_id: PR-DFD-06
+    mapped_prompt_file: prompts/dfd/06-annotation-resolve.prompt.md
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{input_root}}/"
+    output_artifacts:
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+    expected_baseline: "{{expected_root}}/expected-legend-normalization.json (planned; defined in Build Package 10)"
+    scoring_category: feeds RS-03 legend normalization scoring
+    critical_miss_refs:
+      - reinterpreted_token_semantics
+      - treated_stack_marker_as_approved_stack
+      - missed_pci_class5_or_security_token
+      - defaulted_unlabeled_flow_data_class
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Resolves visible legend tokens; never invents token meaning.
+
+  - skill_id: SK-DFD-06-BOUNDARY-CROSSING-DETECT
+    skill_file: skills/dfd/SK-DFD-06-BOUNDARY-CROSSING-DETECT.md
+    skill_family: dfd
+    dfd_step: DFD-06
+    mapped_prompt_id: PR-DFD-07
+    mapped_prompt_file: prompts/dfd/07-boundary-crossing-detect.prompt.md
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+    output_artifacts:
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+    expected_baseline: "{{expected_root}}/expected-boundaries.json (planned; defined in Build Package 10)"
+    scoring_category: feeds RS-06 boundary scoring
+    critical_miss_refs:
+      - missed_internet_facing_crossing
+      - invented_crossing_without_dfd_04_support
+      - claimed_controls_from_boundary_label
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Crossings derived from DFD-02..DFD-05 only.
+
+  - skill_id: SK-DFD-07-CONTROL-SIGNAL-DETECT
+    skill_file: skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+    skill_family: dfd
+    dfd_step: DFD-07
+    mapped_prompt_id: PR-DFD-08
+    mapped_prompt_file: prompts/dfd/08-control-signal-detect.prompt.md
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+    output_artifacts:
+      - "{{output_root}}/dfd/07-control-signals.md"
+    expected_baseline: "{{expected_root}}/expected-security-stack-assessment.json (planned; defined in Build Package 10)"
+    scoring_category: feeds RS-07 security-stack scoring
+    critical_miss_refs:
+      - invented_control_signal_visibility
+      - treated_future_cloud_label_as_runtime_proof
+      - treated_transit_as_at_rest_or_vice_versa
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Visible signals only; review signals are not implementation proof.
+
+  - skill_id: SK-DFD-08-CONFIDENCE-SCORE
+    skill_file: skills/dfd/SK-DFD-08-CONFIDENCE-SCORE.md
+    skill_family: dfd
+    dfd_step: DFD-08
+    mapped_prompt_id: PR-DFD-09
+    mapped_prompt_file: prompts/dfd/09-confidence-score.prompt.md
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+      - "{{output_root}}/dfd/07-control-signals.md"
+    output_artifacts:
+      - "{{output_root}}/dfd/08-confidence-score.md"
+    expected_baseline: "(no separate baseline; per-row confidence aggregated for downstream review)"
+    scoring_category: extraction confidence (not accuracy)
+    critical_miss_refs:
+      - claimed_accuracy_score_in_confidence_skill
+      - promoted_unknown_to_high_without_evidence
+      - hid_low_or_unknown_rows
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Per-row confidence record; accuracy scoring is owned by SK-ACCURACY-SCORE only.
+
+  - skill_id: SK-DFD-09-EXTRACTION-SUMMARIZE
+    skill_file: skills/dfd/SK-DFD-09-EXTRACTION-SUMMARIZE.md
+    skill_family: dfd
+    dfd_step: DFD-09
+    mapped_prompt_id: PR-DFD-10
+    mapped_prompt_file: prompts/dfd/10-dfd-extraction-summarize.prompt.md
+    future_pra_owner: "PRA-DFD-EXTRACTOR (planned; defined in Build Package 06)"
+    input_dependencies:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+      - "{{output_root}}/dfd/07-control-signals.md"
+      - "{{output_root}}/dfd/08-confidence-score.md"
+    output_artifacts:
+      - "{{output_root}}/dfd/09-extraction-summary.md"
+    expected_baseline: "(no separate baseline; navigation artifact for the RS chain)"
+    scoring_category: extraction summary (not accuracy)
+    critical_miss_refs:
+      - asserted_accuracy_score_in_summary
+      - claimed_completeness_when_intake_was_limited
+      - hid_residual_gaps
+      - write_outside_output_root
+    direct_test_supported: true
+    notes: Summary always records accuracy_score_claim = not_applicable. Accuracy is owned by SK-ACCURACY-SCORE only.
