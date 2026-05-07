@@ -221,19 +221,19 @@ Path: `templates/`
 
 Owning Build Package: Build Package 09.
 
-Purpose: future reusable output shapes.
+Purpose: reusable output-shape source. Templates define the shape of run outputs, run-log rows, Jira-ready local drafts, and Confluence-ready local drafts. Templates are not catalogs, not prompt cards, not skill contracts, not PRA specs, not `.agent.md` adapters, not blueprints, not samples, and not run outputs.
 
-Who uses it: prompt authors, skill authors, run operators, validators, and release authors.
+Who uses it: prompt authors (Build Package 04), skill authors (Build Package 05), PRA authors (Build Package 06), `.agent.md` adapter authors (Build Package 06), catalog authors (Build Package 07), blueprint authors (Build Package 08), run operators, validators, and release authors.
 
-Allowed file types: Markdown README in Build Package 01; later Markdown/YAML templates when Build Package 09 authorizes them.
+Allowed file types: Markdown templates and one YAML registry only. Layout: `templates/README.md`, `templates/template-registry.yaml`, `templates/output/README.md` plus 27 `output-*-template.md` files (18 RS + 9 DFD), `templates/jira/README.md` plus 1 `jira-ticket-draft-template.md`, `templates/confluence/README.md` plus 1 `confluence-page-draft-template.md`, `templates/run/README.md` plus 2 row templates (`run-log-entry-row-template.md`, `postback-log-entry-row-template.md`). Total: 31 templates, 1 template registry, 5 READMEs (root + 4 family) = 37 files.
 
-Belongs here: expected structures for outputs, run logs, tickets, Confluence drafts, recommendations, validation notes, and reports.
+Belongs here: file-shape templates for canonical run-output paths under `{{output_root}}` and `{{output_root}}/dfd/`; Jira-ready and Confluence-ready local draft templates; per-step and post-back run-log row patterns; the template registry that maps every template to its consumers (prompts, skills, PRAs, adapters, blueprints, catalogs).
 
-Does not belong here: sample outputs, live run artifacts, release binaries, scripts, or schemas unless a later Build Package authorizes them.
+Does not belong here: invented one-off vocabulary, new catalog identifiers, new controlled values, recommendation prose, finding prose, validation-ticket prose, owner routing prose, severity / score / AI Action Level computation, blueprint match decisions, implementation proof claims, external post-back claims without `executed_by_operator` evidence, runtime/cloud/ADK/Vertex/GCP/MCP/Jira/Confluence/Rovo/database/Terraform claims, runtime code, schemas outside `config/`, release artifacts, prompt bodies, skill contracts, PRA specs, `.agent.md` adapters, samples, runs, diagrams, docs/runbooks, or any non-Markdown/non-YAML file.
 
 Populated by: Build Package 09.
 
-Build Package 01 status: reserved with README only.
+Build Package 09 status: active. 31 templates plus the template registry, 5 READMEs (root + 4 family) are present. Founder decision Q4 seals the upstream Build Package 04, 05, 06, 07, and 08 registries; Build Package 09 records its template→prompt, template→skill, template→PRA, template→adapter, template→blueprint, and template→catalog consumer maps in `templates/template-registry.yaml` only.
 
 ## Root Area 12 — `samples/`
 

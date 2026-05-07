@@ -14,12 +14,12 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "08"
-  build_package_name: Blueprints
-  build_package_status: active
-next_build_package:
   build_package_number: "09"
   build_package_name: Templates
+  build_package_status: active
+next_build_package:
+  build_package_number: "10"
+  build_package_name: Samples and expected baselines
   build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
@@ -607,6 +607,100 @@ build_package_08_allowed_writes:
     - owner routing inside any blueprint
     - implementation proof claims inside any blueprint
     - runtime services, cloud assets, ADK/Vertex/GCP, MCP/Jira/Confluence/Rovo execution proof, database jobs, Terraform, release binaries
+build_package_09_allowed_writes:
+  template_files:
+    - templates/template-registry.yaml
+    - templates/output/output-00-run-log-template.md
+    - templates/output/output-01-input-inventory-template.md
+    - templates/output/output-02-visible-dfd-objects-template.md
+    - templates/output/output-03-legend-normalization-template.md
+    - templates/output/output-04-components-template.md
+    - templates/output/output-05-flows-template.md
+    - templates/output/output-06-boundaries-template.md
+    - templates/output/output-07-security-stack-assessment-template.md
+    - templates/output/output-08-internal-review-table-template.md
+    - templates/output/output-09-missing-facts-template.md
+    - templates/output/output-10-ai-action-level-template.md
+    - templates/output/output-11-blueprint-match-template.md
+    - templates/output/output-12-targeted-questions-template.md
+    - templates/output/output-13-findings-template.md
+    - templates/output/output-14-recommendations-template.md
+    - templates/output/output-15-handoff-pack-template.md
+    - templates/output/output-16-validation-notes-template.md
+    - templates/output/output-17-accuracy-score-template.md
+    - templates/output/output-dfd-01-intake-quality-check-template.md
+    - templates/output/output-dfd-02-boundary-catalog-template.md
+    - templates/output/output-dfd-03-component-catalog-template.md
+    - templates/output/output-dfd-04-flow-inventory-template.md
+    - templates/output/output-dfd-05-annotation-resolution-template.md
+    - templates/output/output-dfd-06-boundary-crossings-template.md
+    - templates/output/output-dfd-07-control-signals-template.md
+    - templates/output/output-dfd-08-confidence-score-template.md
+    - templates/output/output-dfd-09-extraction-summary-template.md
+    - templates/jira/jira-ticket-draft-template.md
+    - templates/confluence/confluence-page-draft-template.md
+    - templates/run/run-log-entry-row-template.md
+    - templates/run/postback-log-entry-row-template.md
+  template_readmes:
+    - templates/README.md
+    - templates/output/README.md
+    - templates/jira/README.md
+    - templates/confluence/README.md
+    - templates/run/README.md
+  validation_files:
+    - validation/package-09-templates-checklist.md
+    - validation/template-registry-checklist.md
+    - validation/template-consumption-checklist.md
+  governance_updates:
+    - PACKAGE-MANIFEST.yaml
+    - FOLDER-CONTRACTS.md
+    - README.md
+    - START-HERE.md
+    - .github/copilot-instructions.md
+    - validation/no-drift-rules.md
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1
+  template_count: 31
+  template_family_count: 4
+  template_family_counts:
+    output: 27
+    jira: 1
+    confluence: 1
+    run: 2
+  total_files_under_templates: 37
+  founder_decisions:
+    q1_run_log_template_split: approved_two_template_model_file_shape_in_output_row_pattern_in_run
+    q2_connector_field_placeholders: approved_use_only_fields_present_in_current_run_profile_schema
+    q3_controlled_catalog_values: approved_placeholder_by_catalog_path_no_enumeration
+    q4_naming_convention: approved_output_NN_name_template_md
+    q5_template_count: approved_lock_at_31_with_4_families_27_1_1_2
+    q6_test_aisraf_package_patch: approved_surgical_five_change_patch
+  prohibited:
+    - prompts/* prompt cards or registry edits
+    - skills/* skill contracts or registry edits
+    - prototype-agents/* PRA specs or registry edits
+    - .agents/*.agent.md adapter file edits
+    - catalogs/* catalog content or registry edits
+    - blueprints/* blueprint content or registry edits
+    - samples/* sample inputs or expected baselines
+    - runs/* committed run outputs
+    - diagrams/* diagram content
+    - docs/* runbooks or practitioner guides
+    - release/* release artifacts
+    - schemas outside config/
+    - .github/prompts/ wrappers
+    - tools/Export-AisrafRelease.ps1 or any new release-export tool
+    - any new tool beyond the surgical Test-AisrafPackage.ps1 patch
+    - introduction of {{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, or {{validation_root}} variables in any template
+    - new catalog identifier introduced inside any template
+    - new controlled value introduced inside any template
+    - enumerated catalog values inside any template body
+    - severity, score, AI Action Level, or blueprint-match computation inside any template
+    - finding facts invented inside any template
+    - recommendation prose invented inside any template
+    - external post-back claim without postback_execution_status executed_by_operator and matching templates/run/postback-log-entry-row-template.md row in {{output_root}}/00-run-log.md
+    - any template count or layout deviating from the locked 31 templates / 4 families / 37 files
+    - runtime services, cloud assets, ADK/Vertex/GCP, MCP/Jira/Confluence/Rovo execution proof, database jobs, Terraform, release binaries
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
@@ -622,7 +716,7 @@ pra_status: active
 agent_adapter_status: active
 catalog_status: active
 blueprint_status: active
-template_status: deferred_to_build_package_09_except_authoring_agent_templates
+template_status: active
 sample_status: deferred_to_build_package_10
 run_output_status: deferred_to_build_package_11
 release_artifact_status: deferred_to_build_package_15

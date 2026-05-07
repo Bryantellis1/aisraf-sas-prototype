@@ -12,7 +12,7 @@ The package is designed to test prompts, skills, adapters, DFD extraction, struc
 
 ## Current State
 
-Build Packages 01–08 are active (Build Package 08 is the most recent, pending human review before commit):
+Build Packages 01–09 are active (Build Package 09 is the most recent, pending human review before commit):
 
 - **Build Package 01** — Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent instruction standard.
 - **Build Package 02** — Config and run-profile variable model (`config/`).
@@ -22,8 +22,9 @@ Build Packages 01–08 are active (Build Package 08 is the most recent, pending 
 - **Build Package 06** — Prototype agents, PRA specs, and `.agent.md` adapter model (`prototype-agents/`, `.agents/`): 8 canonical Prototype Review Agent specs (PRA-01..PRA-08) plus [prototype-agents/prototype-agent-registry.yaml](prototype-agents/prototype-agent-registry.yaml), and 7 thin local `.agent.md` adapter wrappers under [.agents/](.agents/) (orchestrator, input-reader, dfd-extractor, review-table-builder, blueprint-questioner, finding-recommender, handoff-qa-scorer). PRA-04-LEGEND-NORMALIZER has no dedicated adapter; it is wrapped jointly with PRA-03 by [.agents/aisraf-dfd-extractor.agent.md](.agents/aisraf-dfd-extractor.agent.md). PRAs and adapters are specifications/wrappers, not deployed runtime agents.
 - **Build Package 07** — Catalogs (`catalogs/`): 24 controlled-vocabulary YAML catalogs across 7 families (components, interactions, boundaries, identity-access, data-protection, security-stacks, review) plus [catalogs/catalog-registry.yaml](catalogs/catalog-registry.yaml) and 8 READMEs. Two catalogs are cross-cutting: [catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml](catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml) (`global_rule: true`) and [catalogs/data-protection/confidence-level-catalog.yaml](catalogs/data-protection/confidence-level-catalog.yaml) (`cross_cutting_catalog: true`). Catalogs are read-only at runtime; they are not executable tools, runtime services, blueprints, prompts, skills, agent logic, or runbooks. Build Package 07 did not modify any prompt, skill, prototype-agent, or adapter registry.
 - **Build Package 08** — Blueprints (`blueprints/`): 9 controlled YAML blueprints split across two category folders (8 under [blueprints/platform-independent/](blueprints/platform-independent/) and 1 under [blueprints/cloud-patterns/](blueprints/cloud-patterns/)) plus [blueprints/blueprint-registry.yaml](blueprints/blueprint-registry.yaml), [blueprints/blueprint-template.yaml](blueprints/blueprint-template.yaml), and 3 READMEs (14 files total). Match states are fixed at four values: `matched`, `candidate`, `no_match`, `unknown`. Each blueprint references Build Package 07 catalog identifiers only; no new catalog values are introduced. Blueprints scope catalog evidence and surface material missing facts; selection of severity, AI Action Level, finding categories, recommendation types, and final disposition is owned by the consuming Build Package 05 skills and human review. Build Package 08 did not modify any prompt, skill, prototype-agent, adapter, or catalog registry.
+- **Build Package 09** — Templates (`templates/`): 31 reusable Markdown output-shape templates across 4 family folders (27 under [templates/output/](templates/output/), 1 under [templates/jira/](templates/jira/), 1 under [templates/confluence/](templates/confluence/), 2 under [templates/run/](templates/run/)) plus [templates/template-registry.yaml](templates/template-registry.yaml) and 5 READMEs (37 files total). Templates define output shape only; they do not execute the review, do not compute severity / score / AI Action Level / blueprint match, do not invent finding facts or recommendation prose, and do not claim Jira / Confluence / Rovo / MCP / runtime / cloud / ADK / database / Terraform execution. Templates use only the seven approved run-profile placeholder variables; other run-profile fields are referenced descriptively as `[copy from runs/{{run_id}}/run-profile.yaml#field_name]`. Catalog values are referenced via `<value-from-catalogs/...>` placeholder syntax (no enumeration inside template bodies; founder decision Q3). Build Package 09 did not modify any prompt, skill, prototype-agent, adapter, catalog, or blueprint registry; template→prompt, template→skill, template→PRA, template→adapter, template→blueprint, and template→catalog consumer maps are recorded only in [templates/template-registry.yaml](templates/template-registry.yaml) and the validation checklists.
 
-These eight packages do not create templates beyond authoring-agent templates, samples, run outputs, diagrams, docs/runbooks, DOCX/PDF/PPTX/ZIP artifacts, runtime code, schemas outside `config/`, cloud resources, MCP proof, or ADK proof.
+These nine packages do not create samples, run outputs, diagrams, docs/runbooks, DOCX/PDF/PPTX/ZIP artifacts, runtime code, schemas outside `config/`, cloud resources, MCP proof, or ADK proof.
 
 Build Package numbers define the implementation sequence. Root Area numbers define visible package-tree rows and folder ownership. Root Area 01 is Root & Top-Level Files, followed by the 17 actual root folders.
 
@@ -40,7 +41,7 @@ The old package at `D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01` is r
 
 ## Build Order
 
-The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md). The next allowed Build Package after Build Package 08 is **Build Package 09 — Templates**.
+The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md). The next allowed Build Package after Build Package 09 is **Build Package 10 — Samples and expected baselines**.
 
 ## Not Yet Created
 

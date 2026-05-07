@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-08 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-09 surface of AISRAF SAS Prototype v0.1.2.
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -33,9 +33,15 @@
         category folders each with README.md and only the listed YAML files;
         9 controlled YAML blueprints in total);
       - Build Package 08 validation files exist;
+      - Build Package 09 templates/ surface matches the approved layout
+        (README.md, template-registry.yaml, four family folders each with
+        README.md and only the listed Markdown templates; 31 controlled
+        Markdown templates in total: 27 output + 1 jira + 1 confluence + 2
+        run);
+      - Build Package 09 validation files exist;
       - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP,
-        template/sample/diagram/docs/release content beyond folder
-        README placeholders);
+        sample/diagram/docs/release content beyond folder README
+        placeholders);
       - the old reference workspace path is acknowledged as read-only.
 
     The test does not run prompts, skills, PRAs, .agent.md adapters, Jira,
@@ -222,8 +228,8 @@ if ($adapterFails -eq 0) {
 # .agents/ is owned by Build Package 06 (active); see Check 07 for the adapter surface.
 # catalogs/ is owned by Build Package 07 (active); see Check 08e for the catalogs/ allowed surface.
 # blueprints/ is owned by Build Package 08 (active); see Check 08f for the blueprints/ allowed surface.
+# templates/ is owned by Build Package 09 (active); see Check 08g for the templates/ allowed surface.
 $readmeOnlyFolders = @{
-    'templates'        = 'Build Package 09'
     'diagrams'         = 'Build Package 13'
     'docs'             = 'Build Package 14'
     'release'          = 'Build Package 15'
@@ -594,6 +600,110 @@ else {
     Add-Result -Status FAIL -Check '08f-blueprints-content-limits' -Detail "blueprints/ folder is missing."
 }
 
+# 8g. Build Package 09 templates content limits.
+# Allowed under templates/: README.md, template-registry.yaml, and exactly 4 family folders.
+# Each family folder must contain README.md plus exactly the approved Markdown template files.
+# FAIL: unexpected files at templates/ root, unexpected family folders, missing required
+# template files, extra template files, nested folders, or non-Markdown files inside families.
+$templatesAbs = Resolve-PackagePath 'templates'
+$templatesTopAllowedFiles = @('README.md', 'template-registry.yaml')
+$templateFamilyAllowedFiles = @{
+    'output'     = @(
+        'README.md',
+        'output-00-run-log-template.md',
+        'output-01-input-inventory-template.md',
+        'output-02-visible-dfd-objects-template.md',
+        'output-03-legend-normalization-template.md',
+        'output-04-components-template.md',
+        'output-05-flows-template.md',
+        'output-06-boundaries-template.md',
+        'output-07-security-stack-assessment-template.md',
+        'output-08-internal-review-table-template.md',
+        'output-09-missing-facts-template.md',
+        'output-10-ai-action-level-template.md',
+        'output-11-blueprint-match-template.md',
+        'output-12-targeted-questions-template.md',
+        'output-13-findings-template.md',
+        'output-14-recommendations-template.md',
+        'output-15-handoff-pack-template.md',
+        'output-16-validation-notes-template.md',
+        'output-17-accuracy-score-template.md',
+        'output-dfd-01-intake-quality-check-template.md',
+        'output-dfd-02-boundary-catalog-template.md',
+        'output-dfd-03-component-catalog-template.md',
+        'output-dfd-04-flow-inventory-template.md',
+        'output-dfd-05-annotation-resolution-template.md',
+        'output-dfd-06-boundary-crossings-template.md',
+        'output-dfd-07-control-signals-template.md',
+        'output-dfd-08-confidence-score-template.md',
+        'output-dfd-09-extraction-summary-template.md'
+    )
+    'jira'       = @(
+        'README.md',
+        'jira-ticket-draft-template.md'
+    )
+    'confluence' = @(
+        'README.md',
+        'confluence-page-draft-template.md'
+    )
+    'run'        = @(
+        'README.md',
+        'run-log-entry-row-template.md',
+        'postback-log-entry-row-template.md'
+    )
+}
+if (Test-Path -LiteralPath $templatesAbs -PathType Container) {
+    foreach ($entry in @(Get-ChildItem -LiteralPath $templatesAbs -Force)) {
+        if ($entry.PSIsContainer) {
+            if (-not ($templateFamilyAllowedFiles.ContainsKey($entry.Name))) {
+                Add-Result -Status FAIL -Check '08g-templates-content-limits' -Detail "Forbidden subfolder in templates/ (Build Package 09 allows only the 4 approved family folders): templates/$($entry.Name)/"
+            }
+        }
+        else {
+            if (-not ($templatesTopAllowedFiles -contains $entry.Name)) {
+                Add-Result -Status FAIL -Check '08g-templates-content-limits' -Detail "Forbidden file at templates/ root (Build Package 09 allows only README.md and template-registry.yaml here): templates/$($entry.Name)"
+            }
+        }
+    }
+    foreach ($family in $templateFamilyAllowedFiles.Keys) {
+        $familyAbs = Join-Path $templatesAbs $family
+        if (-not (Test-Path -LiteralPath $familyAbs -PathType Container)) {
+            Add-Result -Status FAIL -Check '08g-templates-content-limits' -Detail "Required Build Package 09 template family folder missing: templates/$family/"
+            continue
+        }
+        $approvedNames = $templateFamilyAllowedFiles[$family]
+        $observedNames = @()
+        foreach ($child in @(Get-ChildItem -LiteralPath $familyAbs -Force)) {
+            if ($child.PSIsContainer) {
+                Add-Result -Status FAIL -Check '08g-templates-content-limits' -Detail "Forbidden subfolder in templates/$family/ (Build Package 09 disallows nested folders): templates/$family/$($child.Name)/"
+                continue
+            }
+            $observedNames += $child.Name
+            if (-not ($approvedNames -contains $child.Name)) {
+                Add-Result -Status FAIL -Check '08g-templates-content-limits' -Detail "Forbidden file in templates/$family/ (Build Package 09 fixes the template inventory at the approved Markdown file list): templates/$family/$($child.Name)"
+            }
+        }
+        foreach ($name in $approvedNames) {
+            if (-not ($observedNames -contains $name)) {
+                Add-Result -Status FAIL -Check '08g-templates-content-limits' -Detail "Required Build Package 09 template file missing: templates/$family/$name"
+            }
+        }
+    }
+    foreach ($name in $templatesTopAllowedFiles) {
+        $expected = Join-Path $templatesAbs $name
+        if (-not (Test-Path -LiteralPath $expected -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '08g-templates-content-limits' -Detail "Required Build Package 09 template file missing: templates/$name"
+        }
+    }
+    $templateFails = @($results | Where-Object { $_.Check -eq '08g-templates-content-limits' -and $_.Status -eq 'FAIL' }).Count
+    if ($templateFails -eq 0) {
+        Add-Result -Status PASS -Check '08g-templates-content-limits' -Detail "templates/ surface matches Build Package 09 contract (README.md, template-registry.yaml, 4 family folders each with README.md and the approved Markdown template files; 31 controlled templates total: 27 output + 1 jira + 1 confluence + 2 run)."
+    }
+}
+else {
+    Add-Result -Status FAIL -Check '08g-templates-content-limits' -Detail "templates/ folder is missing."
+}
+
 # 9. samples/ — only README.md at top, no sample-* subfolders before Build Package 10
 $samplesAbs = Resolve-PackagePath 'samples'
 $samplesFails = @()
@@ -631,7 +741,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md', 'package-09-templates-checklist.md', 'template-registry-checklist.md', 'template-consumption-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -644,7 +754,7 @@ if ($validationFails.Count -gt 0) {
     foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 03: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-08 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-09 documents."
 }
 
 # 12. tools/ — Build Package 03 expected file set
