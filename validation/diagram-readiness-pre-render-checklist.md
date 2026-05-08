@@ -6,6 +6,8 @@ Scope: Build Package 13 entry gate. Confirms — under a hard precondition — t
 
 > **Top-of-file hard precondition.** BP13 is **BLOCKED** until `BP12-SAMPLE-DFD-BLOCKER` is resolved via founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD is authorized. If the precondition is not met, **every downstream gate in this file evaluates to `BLOCKED`** (not PASS, not FAIL) and BP13 cannot enter.
 
+> **`BP12-SAMPLE-DFD-BLOCKER: RESOLVED-BY-10A` (sample side).** Build Package 10A reworked `samples/sample-001-dfd-crop/inputs/dfd-crop.mmd` and `dfd-crop.png` into a realistic GCP-style architecture review DFD that satisfies the founder-specified diagrammatic-quality gates. The precondition gate below (§Precondition Gate (Hard), gate 0) becomes **MET** after Build Package 11A refreshes the byte-copies under `runs/RUN-001/inputs/`. Until 11A lands, the precondition reads `MET-ON-SAMPLE-SIDE` and downstream gates remain `BLOCKED-PENDING-11A`. After 11A lands, downstream gates re-evaluate against the catalog / blueprint / template / sample inventory. See `validation/package-10a-corrective-patch-checklist.md` for the 10A falsifiable evidence.
+
 ## Identity
 
 - Gate category: Forward gate.

@@ -6,6 +6,8 @@ Scope: per-sample readiness gate over `samples/sample-001-dfd-crop/`. Confirms t
 
 This checklist does not modify any sample artefact. The current sample-001 DFD FAILs the diagrammatic-quality gates; the FAIL is attributed to `BP12-SAMPLE-DFD-BLOCKER` (severity HARD, owner founder). BP12 records the FAIL line-by-line; only a founder-approved Package 10A / 11A corrective patch or a founder-approved sample-002 may correct it.
 
+> **`BP12-SAMPLE-DFD-BLOCKER: RESOLVED-BY-10A` (sample side).** Build Package 10A reworked the canonical DFD into a realistic GCP-style architecture review diagram. The diagrammatic-quality gates 7, 8, 11, 12, 13, 14, 15, 16 below now PASS against the corrected `samples/sample-001-dfd-crop/inputs/dfd-crop.mmd` and `dfd-crop.png`. See `validation/package-10a-corrective-patch-checklist.md` for the falsifiable evidence. Build Package 11A refreshes the byte-copies under `runs/RUN-001/inputs/` to complete resolution; until 11A lands, BP13 entry remains pinned `next_allowed_pending_blocker_resolution`. The verdict text below is preserved as the BP12 historical record.
+
 ## Identity
 
 - Gate category: Sample gate.

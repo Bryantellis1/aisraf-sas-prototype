@@ -6,6 +6,8 @@ Scope: confirms the Build Package 12 surface for AISRAF SAS Prototype v0.1.2 —
 
 Build Package 12 also records and carries forward `BP12-SAMPLE-DFD-BLOCKER` as a hard, named, non-silent blocker on the canonical sample DFD (`samples/sample-001-dfd-crop/inputs/dfd-crop.png`/`.mmd` and the byte-copy under `runs/RUN-001/inputs/`). BP12 does not modify the sample DFD; only a founder-approved Package 10A / 11A corrective patch or a founder-approved sample-002 may.
 
+> **`BP12-SAMPLE-DFD-BLOCKER: RESOLVED-BY-10A` (sample side).** Build Package 10A reworked the canonical sample DFD into a realistic GCP-style architecture review diagram. The falsifiable cross-reference gate that searches for the literal string `BP12-SAMPLE-DFD-BLOCKER` in `validation/sample-input-readiness-checklist.md`, `validation/expected-output-lint-checklist.md`, `validation/diagram-readiness-pre-render-checklist.md`, `validation/no-drift-rules.md`, this file, `validation/final-qa-checklist.md`, and `PACKAGE-MANIFEST.yaml` continues to PASS — every cited file now also carries the resolution annotation. See `validation/package-10a-corrective-patch-checklist.md` for the 10A falsifiable evidence. Build Package 11A completes resolution by refreshing `runs/RUN-001/inputs/`.
+
 ## Identity
 
 - Package: Build Package 12 — Validation.

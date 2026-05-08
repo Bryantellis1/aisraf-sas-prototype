@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-12 surface of AISRAF SAS Prototype v0.1.2.
+    Smoke-test the Build Package 01-12 surface of AISRAF SAS Prototype v0.1.2 (with corrective patch 10A active on the sample side).
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -931,6 +931,75 @@ else {
     Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Required Build Package 11 run fixture missing: runs/RUN-001/"
 }
 
+# 08j. sample DFD grammar — Build Package 10A default sample-DFD standard
+# Enforces against samples/sample-001-dfd-crop/inputs/dfd-crop.mmd:
+#   - 4-token flow grammar: <flow name> / <C#>,<T#>,<IA#|SA#|CA#>,<AZ#|AZ?>
+#   - explicit authorization on every flow (AZ# or AZ?)
+#   - embedded legend subgraph present (subgraph LEGEND)
+#   - storage tuple on every Data subnet store (<class> • R# • <Enc|Tok|Mask|Clr|Unknown>)
+#   - no BND-NN/CMP-NN/F#/BC-NN as primary visual labels (subgraph titles, node visible labels)
+$dfdMmdPath = Resolve-PackagePath 'samples/sample-001-dfd-crop/inputs/dfd-crop.mmd'
+if (Test-Path -LiteralPath $dfdMmdPath -PathType Leaf) {
+    $dfdMmd = Get-Content -LiteralPath $dfdMmdPath -Raw
+    $dfdGrammarFails = @()
+
+    # 1. embedded legend subgraph present
+    if (-not ($dfdMmd -match '(?m)^\s*subgraph\s+LEGEND\b')) {
+        $dfdGrammarFails += "Embedded legend subgraph 'subgraph LEGEND' missing in dfd-crop.mmd. Default DFD standard (no-drift-rules.md rule 20) requires a compact legend panel inside the rendered DFD."
+    }
+
+    # 2. flow grammar: every Mermaid edge label must match 4-token grammar
+    $flowEdgeRegex = '--\s*"([^"]+)"\s*-->'
+    $flowGrammarRegex = '^[^/]+\s*/\s*C[0-9]+,T[0-9]+,(IA|SA|CA)[0-9]+[OS]?,(AZ[0-9]+|AZ\?)$'
+    $edgeMatches = [regex]::Matches($dfdMmd, $flowEdgeRegex)
+    foreach ($m in $edgeMatches) {
+        $label = $m.Groups[1].Value
+        if ($label -notmatch $flowGrammarRegex) {
+            $dfdGrammarFails += "Non-compliant flow label in dfd-crop.mmd (no-drift-rules.md rules 18-19; default 4-token grammar): '$label'. Required: <flow name> / <C#>,<T#>,<IA#|SA#|CA#>,<AZ#|AZ?>"
+        }
+    }
+    if ($edgeMatches.Count -lt 1) {
+        $dfdGrammarFails += "No flow edges parsed from dfd-crop.mmd (expected 14)."
+    }
+
+    # 3. data-store storage tuple: every node label containing the bullet '•' must match 3-token tuple
+    $storeNodeRegex = '\["([^"]*•[^"]*)"\]'
+    $storeTupleRegex = '^[^•]+•\s*R[0-9]+\s*•\s*(Enc|Tok|Mask|Clr|Unknown)$'
+    $storeMatches = [regex]::Matches($dfdMmd, $storeNodeRegex)
+    foreach ($m in $storeMatches) {
+        $label = $m.Groups[1].Value
+        # Strip Mermaid <br/> line breaks; keep the storage line for the regex match
+        $bodyAfterBr = ($label -split '<br/>')[-1]
+        # Trim a leading C#-token (e.g., "C4 ") if present at start of bodyAfterBr — actually the stored label is "<class> • R1 • Enc" already
+        if ($bodyAfterBr -notmatch $storeTupleRegex) {
+            $dfdGrammarFails += "Non-compliant data-store storage tuple in dfd-crop.mmd (no-drift-rules.md rule 21): '$label'. Required: <class> • R# • <Enc|Tok|Mask|Clr|Unknown>"
+        }
+    }
+
+    # 4. no extraction-ID-as-primary-visual-label
+    # Check subgraph titles and node visible labels for BND-NN / CMP-NN / F# / BC-NN at start of label string
+    $subgraphTitleRegex = '(?m)^\s*subgraph\s+\S+\s*\[(BND-[0-9]+|CMP-[0-9]+|F[0-9]+|BC-[0-9]+)\b'
+    if ($dfdMmd -match $subgraphTitleRegex) {
+        $dfdGrammarFails += "Extraction ID as primary subgraph title in dfd-crop.mmd (no-drift-rules.md rule 22): '$($Matches[1])'. Subgraph titles must be real architecture concepts."
+    }
+    $nodeIdLabelRegex = '\["((?:BND-[0-9]+|CMP-[0-9]+|F[0-9]+|BC-[0-9]+)[\s].*?)"\]'
+    if ($dfdMmd -match $nodeIdLabelRegex) {
+        $dfdGrammarFails += "Extraction ID as primary visual node label in dfd-crop.mmd (no-drift-rules.md rule 22): '$($Matches[1])'. Node visible labels must be real component / boundary names."
+    }
+
+    if ($dfdGrammarFails.Count -gt 0) {
+        foreach ($s in $dfdGrammarFails) { Add-Result -Status FAIL -Check '08j-sample-dfd-grammar' -Detail $s }
+    }
+    else {
+        $flowCount = $edgeMatches.Count
+        $storeCount = $storeMatches.Count
+        Add-Result -Status PASS -Check '08j-sample-dfd-grammar' -Detail "samples/sample-001-dfd-crop/inputs/dfd-crop.mmd conforms to the Build Package 10A default DFD standard (no-drift-rules.md rules 18-22): embedded LEGEND subgraph present; $flowCount flows match the 4-token grammar with explicit AZ# or AZ?; $storeCount data-store tuples match <class> • R# • <Enc|Tok|Mask|Clr|Unknown>; no BND-NN/CMP-NN/F#/BC-NN extraction IDs leaked into primary visual labels."
+    }
+}
+else {
+    Add-Result -Status FAIL -Check '08j-sample-dfd-grammar' -Detail "Required sample DFD source missing: samples/sample-001-dfd-crop/inputs/dfd-crop.mmd"
+}
+
 # 10. authoring-agents/ — only the four templates approved by Build Package 01
 $authAbs = Resolve-PackagePath 'authoring-agents'
 $authoringAllowed = @('README.md', 'agent-instruction-triad-template.md', 'package-build-agent-template.md', 'package-validation-template.md', 'package-acceptance-checklist.md')
@@ -951,7 +1020,7 @@ else {
 
 # 11. validation/ — Build Package 03 expected file set
 $validationAbs = Resolve-PackagePath 'validation'
-$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md', 'package-09-templates-checklist.md', 'template-registry-checklist.md', 'template-consumption-checklist.md', 'package-10-samples-checklist.md', 'sample-registry-checklist.md', 'sample-baseline-checklist.md', 'package-11-runs-checklist.md', 'run-folder-shape-checklist.md', 'run-log-checklist.md', 'run-comparison-checklist.md', 'package-12-validation-checklist.md', 'scoring-rubric-checklist.md', 'package-lint-master-checklist.md', 'expected-output-lint-checklist.md', 'prompt-skill-pra-parity-checklist.md', 'sample-input-readiness-checklist.md', 'local-run-readiness-checklist.md', 'prototype-execution-readiness-checklist.md', 'diagram-readiness-pre-render-checklist.md', 'docs-readiness-pre-render-checklist.md', 'final-qa-checklist.md')
+$validationAllowed = @('README.md', 'no-drift-rules.md', 'release-readiness-checklist.md', 'package-01-foundation-checklist.md', 'package-02-config-checklist.md', 'package-03-tools-checklist.md', 'package-04-prompts-checklist.md', 'prompt-registry-checklist.md', 'package-05-skills-checklist.md', 'skill-registry-checklist.md', 'package-06-agents-checklist.md', 'agent-registry-checklist.md', 'prompt-skill-agent-mapping-checklist.md', 'package-07-catalogs-checklist.md', 'catalog-registry-checklist.md', 'catalog-consumption-checklist.md', 'package-08-blueprints-checklist.md', 'blueprint-registry-checklist.md', 'blueprint-catalog-consumption-checklist.md', 'package-09-templates-checklist.md', 'template-registry-checklist.md', 'template-consumption-checklist.md', 'package-10-samples-checklist.md', 'sample-registry-checklist.md', 'sample-baseline-checklist.md', 'package-11-runs-checklist.md', 'run-folder-shape-checklist.md', 'run-log-checklist.md', 'run-comparison-checklist.md', 'package-12-validation-checklist.md', 'scoring-rubric-checklist.md', 'package-lint-master-checklist.md', 'expected-output-lint-checklist.md', 'prompt-skill-pra-parity-checklist.md', 'sample-input-readiness-checklist.md', 'local-run-readiness-checklist.md', 'prototype-execution-readiness-checklist.md', 'diagram-readiness-pre-render-checklist.md', 'docs-readiness-pre-render-checklist.md', 'final-qa-checklist.md', 'package-10a-corrective-patch-checklist.md')
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $validationAbs -Force -File)) {
@@ -964,7 +1033,7 @@ if ($validationFails.Count -gt 0) {
     foreach ($s in $validationFails) { Add-Result -Status FAIL -Check '11-validation-allowed' -Detail "Unexpected file in validation/ at Build Package 12: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-12 documents."
+    Add-Result -Status PASS -Check '11-validation-allowed' -Detail "validation/ contains only the Build Package 01-12 documents (plus Build Package 10A corrective-patch checklist)."
 }
 
 # 12. tools/ — Build Package 03 expected file set

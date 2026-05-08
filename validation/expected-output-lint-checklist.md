@@ -17,6 +17,8 @@ This checklist does not modify any expected baseline. Where a baseline is found 
 
 `BP12-SAMPLE-DFD-BLOCKER` (severity HARD, owner founder) is cited in this checklist's gate set. The current sample DFD input mixes extraction IDs with visual architecture notation, uses BND-/CMP-/F-style labels as primary diagram language, has weak/incorrect boundary semantics, and does not consistently follow AISRAF flow-label grammar or data-store annotation rules. Expected baselines that normalize this defect into a "clean" output silently misrepresent the input quality and FAIL gate set §6 below.
 
+> **`BP12-SAMPLE-DFD-BLOCKER: RESOLVED-BY-10A` (sample side).** Build Package 10A reworked the canonical DFD and the affected expected baselines (the DFD now uses real architecture boundaries, real component names, and the founder-specified `<data/action name> / <C#>,<T#>,<auth>` flow-label grammar). The §6 defect-non-normalization gate now PASSes because the inputs no longer carry the original defect to normalize away. See `validation/package-10a-corrective-patch-checklist.md` for the falsifiable evidence. Build Package 11A completes resolution by refreshing `runs/RUN-001/inputs/`. The verdict text below is preserved as the BP12 historical record.
+
 ## Scope
 
 - 17 RS expected baselines: `expected-01-input-inventory.md` through `expected-17-accuracy-score.md`.

@@ -14,14 +14,14 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "12"
-  build_package_name: Validation
+  build_package_number: "10A"
+  build_package_name: Sample DFD Correction (corrective patch resolving BP12-SAMPLE-DFD-BLOCKER on the sample side)
   build_package_status: active
 next_build_package:
-  build_package_number: "13"
-  build_package_name: Diagrams
+  build_package_number: "11A"
+  build_package_name: RUN-001 Input Refresh (byte-copy refresh from corrected sample-001 inputs)
   build_package_status: next_allowed_pending_blocker_resolution
-  pending_blocker: BP12-SAMPLE-DFD-BLOCKER
+  pending_blocker: BP12-SAMPLE-DFD-BLOCKER (RESOLVED-BY-10A on the sample side; pending RESOLVED-BY-10A-AND-11A after RUN-001 byte-copy refresh)
 build_packages:
   - build_package_number: "01"
     build_package_name: Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent standard
@@ -916,31 +916,136 @@ build_package_12_allowed_writes:
       severity: HARD
       owner: founder
       blocks: Build Package 13 entry
+      resolution_status: RESOLVED-BY-10A   # sample side resolved by Build Package 10A; pending RESOLVED-BY-10A-AND-11A after byte-copy refresh under runs/RUN-001/inputs/
+      sample_side_status: RESOLVED-BY-10A
+      run_side_status: pending_resolution_by_11A
       resolution_options:
-        - founder-approved Package 10A / 11A corrective patch to samples/sample-001-dfd-crop/inputs/dfd-crop.png and dfd-crop.mmd
-        - founder-approved sample-002 with a clean canonical DFD
+        - founder-approved Package 10A / 11A corrective patch to samples/sample-001-dfd-crop/inputs/dfd-crop.png and dfd-crop.mmd   # CHOSEN — Build Package 10A executed the sample-side correction
+        - founder-approved sample-002 with a clean canonical DFD                                                                  # not chosen
       cross_referenced_in:
-        - validation/sample-input-readiness-checklist.md
-        - validation/expected-output-lint-checklist.md
-        - validation/diagram-readiness-pre-render-checklist.md
-        - validation/no-drift-rules.md
-        - validation/package-12-validation-checklist.md
-        - validation/final-qa-checklist.md
-        - PACKAGE-MANIFEST.yaml
+        - validation/sample-input-readiness-checklist.md            # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
+        - validation/expected-output-lint-checklist.md              # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
+        - validation/diagram-readiness-pre-render-checklist.md      # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
+        - validation/no-drift-rules.md                              # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
+        - validation/package-12-validation-checklist.md             # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
+        - validation/final-qa-checklist.md                          # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
+        - validation/package-10a-corrective-patch-checklist.md      # 10A falsifiable evidence
+        - PACKAGE-MANIFEST.yaml                                     # this file
       defect_statement: |
         The current DFD is not acceptable as the canonical AISRAF sample DFD because it
         mixes extraction IDs with visual architecture notation, uses artificial BND-/CMP-/F-style
         labels as primary diagram language, has weak/incorrect boundary semantics, and does not
         consistently follow AISRAF flow-label grammar or data-store annotation rules.
       bp12_disposition: record_validate_surface_in_every_relevant_gate_do_not_correct
-      bp12_does_not_modify:
-        - samples/sample-001-dfd-crop/inputs/dfd-crop.png
+      bp10a_disposition: corrective_patch_default_DFD_standard_4_token_flow_grammar_AZ_explicit_or_unknown_embedded_legend_panel_real_GCP_topology_real_components_storage_state_markers
+      bp12_did_not_modify:
+        - samples/sample-001-dfd-crop/inputs/dfd-crop.png      # modified by 10A
+        - samples/sample-001-dfd-crop/inputs/dfd-crop.mmd      # modified by 10A
+        - runs/RUN-001/inputs/dfd-crop.png                     # 11A scope
+        - runs/RUN-001/inputs/dfd-crop.mmd                     # 11A scope
+        - samples/sample-001-dfd-crop/expected/                # 17 of 26 baselines modified by 10A; 9 remain byte-stable
+        - samples-002                                          # no sample-002 folder created
+      bp10a_modified:
         - samples/sample-001-dfd-crop/inputs/dfd-crop.mmd
-        - runs/RUN-001/inputs/dfd-crop.png
-        - runs/RUN-001/inputs/dfd-crop.mmd
-        - samples/sample-001-dfd-crop/expected/   # all 26 baselines remain byte-stable in BP12
-        - samples-002 (no folder created in BP12)
+        - samples/sample-001-dfd-crop/inputs/dfd-crop.png
+        - samples/sample-001-dfd-crop/inputs/dfd-legend-excerpt.md
+        - samples/sample-001-dfd-crop/README.md
+        - samples/sample-001-dfd-crop/expected/expected-02-visible-dfd-objects.md
+        - samples/sample-001-dfd-crop/expected/expected-03-legend-normalization.md
+        - samples/sample-001-dfd-crop/expected/expected-04-components.md
+        - samples/sample-001-dfd-crop/expected/expected-05-flows.md
+        - samples/sample-001-dfd-crop/expected/expected-06-boundaries.md
+        - samples/sample-001-dfd-crop/expected/expected-07-security-stack-assessment.md
+        - samples/sample-001-dfd-crop/expected/expected-08-internal-review-table.md
+        - samples/sample-001-dfd-crop/expected/expected-09-missing-facts.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-01-intake-quality-check.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-02-boundary-catalog.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-03-component-catalog.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-04-flow-inventory.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-05-annotation-resolution.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-06-boundary-crossings.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-07-control-signals.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-08-confidence-score.md
+        - samples/sample-001-dfd-crop/expected/expected-dfd-09-extraction-summary.md
+
+build_package_10a_allowed_writes:
+  sample_inputs:
+    - samples/sample-001-dfd-crop/inputs/dfd-crop.mmd          # rewritten — real GCP topology
+    - samples/sample-001-dfd-crop/inputs/dfd-crop.png          # regenerated via mmdc -i ... -o ... -w 2400 -H 1500 -b transparent
+    - samples/sample-001-dfd-crop/inputs/dfd-legend-excerpt.md # rewritten — IA1, SA5, SA7, S1 ◇, T1, R1, Enc, C2, C4
+  sample_root_files:
+    - samples/sample-001-dfd-crop/README.md                    # rewritten §2 surface coverage; §15 corrective patch
+  sample_001_expected_rs_baselines_modified:
+    - samples/sample-001-dfd-crop/expected/expected-02-visible-dfd-objects.md
+    - samples/sample-001-dfd-crop/expected/expected-03-legend-normalization.md
+    - samples/sample-001-dfd-crop/expected/expected-04-components.md
+    - samples/sample-001-dfd-crop/expected/expected-05-flows.md
+    - samples/sample-001-dfd-crop/expected/expected-06-boundaries.md
+    - samples/sample-001-dfd-crop/expected/expected-07-security-stack-assessment.md
+    - samples/sample-001-dfd-crop/expected/expected-08-internal-review-table.md
+    - samples/sample-001-dfd-crop/expected/expected-09-missing-facts.md
+  sample_001_expected_dfd_baselines_modified:
+    - samples/sample-001-dfd-crop/expected/expected-dfd-01-intake-quality-check.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-02-boundary-catalog.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-03-component-catalog.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-04-flow-inventory.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-05-annotation-resolution.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-06-boundary-crossings.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-07-control-signals.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-08-confidence-score.md
+    - samples/sample-001-dfd-crop/expected/expected-dfd-09-extraction-summary.md
+  sample_001_expected_baselines_byte_stable:
+    - samples/sample-001-dfd-crop/expected/expected-01-input-inventory.md
+    - samples/sample-001-dfd-crop/expected/expected-10-ai-action-level.md
+    - samples/sample-001-dfd-crop/expected/expected-11-blueprint-match.md
+    - samples/sample-001-dfd-crop/expected/expected-12-targeted-questions.md
+    - samples/sample-001-dfd-crop/expected/expected-13-findings.md
+    - samples/sample-001-dfd-crop/expected/expected-14-recommendations.md
+    - samples/sample-001-dfd-crop/expected/expected-15-handoff-pack.md
+    - samples/sample-001-dfd-crop/expected/expected-16-validation-notes.md
+    - samples/sample-001-dfd-crop/expected/expected-17-accuracy-score.md
+  validation_files:
+    - validation/package-10a-corrective-patch-checklist.md     # NEW — 47 falsifiable gates + validation commands
+  governance_updates:
+    - PACKAGE-MANIFEST.yaml                                    # this file (current/next package; carried_forward_blockers status; allowed_writes block)
+    - validation/no-drift-rules.md                             # appended ## Build Package 10A — Sample DFD Correction rules (rules 1-17)
+    - validation/sample-input-readiness-checklist.md           # RESOLVED-BY-10A annotation
+    - validation/expected-output-lint-checklist.md             # RESOLVED-BY-10A annotation
+    - validation/diagram-readiness-pre-render-checklist.md     # RESOLVED-BY-10A annotation (precondition gate now MET-ON-SAMPLE-SIDE)
+    - validation/package-12-validation-checklist.md            # RESOLVED-BY-10A annotation
+    - validation/final-qa-checklist.md                         # RESOLVED-BY-10A annotation
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1                             # surgical: synopsis update; Check 11 allow-list extension by exactly one filename (package-10a-corrective-patch-checklist.md)
+  founder_decisions:
+    q1_patch_or_sample_002: patch_sample_001_in_place_no_sample_002
+    q2_topology_rework: real_GCP_topology_14_components_8_boundaries_14_flows_10_boundary_crossings
+    q3_input_narrative_files: out_of_scope_for_10A_carried_forward_as_BP12_SAMPLE_DFD_NARRATIVE_DRIFT_minor_defect
+    q4_extraction_id_renumbering: topological_renumbering_CMP_01_to_14_BND_01_to_08_F1_to_F14
+    q5_test_aisraf_package_patch: surgical_three_change_patch_synopsis_plus_check_11_allow_list_one_filename_plus_new_check_08j_sample_dfd_grammar
+    q6_default_dfd_standard: 4_token_flow_grammar_required_AZ_sharp_or_AZ_question_mark_mandatory_authentication_does_not_imply_authorization
+    q7_embedded_legend_panel: subgraph_LEGEND_inside_dfd_required_dfd_legend_excerpt_md_is_supporting_documentation_only
+    q8_data_store_tuple: class_R_state_required_with_state_in_Enc_Tok_Mask_Clr_Unknown
+    q9_validation_enforcement: tools_test_aisraf_package_ps1_check_08j_enforces_grammar_legend_storage_tuple_no_extraction_id_leak
   prohibited:
+    - any modification to a sealed Build Package 01-09 surface (prompts, skills, prototype-agents, .agents adapters, catalogs, blueprints, templates, config) or BP12 surface other than the explicit BP12 cross-reference annotations
+    - modifying runs/RUN-001/inputs/ (11A scope)
+    - modifying runs/RUN-001/run-profile.yaml or runs/RUN-001/00-run-log.md or runs/RUN-001/README.md or runs/RUN-001/dfd/.gitkeep
+    - authoring sample-002 or any new sample folder
+    - silently dropping the BP12-SAMPLE-DFD-BLOCKER citation from any cross-reference file (RESOLVED-BY-10A is the recorded resolution)
+    - producing diagrams (Build Package 13)
+    - producing runbooks, practitioner guides, or docs/ content beyond docs/README.md (Build Package 14)
+    - producing release artefacts, ZIP, DOCX, PDF, PPTX, or release/ binaries (Build Package 15)
+    - producing the 17 RS or 9 DFD chain outputs in runs/RUN-001/
+    - producing a numeric accuracy score for runs/RUN-001/
+    - claims of runtime / cloud / ADK / Vertex / GCP / MCP / Jira post-back / Confluence publication / Rovo / database / Terraform / executed_by_operator execution
+    - introducing non-schema run-profile placeholders ({{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, {{validation_root}})
+    - introducing extraction IDs (CMP-NN, BND-NN, F#, BC-NN) as primary visual labels on the rendered DFD
+    - introducing AZ# tokens on visible flow labels (authentication does not imply authorization)
+    - lowering any expected_score_threshold inside any baseline to force a pass
+    - bit-copying the v0.01 reference PNG into the v0.1.2 sample
+    - tools/New-AisrafRun.ps1 or tools/Test-AisrafRunProfile.ps1 modifications
+    - any new tool beyond the surgical Test-AisrafPackage.ps1 patch
+  bp12_historical_prohibited:        # preserved from build_package_12_allowed_writes for BP12 audit trail; no longer the active prohibited list (10A is current package)
     - any modification to a sealed Build Package 01-11 surface (validation files 01-11, registries, prompts, skills, prototype-agents, .agents adapters, catalogs, blueprints, templates, samples inputs/expected, config, runs/RUN-001/run-profile.yaml, runs/RUN-001/00-run-log.md, runs/RUN-001/README.md, runs/RUN-001/inputs/, tools/New-AisrafRun.ps1, tools/Test-AisrafRunProfile.ps1)
     - modifying samples/sample-001-dfd-crop/inputs/dfd-crop.png or dfd-crop.mmd
     - modifying runs/RUN-001/inputs/dfd-crop.png or dfd-crop.mmd

@@ -6,6 +6,8 @@ Scope: terse closing gate at Build Package 12 framework standup. One screen of b
 
 This checklist is the BP12 closure gate, not the prototype's final-QA seal. The prototype's final-QA seal is owned by Build Package 16. Sealing without resolving `BP12-SAMPLE-DFD-BLOCKER` is **not** "release-ready"; it is **"framework-ready, BP13-blocked"**.
 
+> **`BP12-SAMPLE-DFD-BLOCKER: RESOLVED-BY-10A` (sample side).** Build Package 10A reworked `samples/sample-001-dfd-crop/inputs/dfd-crop.mmd` and `dfd-crop.png` into a realistic GCP-style architecture review diagram and rewrote the affected expected baselines. The closure verdict moves from `framework-ready, BP13-blocked` to `framework-ready, BP13-unblocked-pending-11A` after 10A. Build Package 11A refreshes the byte-copies under `runs/RUN-001/inputs/` to complete resolution. See `validation/package-10a-corrective-patch-checklist.md` for the falsifiable evidence.
+
 ## Identity
 
 - Gate category: Final QA.
