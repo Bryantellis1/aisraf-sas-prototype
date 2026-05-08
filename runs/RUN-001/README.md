@@ -1,10 +1,12 @@
 # RUN-001 — first governed run fixture
 
-Owning Build Package: Build Package 11 — Runs and execution evidence model.
+Owning Build Package: Build Package 11 — Runs and execution evidence model (refreshed by Build Package 11A — RUN-001 Input Refresh).
 
 Run class: **first canonical governed fixture** for `sample-001-dfd-crop` (AI SaaS Security Review Portal).
 
 > **Synthetic-data guarantee.** All staged inputs under `inputs/` are byte-copies of the synthetic inputs at [samples/sample-001-dfd-crop/inputs/](../../samples/sample-001-dfd-crop/inputs/). No real PII, PAN, SSN, PHI, customer identifiers, internal employee identifiers, secrets, credentials, or production endpoints appear here, and none must be added.
+
+> **Build Package 11A note.** The 6 input byte-copies under [inputs/](inputs/) have been refreshed from the corrected sample-001 inputs delivered by Build Package 10A (default DFD standard: 4-token flow grammar `<flow name> / <C#>,<T#>,<IA#|SA#|CA#>,<AZ#|AZ?>`; `<class> • R# • <Enc|Tok|Mask|Clr|Unknown>` data-store grammar; embedded `subgraph LEGEND` panel inside the rendered DFD; real GCP architecture boundaries; real component names; no extraction-ID leak into primary visual labels). Byte-equality is verified by SHA-256 hash comparison; see [validation/package-11a-input-refresh-checklist.md](../../validation/package-11a-input-refresh-checklist.md). 11A does not modify [run-profile.yaml](run-profile.yaml), [00-run-log.md](00-run-log.md), [dfd/.gitkeep](dfd/.gitkeep), or any sealed surface. 11A does not execute the chain; the 26 reserved future outputs (17 RS + 9 DFD) remain unmade. After 11A: `BP12-SAMPLE-DFD-BLOCKER: RESOLVED-BY-10A-AND-11A`; BP13 (Diagrams) is `next_allowed`.
 
 ## 1. What This Fixture Is
 

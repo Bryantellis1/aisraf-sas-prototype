@@ -14,14 +14,13 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "10A"
-  build_package_name: Sample DFD Correction (corrective patch resolving BP12-SAMPLE-DFD-BLOCKER on the sample side)
+  build_package_number: "11A"
+  build_package_name: RUN-001 Input Refresh (byte-copy refresh from corrected sample-001 inputs; completes BP12-SAMPLE-DFD-BLOCKER resolution)
   build_package_status: active
 next_build_package:
-  build_package_number: "11A"
-  build_package_name: RUN-001 Input Refresh (byte-copy refresh from corrected sample-001 inputs)
-  build_package_status: next_allowed_pending_blocker_resolution
-  pending_blocker: BP12-SAMPLE-DFD-BLOCKER (RESOLVED-BY-10A on the sample side; pending RESOLVED-BY-10A-AND-11A after RUN-001 byte-copy refresh)
+  build_package_number: "13"
+  build_package_name: Diagrams
+  build_package_status: next_allowed
 build_packages:
   - build_package_number: "01"
     build_package_name: Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent standard
@@ -916,20 +915,21 @@ build_package_12_allowed_writes:
       severity: HARD
       owner: founder
       blocks: Build Package 13 entry
-      resolution_status: RESOLVED-BY-10A   # sample side resolved by Build Package 10A; pending RESOLVED-BY-10A-AND-11A after byte-copy refresh under runs/RUN-001/inputs/
+      resolution_status: RESOLVED-BY-10A-AND-11A   # sample side resolved by Build Package 10A; run side resolved by Build Package 11A byte-copy refresh
       sample_side_status: RESOLVED-BY-10A
-      run_side_status: pending_resolution_by_11A
+      run_side_status: RESOLVED-BY-11A
       resolution_options:
         - founder-approved Package 10A / 11A corrective patch to samples/sample-001-dfd-crop/inputs/dfd-crop.png and dfd-crop.mmd   # CHOSEN — Build Package 10A executed the sample-side correction
         - founder-approved sample-002 with a clean canonical DFD                                                                  # not chosen
       cross_referenced_in:
-        - validation/sample-input-readiness-checklist.md            # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
-        - validation/expected-output-lint-checklist.md              # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
-        - validation/diagram-readiness-pre-render-checklist.md      # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
-        - validation/no-drift-rules.md                              # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
-        - validation/package-12-validation-checklist.md             # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
-        - validation/final-qa-checklist.md                          # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A annotation
-        - validation/package-10a-corrective-patch-checklist.md      # 10A falsifiable evidence
+        - validation/sample-input-readiness-checklist.md            # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A-AND-11A annotation
+        - validation/expected-output-lint-checklist.md              # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A-AND-11A annotation
+        - validation/diagram-readiness-pre-render-checklist.md      # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A-AND-11A annotation; precondition gate now MET
+        - validation/no-drift-rules.md                              # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A-AND-11A annotation
+        - validation/package-12-validation-checklist.md             # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A-AND-11A annotation
+        - validation/final-qa-checklist.md                          # carries BP12-SAMPLE-DFD-BLOCKER + RESOLVED-BY-10A-AND-11A annotation
+        - validation/package-10a-corrective-patch-checklist.md      # 10A falsifiable evidence (sample side)
+        - validation/package-11a-input-refresh-checklist.md         # 11A falsifiable evidence (run side, byte-equality)
         - PACKAGE-MANIFEST.yaml                                     # this file
       defect_statement: |
         The current DFD is not acceptable as the canonical AISRAF sample DFD because it
@@ -1026,7 +1026,7 @@ build_package_10a_allowed_writes:
     q7_embedded_legend_panel: subgraph_LEGEND_inside_dfd_required_dfd_legend_excerpt_md_is_supporting_documentation_only
     q8_data_store_tuple: class_R_state_required_with_state_in_Enc_Tok_Mask_Clr_Unknown
     q9_validation_enforcement: tools_test_aisraf_package_ps1_check_08j_enforces_grammar_legend_storage_tuple_no_extraction_id_leak
-  prohibited:
+  bp10a_prohibited:
     - any modification to a sealed Build Package 01-09 surface (prompts, skills, prototype-agents, .agents adapters, catalogs, blueprints, templates, config) or BP12 surface other than the explicit BP12 cross-reference annotations
     - modifying runs/RUN-001/inputs/ (11A scope)
     - modifying runs/RUN-001/run-profile.yaml or runs/RUN-001/00-run-log.md or runs/RUN-001/README.md or runs/RUN-001/dfd/.gitkeep
@@ -1066,6 +1066,52 @@ build_package_10a_allowed_writes:
     - .github/prompts/ wrappers
     - tools/Export-AisrafRelease.ps1 or any new release-export tool
     - runtime services, cloud assets, deployed agents, MCP/Jira/Confluence/Rovo execution proof, ADK or Vertex/GCP code, database jobs, Terraform, release-export tools, or release binaries
+
+build_package_11a_allowed_writes:
+  run_input_byte_copies_refreshed:
+    - runs/RUN-001/inputs/dfd-crop.mmd                                # byte-copy of post-10A samples/sample-001-dfd-crop/inputs/dfd-crop.mmd
+    - runs/RUN-001/inputs/dfd-crop.png                                # byte-copy of post-10A samples/sample-001-dfd-crop/inputs/dfd-crop.png
+    - runs/RUN-001/inputs/dfd-legend-excerpt.md                       # byte-copy of post-10A samples/sample-001-dfd-crop/inputs/dfd-legend-excerpt.md
+  run_input_byte_copies_byte_stable:
+    - runs/RUN-001/inputs/cloud-triage-notes.md                       # 10A did not modify the source; re-byte-copy is a no-op
+    - runs/RUN-001/inputs/review-transcript.md                        # 10A did not modify the source; re-byte-copy is a no-op
+    - runs/RUN-001/inputs/intake-ticket.md                            # 10A did not modify the source; re-byte-copy is a no-op
+  run_governance_updates:
+    - runs/RUN-001/README.md                                          # appended Build Package 11A note (default DFD standard inheritance + RESOLVED-BY-10A-AND-11A)
+  validation_files:
+    - validation/package-11a-input-refresh-checklist.md               # NEW — 33 falsifiable gates including SHA-256 byte-equality
+  governance_updates:
+    - PACKAGE-MANIFEST.yaml                                           # this file (current=11A; next=13 next_allowed; carried_forward_blockers RESOLVED-BY-10A-AND-11A)
+    - validation/no-drift-rules.md                                    # appended ## Build Package 11A — RUN-001 Input Refresh rules (rules 1-12)
+    - validation/sample-input-readiness-checklist.md                  # RESOLVED-BY-10A-AND-11A annotation (upgraded from RESOLVED-BY-10A)
+    - validation/expected-output-lint-checklist.md                    # RESOLVED-BY-10A-AND-11A annotation (upgraded from RESOLVED-BY-10A)
+    - validation/diagram-readiness-pre-render-checklist.md            # RESOLVED-BY-10A-AND-11A annotation; precondition gate now MET
+    - validation/package-12-validation-checklist.md                   # RESOLVED-BY-10A-AND-11A annotation
+    - validation/final-qa-checklist.md                                # RESOLVED-BY-10A-AND-11A annotation
+  tool_compatibility_updates:
+    - tools/Test-AisrafPackage.ps1                                    # surgical: synopsis text update; Check 11 allow-list extension by exactly one filename (package-11a-input-refresh-checklist.md)
+  founder_decisions:
+    q1_byte_equality_verification_method: SHA_256_hash_comparison_for_all_6_inputs_recorded_in_11A_checklist
+    q2_run_profile_run_log_dfd_gitkeep: not_modified_by_11A_BP11_evidence_model_remains_fixed
+    q3_chain_execution: not_executed_by_11A_26_reserved_future_outputs_remain_unmade
+    q4_blocker_resolution_string: RESOLVED_BY_10A_AND_11A_replaces_RESOLVED_BY_10A_in_all_six_cross_reference_files_plus_manifest
+    q5_test_aisraf_package_patch: surgical_two_change_patch_synopsis_plus_check_11_allow_list_one_filename
+    q6_next_build_package: BP13_Diagrams_next_allowed_pending_blocker_removed
+  prohibited:
+    - any modification to a sealed Build Package 01-10A or BP12 surface beyond the explicit 11A allow-list (prompts, skills, prototype-agents, .agents adapters, catalogs, blueprints, templates, config, samples/sample-001-dfd-crop/, BP01-BP10A validation checklists)
+    - modifying runs/RUN-001/run-profile.yaml or runs/RUN-001/00-run-log.md or runs/RUN-001/dfd/.gitkeep
+    - producing diagrams (Build Package 13)
+    - producing runbooks, practitioner guides, or docs/ content beyond docs/README.md (Build Package 14)
+    - producing release artefacts, ZIP, DOCX, PDF, PPTX, or release/ binaries (Build Package 15)
+    - producing the 17 RS or 9 DFD chain outputs in runs/RUN-001/
+    - producing a numeric accuracy score for runs/RUN-001/
+    - claims of runtime / cloud / ADK / Vertex / GCP / MCP / Jira post-back / Confluence publication / Rovo / database / Terraform / executed_by_operator execution
+    - introducing non-schema run-profile placeholders ({{catalog_root}}, {{prompt_root}}, {{skill_root}}, {{template_root}}, {{diagram_root}}, {{validation_root}})
+    - byte-mismatch between samples/sample-001-dfd-crop/inputs/<f> and runs/RUN-001/inputs/<f> for any of the 6 files
+    - tools/New-AisrafRun.ps1 or tools/Test-AisrafRunProfile.ps1 modifications
+    - any new tool beyond the surgical Test-AisrafPackage.ps1 patch
+    - introducing a new Test-AisrafPackage.ps1 check beyond the BP10A Check 08j-sample-dfd-grammar already in place
+
 controlled_release_status: not_ready
 zip_status: not_authorized
 diagram_status: not_started
