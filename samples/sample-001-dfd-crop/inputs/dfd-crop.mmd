@@ -1,23 +1,8 @@
 %% sample-001-dfd-crop — AI SaaS Security Review Portal (GCP-style architecture review DFD)
 %% Synthetic DFD for AISRAF SAS Prototype v0.1.2.
-%% Build Package 10A corrective patch resolves BP12-SAMPLE-DFD-BLOCKER on the sample side.
-%% Default standard enforced:
-%%   - real architecture boundaries (no BND-* as primary visual labels)
-%%   - real component names (no CMP-* as primary visual labels)
-%%   - 4-token flow grammar: <flow name> / <C#>,<T#>,<IA#|SA#|CA#>,<AZ#|AZ?>
-%%   - data-store grammar: <class> • <R#> • <Enc|Tok|Mask|Clr|Unknown>
-%%   - authentication does not imply authorization; if authorization is not visibly proven, AZ? is the explicit unknown marker
-%%   - embedded legend subgraph rendered as part of the DFD
-%%   - extraction IDs (CMP-NN, BND-NN, F#, BC-NN) live only in expected baselines and analyst-output tables
-%% No real PII, PAN, SSN, PHI, secrets, credentials, or production endpoints.
-%% Regenerate the PNG with:
-%%   mmdc -i samples/sample-001-dfd-crop/inputs/dfd-crop.mmd \
-%%        -o samples/sample-001-dfd-crop/inputs/dfd-crop.png \
-%%        -w 2600 -H 1700 -b transparent
+%% BP10A/BP11A corrected sample DFD. No real PII, PAN, SSN, PHI, secrets, credentials, or production endpoints.
 flowchart LR
   classDef extZone fill:#fbe9e7,stroke:#bf360c,stroke-width:1px,color:#212121
-  classDef gcpProj fill:#e3f2fd,stroke:#0d47a1,stroke-width:1px,color:#0d47a1
-  classDef vpcZone fill:#f3e5f5,stroke:#4a148c,stroke-width:1px,color:#4a148c
   classDef edgeSub fill:#fce4ec,stroke:#880e4f,stroke-width:1px,color:#880e4f
   classDef appSub fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px,color:#1b5e20
   classDef dataSub fill:#fff3e0,stroke:#e65100,stroke-width:1px,color:#e65100
@@ -25,52 +10,56 @@ flowchart LR
   classDef atlasZone fill:#ede7f6,stroke:#311b92,stroke-width:1px,color:#311b92
   classDef legendBox fill:#fafafa,stroke:#424242,stroke-width:1px,color:#212121
 
-  subgraph EXT[External User / Internet Zone]
+  subgraph EXT["External User / Internet Zone"]
     REVBR["Reviewer Browser"]:::extZone
   end
 
-  subgraph GCP[GCP Project: aisraf-review-dev]
-    subgraph VPC1[VPC: review-platform-vpc]
-      subgraph EDGE[Edge subnet]
+  subgraph GCP["GCP Project: aisraf-review-dev"]
+    subgraph VPC1["VPC: review-platform-vpc"]
+      subgraph EDGE["Edge subnet"]
         CLB["Cloud Load Balancer"]:::edgeSub
-        WAF["Cloud Armor / WAF ◇"]:::edgeSub
+        WAF["Cloud Armor / WAF (S1)"]:::edgeSub
       end
-      subgraph APP[Application subnet]
+
+      subgraph APP["Application subnet"]
         WEBAPP["Review Portal Web App"]:::appSub
         APIGW["API Gateway"]:::appSub
-        ORCH["Review Orchestrator Service"]:::appSub
+        ORCH["Review Orchestrator Service<br/>HITL / AAL-L3"]:::appSub
         AICONN["AI Analysis Connector"]:::appSub
       end
-      subgraph DATA[Data subnet]
-        SQLDB["Review Metadata Cloud SQL<br/>C4 • R1 • Enc"]:::dataSub
-        POLDB["Policy Reference Store<br/>C2 • R1 • Enc"]:::dataSub
-        FINDDB["Findings Store<br/>C4 • R1 • Enc"]:::dataSub
-        ARTBKT["Review Artifact Bucket<br/>C4 • R1 • Enc"]:::dataSub
-        AUDLG["Audit Log Store<br/>C4 • R1 • Enc"]:::dataSub
+
+      subgraph DATA["Data subnet"]
+        SQLDB["Review Metadata Cloud SQL<br/>C4 - R1 - Enc"]:::dataSub
+        POLDB["Policy Reference Store<br/>C2 - R1 - Enc"]:::dataSub
+        FINDDB["Findings Store<br/>C4 - R1 - Enc"]:::dataSub
+        ARTBKT["Review Artifact Bucket<br/>C4 - R1 - Enc"]:::dataSub
+        AUDLG["Audit Log Store<br/>C4 - R1 - Enc"]:::dataSub
       end
     end
   end
 
-  subgraph SAAS[External AI SaaS Provider Zone]
+  subgraph SAAS["External AI SaaS Provider Zone"]
     AIMODEL["External AI Model Endpoint"]:::saasZone
   end
 
-  subgraph ATL[Atlassian Cloud / Jira-Confluence Zone]
+  subgraph ATL["Atlassian Cloud / Jira-Confluence Zone"]
     JIRACONF["Jira / Confluence API"]:::atlasZone
   end
 
-  subgraph LEGEND[Legend — visible markers are review signals, not implementation proof]
+  subgraph LEGEND["Legend - visible markers are review signals, not implementation proof"]
     L1["C# = data class"]:::legendBox
     L2["T# = transport protection"]:::legendBox
-    L3["IA# = interactive / user authentication"]:::legendBox
+    L3["IA# = interactive/user authentication"]:::legendBox
     L4["SA# = service authentication"]:::legendBox
-    L5["CA# = client / customer authentication"]:::legendBox
-    L6["AZ# = authorization visible / proven"]:::legendBox
-    L7["AZ? = authorization unknown / not visible"]:::legendBox
-    L8["R# = residency / replication / region marker"]:::legendBox
+    L5["CA# = client/customer authentication"]:::legendBox
+    L6["AZ# = authorization visible/proven"]:::legendBox
+    L7["AZ? = authorization unknown/not visible"]:::legendBox
+    L8["R# = residency/replication/region marker"]:::legendBox
     L9["Enc = encrypted at rest"]:::legendBox
-    L10["◇ / S# = security-control / security-stack signal"]:::legendBox
-    L11["authentication does not imply authorization"]:::legendBox
+    L10["S# = security-control/security-stack signal"]:::legendBox
+    L11["HITL = human-in-the-loop approval gate"]:::legendBox
+    L12["AAL-L1..L4 = AI Action Level"]:::legendBox
+    L13["Authentication does not imply authorization"]:::legendBox
   end
 
   REVBR -- "Review Request / C4,T1,IA1,AZ?" --> CLB
