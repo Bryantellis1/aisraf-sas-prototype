@@ -6,7 +6,7 @@ Owning Build Package: Build Package 03 — Tools and setup/test/export scripts.
 
 ## Purpose
 
-Local PowerShell helper scripts that operationalize the Build Package 02 run-profile variable model. Tools prepare folder-first run scaffolds, validate run-profile YAML against the canonical schema, and smoke-test the package surface.
+Local PowerShell helper scripts that operationalize the Build Package 02 run-profile variable model. Tools prepare folder-first run scaffolds, validate run-profile YAML against the canonical schema, smoke-test the package surface, and run the BP12A automated readiness harness before founder manual smoke testing.
 
 Tools are local helper scripts, not runtime services.
 
@@ -35,7 +35,7 @@ The Build Package 03 tools do not:
 - generate templated outputs at runtime (Build Package 09 surface);
 - create or edit sample inputs or expected baselines (Build Package 10 surface);
 - create run outputs beyond the empty scaffold (Build Package 11 surface);
-- perform package, prompt, skill, run, or release validation beyond the smoke checks declared here (Build Package 12 surface);
+- perform package, prompt, skill, run, or release validation beyond the governed checks declared here (Build Package 12 surface);
 - generate diagrams (Build Package 13 surface);
 - generate runbooks or practitioner guides (Build Package 14 surface);
 - export release artifacts (Build Package 15 surface);
@@ -51,7 +51,8 @@ The Build Package 03 tools do not:
 |---|---|
 | [New-AisrafRun.ps1](New-AisrafRun.ps1) | Scaffold `runs/<RunId>/` with `inputs/`, `dfd/`, a resolved `run-profile.yaml` from the Build Package 02 template, and an initial `00-run-log.md`. Does not execute prompts, skills, PRAs, or adapters. Refuses to overwrite an existing run folder; `-Force` is intentionally not implemented. |
 | [Test-AisrafRunProfile.ps1](Test-AisrafRunProfile.ps1) | Validate one `run-profile.yaml` against `config/run-profile.schema.yaml` and `config/run-profile.validation-rules.md`. Two levels: `-ProfileShape` (default; allows `sensitive_data_confirmed_redacted: false`) and `-ExecutionReady` (requires `sensitive_data_confirmed_redacted: true`). Exit code 1 on any FAIL. |
-| [Test-AisrafPackage.ps1](Test-AisrafPackage.ps1) | Smoke-test the Build Package 01-03 surface: required root files, folder READMEs, Build Package 02 config files, Build Package 03 tool files, and forbidden later-package artifacts. WARNs on `runs/RUN-*/` folders; FAILs on forbidden artifacts and committed later-package content. |
+| [Test-AisrafPackage.ps1](Test-AisrafPackage.ps1) | Smoke-test the active Build Package 01-12 surface: root files, governed folders, registries, prompts, skills, PRAs, adapters and projection, catalogs, blueprints, templates, samples, RUN-001, validation files, and forbidden forward-package artifacts. |
+| [Test-AisrafBp12AReadiness.ps1](Test-AisrafBp12AReadiness.ps1) | Run the BP12A automated readiness harness across git/workspace posture, package/profile validators, agent projection, prompt and skill registries, prompt-skill-PRA crosswalk, templates, sample fixture, RUN-001 fixture, security/no-drift posture, and read-only agent smoke simulation. Does not write run outputs or execute adapters. |
 
 ## Dependencies
 
@@ -97,6 +98,12 @@ Smoke-test the package surface:
 .\tools\Test-AisrafPackage.ps1
 ```
 
+Run the BP12A readiness harness before manual smoke testing:
+
+```powershell
+.\tools\Test-AisrafBp12AReadiness.ps1
+```
+
 ## Stop Conditions
 
 The tools refuse to proceed and exit with an error when:
@@ -108,7 +115,8 @@ The tools refuse to proceed and exit with an error when:
 - `config/run-profile.template.yaml` is missing.
 - A resolved write target lies outside the active workspace root.
 - The validator finds any FAIL in the schema, type, enum, identifier, path, no-drift, mode-coupling, post-back, connector, scoring, or sensitive-data checks.
-- `Test-AisrafPackage` finds a forbidden release binary (`*.docx`, `*.pdf`, `*.pptx`, `*.zip`), an `.agent.md` file, content beyond `README.md` in a folder owned by a later Build Package, or unexpected files in `tools/`, `config/`, `validation/`, `samples/`, or `authoring-agents/`.
+- `Test-AisrafPackage` finds a forbidden release binary (`*.docx`, `*.pdf`, `*.pptx`, `*.zip`), an unauthorized `.agent.md` file, content beyond governed contracts, or unexpected files in `tools/`, `config/`, `validation/`, `samples/`, or `authoring-agents/`.
+- `Test-AisrafBp12AReadiness` finds any FAIL across git/workspace posture, package/profile validators, agent projection, registries, crosswalks, templates, sample fixture, RUN-001 fixture, security/no-drift posture, or read-only agent smoke simulation.
 
 ## Operator Reminder
 
@@ -116,4 +124,4 @@ The tools refuse to proceed and exit with an error when:
 
 ## Current Build Package 03 Status
 
-Active. The three scripts and this README are the complete Build Package 03 tool surface. `tools/Export-AisrafRelease.ps1` is intentionally deferred to Build Package 15 — release packaging.
+Active. The three core scripts, the governed BP12A readiness harness, and this README are the complete tool surface. `tools/Export-AisrafRelease.ps1` is intentionally deferred to Build Package 15 — release packaging.

@@ -1,26 +1,11 @@
----
-expected_baseline_id: EXP-RS-01-INPUT-INVENTORY
-sample_id: sample-001-dfd-crop
-mirrors_template: templates/output/output-01-input-inventory-template.md
-prompt: prompts/rs/01-input-package-read.prompt.md
-skill: skills/rs/SK-INPUT-PACKAGE-READ.md
-owning_pra: PRA-02-INPUT-READER
-adapter: .agents/aisraf-input-reader.agent.md
-target_run_output: "{{output_root}}/01-input-inventory.md"
-expected_outcome: PASS_READY_FOR_REVIEW
-scoring_basis: template-aligned qualitative baseline; numeric scoring deferred to Build Package 11 run execution
-package_version: v0.1.2
----
-
-# Input Inventory — sample-001-dfd-crop
-
+# Input Inventory — RUN-001
 | field | value |
 |---|---|
-| run_id | `{{run_id}}` |
+| run_id | `RUN-001` |
 | sample_id | sample-001-dfd-crop |
-| mode | `{{mode}}` |
-| input_root | `{{input_root}}` |
-| output_root | `{{output_root}}` |
+| mode | `folder_first_test` |
+| input_root | `runs/RUN-001/inputs` |
+| output_root | `runs/RUN-001` |
 | step | RS-01 |
 | prompt | prompts/rs/01-input-package-read.prompt.md |
 | skill | skills/rs/SK-INPUT-PACKAGE-READ.md |
@@ -46,3 +31,4 @@ package_version: v0.1.2
 ## Stop Conditions Recorded
 
 None at this step. No stop condition is triggered at intake. Sensitive-data review is deferred to `09-missing-facts.md` and `16-validation-notes.md`; the inputs are confirmed synthetic per `intake-ticket.md` § 6 and `cloud-triage-notes.md` § 6.
+

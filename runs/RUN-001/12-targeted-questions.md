@@ -1,25 +1,10 @@
----
-expected_baseline_id: EXP-RS-12-TARGETED-QUESTIONS
-sample_id: sample-001-dfd-crop
-mirrors_template: templates/output/output-12-targeted-questions-template.md
-prompt: prompts/rs/07-missing-fact-question-generate.prompt.md
-skill: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
-owning_pra: PRA-06-BLUEPRINT-QUESTIONER
-adapter: .agents/aisraf-blueprint-questioner.agent.md
-target_run_output: "{{output_root}}/12-targeted-questions.md"
-expected_outcome: PASS_READY_FOR_REVIEW
-scoring_basis: template-aligned qualitative baseline; numeric scoring deferred to Build Package 11 run execution
-package_version: v0.1.2
----
-
-# Targeted Questions — sample-001-dfd-crop
-
+# Targeted Questions — RUN-001
 | field | value |
 |---|---|
-| run_id | `{{run_id}}` |
+| run_id | `RUN-001` |
 | sample_id | sample-001-dfd-crop |
-| mode | `{{mode}}` |
-| output_root | `{{output_root}}` |
+| mode | `folder_first_test` |
+| output_root | `runs/RUN-001` |
 | step | RS-07 |
 | prompt | prompts/rs/07-missing-fact-question-generate.prompt.md |
 | skill | skills/rs/SK-TARGETED-QUESTION-GENERATE.md |
@@ -37,3 +22,4 @@ package_version: v0.1.2
 ## Stop Conditions Recorded
 
 None at this step. Every question traces to a `gap_id` in `09-missing-facts.md`. No question is a broad-checklist question. No new BP-* identifiers are introduced.
+

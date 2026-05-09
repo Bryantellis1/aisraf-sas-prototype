@@ -1,25 +1,10 @@
----
-expected_baseline_id: EXP-RS-11-BLUEPRINT-MATCH
-sample_id: sample-001-dfd-crop
-mirrors_template: templates/output/output-11-blueprint-match-template.md
-prompt: prompts/rs/09-blueprint-match.prompt.md
-skill: skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
-owning_pra: PRA-06-BLUEPRINT-QUESTIONER
-adapter: .agents/aisraf-blueprint-questioner.agent.md
-target_run_output: "{{output_root}}/11-blueprint-match.md"
-expected_outcome: PASS_READY_FOR_REVIEW
-scoring_basis: template-aligned qualitative baseline; numeric scoring deferred to Build Package 11 run execution
-package_version: v0.1.2
----
-
-# Blueprint Match — sample-001-dfd-crop
-
+# Blueprint Match — RUN-001
 | field | value |
 |---|---|
-| run_id | `{{run_id}}` |
+| run_id | `RUN-001` |
 | sample_id | sample-001-dfd-crop |
-| mode | `{{mode}}` |
-| output_root | `{{output_root}}` |
+| mode | `folder_first_test` |
+| output_root | `runs/RUN-001` |
 | step | RS-09 |
 | prompt | prompts/rs/09-blueprint-match.prompt.md |
 | skill | skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md |
@@ -48,10 +33,10 @@ Additional dispositions:
 
 | blueprint_id | match_state | reviewer | timestamp |
 |---|---|---|---|
-| BP-AI-SAAS-INTEGRATION | `matched` | `[copy from runs/{{run_id}}/run-profile.yaml#reviewer_name]` | [ISO 8601 UTC timestamp recorded at run time] |
-| BP-MODEL-ENDPOINT-CALL | `candidate` | `[copy from runs/{{run_id}}/run-profile.yaml#reviewer_name]` | [ISO 8601 UTC timestamp recorded at run time] |
-| BP-HITL-APPROVAL | `matched` | `[copy from runs/{{run_id}}/run-profile.yaml#reviewer_name]` | [ISO 8601 UTC timestamp recorded at run time] |
-| BP-API-WRITEBACK | `candidate` | `[copy from runs/{{run_id}}/run-profile.yaml#reviewer_name]` | [ISO 8601 UTC timestamp recorded at run time] |
+| BP-AI-SAAS-INTEGRATION | `matched` | `SAS reviewer` | 2026-05-08T23:57:48Z |
+| BP-MODEL-ENDPOINT-CALL | `candidate` | `SAS reviewer` | 2026-05-08T23:57:48Z |
+| BP-HITL-APPROVAL | `matched` | `SAS reviewer` | 2026-05-08T23:57:48Z |
+| BP-API-WRITEBACK | `candidate` | `SAS reviewer` | 2026-05-08T23:57:48Z |
 
 ## Supporting Catalog Evidence
 
@@ -81,3 +66,4 @@ Cross-references to `09-missing-facts.md`:
 ## Stop Conditions Recorded
 
 None at this step. No new BP-* identifiers introduced. No new controlled values introduced. No approval claim from blueprint match.
+

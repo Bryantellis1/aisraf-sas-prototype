@@ -44,13 +44,13 @@ The numeric per-row comparison is produced by `skills/rs/SK-ACCURACY-SCORE.md` a
 | output_artifact | baseline_artifact | comparison_result | unknowns_at_extract_time | confidence | notes |
 |---|---|---|---|---|---|
 | `{{output_root}}/01-input-inventory.md` | `{{expected_root}}/expected-01-input-inventory.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | All six artifacts present with high-confidence rows. |
-| `{{output_root}}/02-visible-dfd-objects.md` | `{{expected_root}}/expected-02-visible-dfd-objects.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | 8 components + 4 boundaries visible. |
-| `{{output_root}}/03-legend-normalization.md` | `{{expected_root}}/expected-03-legend-normalization.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | C4P entry recorded under `DC-C5P` raw_pattern with medium-confidence note. |
-| `{{output_root}}/04-components.md` | `{{expected_root}}/expected-04-components.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | 8 components classified by visible evidence. |
-| `{{output_root}}/05-flows.md` | `{{expected_root}}/expected-05-flows.md` | partial_match | 2 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-MEDIUM>` | F4 / F5 data class is honestly `unknown`. |
-| `{{output_root}}/06-boundaries.md` | `{{expected_root}}/expected-06-boundaries.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | 4 boundaries; 7 boundary crossings. |
-| `{{output_root}}/07-security-stack-assessment.md` | `{{expected_root}}/expected-07-security-stack-assessment.md` | partial_match | 2 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | All marker rows are `signal`; AZ scope on F4 is honestly unknown. |
-| `{{output_root}}/08-internal-review-table.md` | `{{expected_root}}/expected-08-internal-review-table.md` | partial_match | 4 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-MEDIUM>` | RT-04 / RT-05 carry `DC-UNKNOWN` and `AZ-UNKNOWN`. |
+| `{{output_root}}/02-visible-dfd-objects.md` | `{{expected_root}}/expected-02-visible-dfd-objects.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | 14 components + 8 boundary containers visible. |
+| `{{output_root}}/03-legend-normalization.md` | `{{expected_root}}/expected-03-legend-normalization.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | IA1 / SA5 / SA7 / AZ? / Enc tokens recorded under corrected 4-token flow grammar and storage-marker rules. |
+| `{{output_root}}/04-components.md` | `{{expected_root}}/expected-04-components.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | 14 components classified by visible evidence. |
+| `{{output_root}}/05-flows.md` | `{{expected_root}}/expected-05-flows.md` | partial_match | 2 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-MEDIUM>` | F9 / F10 redaction and data-class posture are honestly unknown. |
+| `{{output_root}}/06-boundaries.md` | `{{expected_root}}/expected-06-boundaries.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | 8 boundary containers; 10 boundary crossings. |
+| `{{output_root}}/07-security-stack-assessment.md` | `{{expected_root}}/expected-07-security-stack-assessment.md` | partial_match | 2 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | All marker rows are `signal`; AZ scope remains unknown on every IA# / SA# flow unless visibly proven. |
+| `{{output_root}}/08-internal-review-table.md` | `{{expected_root}}/expected-08-internal-review-table.md` | partial_match | 4 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-MEDIUM>` | RT-09 / RT-10 carry the external AI model exchange uncertainty; RT-14 records formatted_only handoff without post-back. |
 | `{{output_root}}/09-missing-facts.md` | `{{expected_root}}/expected-09-missing-facts.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | 4 material missing facts; all blueprint cross-references resolve. |
 | `{{output_root}}/10-ai-action-level.md` | `{{expected_root}}/expected-10-ai-action-level.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | `AAL-L3` with `CL-MEDIUM`. |
 | `{{output_root}}/11-blueprint-match.md` | `{{expected_root}}/expected-11-blueprint-match.md` | match | 0 | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-HIGH>` | 4 dispositions across the four-state model. |
@@ -67,9 +67,9 @@ The numeric per-row comparison is produced by `skills/rs/SK-ACCURACY-SCORE.md` a
 - No `C5` / `PCI` token is present in the sample, so neither "missed" nor "invented" applies.
 - Internet-facing boundary BC-01 is captured.
 - `S1` is recorded as `signal` only; no security-stack presence is asserted.
-- F4 model call and F8 tool call are captured.
+- F9 / F10 model prompt / response and F14 formatted-only tool call are captured.
 - AAL-L3 is supported by HITL evidence.
-- Blueprint match disposition (BP-AI-SAAS-INTEGRATION matched) is supported by F4 + BC-02 evidence.
+- Blueprint match disposition (BP-AI-SAAS-INTEGRATION matched) is supported by F9 + BC-05 evidence, with BC-06 recording the inbound model response.
 - All targeted questions are material (not broad-checklist).
 - Every finding traces to a supported fact.
 - Every recommendation traces to a finding.

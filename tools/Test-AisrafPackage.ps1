@@ -9,7 +9,7 @@
       - required root folders and folder READMEs exist;
       - Build Package 02 config files exist;
       - Build Package 02 validation file exists;
-      - Build Package 03 tool files exist;
+            - Build Package 03 tool files and the governed BP12A readiness harness exist;
       - Build Package 03 validation file exists;
       - Build Package 04 prompt registry, family READMEs, and prompt cards exist
         and match the approved naming pattern under prompts/rs/ and prompts/dfd/;
@@ -163,6 +163,7 @@ $pkg03Tools = @(
     'tools/New-AisrafRun.ps1',
     'tools/Test-AisrafRunProfile.ps1',
     'tools/Test-AisrafPackage.ps1',
+    'tools/Test-AisrafBp12AReadiness.ps1',
     'tools/README.md'
 )
 foreach ($f in $pkg03Tools) {
@@ -187,8 +188,11 @@ else {
 
 # 7. Build Package 06 .agent.md adapter surface.
 # Allowed under .agents/: README.md plus exactly 7 approved aisraf-*.agent.md adapter files.
+# Allowed under .github/agents/: BP06A Copilot discovery projection files for the same
+# 7 approved adapters, byte-identical to their canonical .agents/ counterparts.
 # FAIL: any other *.agent.md anywhere in the workspace; any file under .agents/ that
-# is not in the approved adapter list or README.md; any approved adapter file missing.
+# is not in the approved adapter list or README.md; any approved adapter file missing;
+# any .github/agents projection file that is not approved or does not match .agents/.
 $approvedAdapters = @(
     'aisraf-orchestrator.agent.md',
     'aisraf-input-reader.agent.md',
@@ -202,6 +206,8 @@ $agentMd = @(Get-ChildItem -LiteralPath $packageRoot -Recurse -Force -File -Filt
     Where-Object { $_.FullName -notlike "*\.git\*" })
 $agentsAbs = Resolve-PackagePath '.agents'
 $agentsAbsNormalized = $agentsAbs.TrimEnd('\','/')
+$githubAgentsAbs = Resolve-PackagePath '.github/agents'
+$githubAgentsAbsNormalized = $githubAgentsAbs.TrimEnd('\','/')
 foreach ($a in $agentMd) {
     $parent = Split-Path -Parent $a.FullName
     $parentNormalized = $parent.TrimEnd('\','/')
@@ -210,9 +216,25 @@ foreach ($a in $agentMd) {
             Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden adapter in .agents/ (not in the 7 approved Build Package 06 adapters): .agents/$($a.Name)"
         }
     }
+    elseif ($parentNormalized -ieq $githubAgentsAbsNormalized) {
+        if (-not ($approvedAdapters -contains $a.Name)) {
+            Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden Copilot projection in .github/agents/ (not one of the 7 approved Build Package 06 adapters): .github/agents/$($a.Name)"
+            continue
+        }
+        $canonical = Join-Path $agentsAbs $a.Name
+        if (-not (Test-Path -LiteralPath $canonical -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Copilot projection has no canonical .agents/ source: .github/agents/$($a.Name)"
+            continue
+        }
+        $canonicalHash = (Get-FileHash -LiteralPath $canonical -Algorithm SHA256).Hash
+        $projectionHash = (Get-FileHash -LiteralPath $a.FullName -Algorithm SHA256).Hash
+        if ($canonicalHash -ne $projectionHash) {
+            Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Copilot projection differs from canonical adapter: .github/agents/$($a.Name)"
+        }
+    }
     else {
         $rel = $a.FullName.Substring($packageRoot.Length + 1)
-        Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden *.agent.md outside .agents/ (Build Package 06 reserves adapter content for .agents/): $rel"
+        Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden *.agent.md outside .agents/ or .github/agents/ projection: $rel"
     }
 }
 foreach ($name in $approvedAdapters) {
@@ -233,9 +255,20 @@ if (Test-Path -LiteralPath $agentsAbs -PathType Container) {
         }
     }
 }
+if (Test-Path -LiteralPath $githubAgentsAbs -PathType Container) {
+    foreach ($child in @(Get-ChildItem -LiteralPath $githubAgentsAbs -Force)) {
+        if ($child.PSIsContainer) {
+            Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden subfolder in .github/agents/ (BP06A projection disallows nested folders): .github/agents/$($child.Name)/"
+            continue
+        }
+        if (-not ($approvedAdapters -contains $child.Name)) {
+            Add-Result -Status FAIL -Check '07-package-06-adapters' -Detail "Forbidden file in .github/agents/ (only the 7 approved aisraf-*.agent.md projection files are allowed): .github/agents/$($child.Name)"
+        }
+    }
+}
 $adapterFails = @($results | Where-Object { $_.Check -eq '07-package-06-adapters' -and $_.Status -eq 'FAIL' }).Count
 if ($adapterFails -eq 0) {
-    Add-Result -Status PASS -Check '07-package-06-adapters' -Detail ".agents/ contains exactly the 7 approved Build Package 06 adapters plus README.md."
+    Add-Result -Status PASS -Check '07-package-06-adapters' -Detail ".agents/ contains exactly the 7 approved Build Package 06 adapters plus README.md; .github/agents/ projections, when present, are approved and byte-identical."
 }
 
 # 8. Folder content limits — only README.md allowed before owning Build Package
@@ -853,19 +886,31 @@ else {
 # Allowed under runs/RUN-001/: README.md, run-profile.yaml, 00-run-log.md,
 #   inputs/, dfd/, and (when the chain has executed) the 17 RS outputs at
 #   root matching ^(0[1-9]|1[0-7])-[a-z0-9-]+\.md$ and the 9 DFD outputs
-#   under dfd/ matching ^dfd-0[1-9]-[a-z0-9-]+\.md$. Optional Jira/Confluence
-#   draft files (jira-ticket-draft.md, confluence-page-draft.md) are also
-#   permitted.
+#   under dfd/ as a fixed allow-list of governed BP12B post-execution
+#   filenames (01-intake-quality-check.md ... 09-extraction-summary.md).
+#   Optional Jira/Confluence draft files (jira-ticket-draft.md,
+#   confluence-page-draft.md) are also permitted.
 # Allowed under runs/RUN-001/inputs/: exactly the 6 byte-copied sample
 #   inputs (no other files; no subfolders).
-# Allowed under runs/RUN-001/dfd/: empty (Build Package 11 reservation) or
-#   the 9 DFD chain outputs matching ^dfd-0[1-9]-[a-z0-9-]+\.md$. No nested
-#   folders.
+# Allowed under runs/RUN-001/dfd/: empty (Build Package 11 reservation),
+#   .gitkeep (Build Package 12 fresh-clone reservation marker), or the
+#   9 BP12B post-execution DFD chain outputs (fixed allow-list). No
+#   nested folders. Arbitrary extra files are FAIL.
 # FAIL anything else.
 $run001InputsAllowed = @('dfd-crop.png', 'dfd-crop.mmd', 'dfd-legend-excerpt.md', 'cloud-triage-notes.md', 'review-transcript.md', 'intake-ticket.md')
 $run001RootAllowedFiles = @('README.md', 'run-profile.yaml', '00-run-log.md', 'jira-ticket-draft.md', 'confluence-page-draft.md')
 $run001RootRsOutputPattern = '^(0[1-9]|1[0-7])-[a-z0-9-]+\.md$'
-$run001DfdOutputPattern    = '^dfd-0[1-9]-[a-z0-9-]+\.md$'
+$run001DfdOutputsAllowed = @(
+    '01-intake-quality-check.md',
+    '02-boundary-catalog.md',
+    '03-component-catalog.md',
+    '04-flow-inventory.md',
+    '05-annotation-resolution.md',
+    '06-boundary-crossings.md',
+    '07-control-signals.md',
+    '08-confidence-score.md',
+    '09-extraction-summary.md'
+)
 $run001Abs = Resolve-PackagePath 'runs/RUN-001'
 if (Test-Path -LiteralPath $run001Abs -PathType Container) {
     # Required Build Package 11 files at run-folder root
@@ -907,16 +952,16 @@ if (Test-Path -LiteralPath $run001Abs -PathType Container) {
     else {
         Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Required Build Package 11 inputs/ folder missing: runs/RUN-001/inputs/"
     }
-    # dfd/ — empty (Build Package 11/12) or 9 DFD chain outputs (post-execution); .gitkeep is permitted as a fresh-clone reservation marker (Build Package 12)
+    # dfd/ — empty (Build Package 11/12), .gitkeep (Build Package 12 fresh-clone reservation marker), or the 9 BP12B post-execution DFD chain outputs (fixed allow-list)
     $run001Dfd = Join-Path $run001Abs 'dfd'
     if (Test-Path -LiteralPath $run001Dfd -PathType Container) {
         foreach ($d in @(Get-ChildItem -LiteralPath $run001Dfd -Force -Directory)) {
             Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden subfolder in runs/RUN-001/dfd/ (Build Package 11 disallows nested folders): $($d.Name)/"
         }
         foreach ($c in @(Get-ChildItem -LiteralPath $run001Dfd -Force -File)) {
-            if ($c.Name -notmatch $run001DfdOutputPattern -and $c.Name -ne '.gitkeep') {
-                Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden file in runs/RUN-001/dfd/: $($c.Name). Build Package 11 reserves dfd/ empty (or post-chain DFD outputs matching '$run001DfdOutputPattern'); the only allowed non-DFD-output filename is '.gitkeep' (Build Package 12 fresh-clone reservation marker)."
-            }
+            if ($c.Name -eq '.gitkeep') { continue }
+            if ($run001DfdOutputsAllowed -contains $c.Name) { continue }
+            Add-Result -Status FAIL -Check '08i-runs-content-limits' -Detail "Forbidden file in runs/RUN-001/dfd/: $($c.Name). Build Package 11 reserves dfd/ empty; Build Package 12 permits '.gitkeep' as a fresh-clone reservation marker; Build Package 12B post-execution permits exactly the 9 governed DFD chain outputs (01-intake-quality-check.md, 02-boundary-catalog.md, 03-component-catalog.md, 04-flow-inventory.md, 05-annotation-resolution.md, 06-boundary-crossings.md, 07-control-signals.md, 08-confidence-score.md, 09-extraction-summary.md). No other filenames are permitted."
         }
     }
     else {
@@ -924,7 +969,7 @@ if (Test-Path -LiteralPath $run001Abs -PathType Container) {
     }
     $run001Fails = @($results | Where-Object { $_.Check -eq '08i-runs-content-limits' -and $_.Status -eq 'FAIL' }).Count
     if ($run001Fails -eq 0) {
-        Add-Result -Status PASS -Check '08i-runs-content-limits' -Detail "runs/RUN-001/ surface matches Build Package 11 contract (README.md, run-profile.yaml, 00-run-log.md, inputs/ with 6 byte-copied files, and dfd/ as empty governed reservation; .gitkeep permitted in dfd/ as a fresh-clone reservation marker per Build Package 12)."
+        Add-Result -Status PASS -Check '08i-runs-content-limits' -Detail "runs/RUN-001/ surface matches Build Package 11 contract (README.md, run-profile.yaml, 00-run-log.md, inputs/ with 6 byte-copied files; dfd/ accepts the empty/.gitkeep BP11/12 reservation OR the 9 governed BP12B post-execution DFD chain outputs as a fixed allow-list)."
     }
 }
 else {
@@ -1038,7 +1083,7 @@ else {
 
 # 12. tools/ — Build Package 03 expected file set
 $toolsAbs = Resolve-PackagePath 'tools'
-$toolsAllowed = @('README.md', 'New-AisrafRun.ps1', 'Test-AisrafRunProfile.ps1', 'Test-AisrafPackage.ps1')
+$toolsAllowed = @('README.md', 'New-AisrafRun.ps1', 'Test-AisrafRunProfile.ps1', 'Test-AisrafPackage.ps1', 'Test-AisrafBp12AReadiness.ps1')
 $toolsFails = @()
 if (Test-Path -LiteralPath $toolsAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $toolsAbs -Force -File)) {
@@ -1048,10 +1093,10 @@ if (Test-Path -LiteralPath $toolsAbs -PathType Container) {
     }
 }
 if ($toolsFails.Count -gt 0) {
-    foreach ($s in $toolsFails) { Add-Result -Status FAIL -Check '12-tools-allowed' -Detail "Unexpected file in tools/: $s. Build Package 03 authorizes only the three approved scripts plus README.md." }
+    foreach ($s in $toolsFails) { Add-Result -Status FAIL -Check '12-tools-allowed' -Detail "Unexpected file in tools/: $s. Build Package 03 authorizes the three core scripts, the governed BP12A readiness harness, and README.md only." }
 }
 else {
-    Add-Result -Status PASS -Check '12-tools-allowed' -Detail "tools/ contains only the three Build Package 03 scripts plus README.md."
+    Add-Result -Status PASS -Check '12-tools-allowed' -Detail "tools/ contains only the three Build Package 03 core scripts, the governed BP12A readiness harness, and README.md."
 }
 
 # 13. config/ — Build Package 02 expected file set

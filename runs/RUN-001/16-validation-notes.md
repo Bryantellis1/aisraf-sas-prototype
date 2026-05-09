@@ -1,25 +1,10 @@
----
-expected_baseline_id: EXP-RS-16-VALIDATION-NOTES
-sample_id: sample-001-dfd-crop
-mirrors_template: templates/output/output-16-validation-notes-template.md
-prompt: prompts/rs/12-validation-note-write.prompt.md
-skill: skills/rs/SK-VALIDATION-NOTE-WRITE.md
-owning_pra: PRA-08-HANDOFF-QA-SCORER
-adapter: .agents/aisraf-handoff-qa-scorer.agent.md
-target_run_output: "{{output_root}}/16-validation-notes.md"
-expected_outcome: PASS_READY_FOR_REVIEW
-scoring_basis: template-aligned qualitative baseline; numeric scoring deferred to Build Package 11 run execution
-package_version: v0.1.2
----
-
-# Validation Notes — sample-001-dfd-crop
-
+# Validation Notes — RUN-001
 | field | value |
 |---|---|
-| run_id | `{{run_id}}` |
+| run_id | `RUN-001` |
 | sample_id | sample-001-dfd-crop |
-| mode | `{{mode}}` |
-| output_root | `{{output_root}}` |
+| mode | `folder_first_test` |
+| output_root | `runs/RUN-001` |
 | step | RS-12 |
 | prompt | prompts/rs/12-validation-note-write.prompt.md |
 | skill | skills/rs/SK-VALIDATION-NOTE-WRITE.md |
@@ -39,3 +24,4 @@ This file is not a duplicate of `13-findings.md` or `14-recommendations.md`. Val
 ## Stop Conditions Recorded
 
 None at this step. No implementation-proof claim. No mixing of design-review closeout content. Owners remain `unknown` until evidence arrives.
+

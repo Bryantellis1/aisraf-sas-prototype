@@ -1,27 +1,12 @@
----
-expected_baseline_id: EXP-RS-15-HANDOFF-PACK
-sample_id: sample-001-dfd-crop
-mirrors_template: templates/output/output-15-handoff-pack-template.md
-prompt: prompts/rs/11-handoff-pack-build.prompt.md
-skill: skills/rs/SK-HANDOFF-PACK-BUILD.md
-owning_pra: PRA-08-HANDOFF-QA-SCORER
-adapter: .agents/aisraf-handoff-qa-scorer.agent.md
-target_run_output: "{{output_root}}/15-handoff-pack.md"
-expected_outcome: PASS_READY_FOR_REVIEW
-scoring_basis: template-aligned qualitative baseline; numeric scoring deferred to Build Package 11 run execution
-package_version: v0.1.2
----
-
-# Design Review Handoff Pack — sample-001-dfd-crop
-
+# Design Review Handoff Pack — RUN-001
 | field | value |
 |---|---|
-| run_id | `{{run_id}}` |
+| run_id | `RUN-001` |
 | sample_id | sample-001-dfd-crop |
-| mode | `{{mode}}` |
-| output_root | `{{output_root}}` |
-| output_destination_mode | `{{output_destination_mode}}` |
-| postback_execution_status | `{{postback_execution_status}}` |
+| mode | `folder_first_test` |
+| output_root | `runs/RUN-001` |
+| output_destination_mode | `local_only` |
+| postback_execution_status | `deferred` |
 | step | RS-11 |
 | prompt | prompts/rs/11-handoff-pack-build.prompt.md |
 | skill | skills/rs/SK-HANDOFF-PACK-BUILD.md |
@@ -93,8 +78,9 @@ References the state recorded in `11-blueprint-match.md`: BP-AI-SAAS-INTEGRATION
 
 ## Separation From Validation Notes
 
-Implementation-validation evidence does not live in this handoff pack. It lives in `{{output_root}}/16-validation-notes.md`. Specifically, MF-01 routes to VN-02 (CMP-10 Cloud Armor / WAF approved-stack control evidence) and MF-02 routes to VN-01 (current Data subnet store at-rest encryption implementation). The handoff pack records what the design review can support today and points to the validation notes for what the validation workflow must verify separately.
+Implementation-validation evidence does not live in this handoff pack. It lives in `runs/RUN-001/16-validation-notes.md`. Specifically, MF-01 routes to VN-02 (CMP-10 Cloud Armor / WAF approved-stack control evidence) and MF-02 routes to VN-01 (current Data subnet store at-rest encryption implementation). The handoff pack records what the design review can support today and points to the validation notes for what the validation workflow must verify separately.
 
 ## Stop Conditions Recorded
 
 None at this step. The handoff pack contains no finding facts, recommendation prose, or owner routing beyond what `13-findings.md` and `14-recommendations.md` already recorded; no Jira post-back claim; no Confluence publication claim; no implementation-proof claim.
+

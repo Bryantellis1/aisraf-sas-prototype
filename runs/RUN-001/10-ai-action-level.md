@@ -1,25 +1,10 @@
----
-expected_baseline_id: EXP-RS-10-AI-ACTION-LEVEL
-sample_id: sample-001-dfd-crop
-mirrors_template: templates/output/output-10-ai-action-level-template.md
-prompt: prompts/rs/08-ai-action-level-classify.prompt.md
-skill: skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
-owning_pra: PRA-06-BLUEPRINT-QUESTIONER
-adapter: .agents/aisraf-blueprint-questioner.agent.md
-target_run_output: "{{output_root}}/10-ai-action-level.md"
-expected_outcome: PASS_READY_FOR_REVIEW
-scoring_basis: template-aligned qualitative baseline; numeric scoring deferred to Build Package 11 run execution
-package_version: v0.1.2
----
-
-# AI Action Level — sample-001-dfd-crop
-
+# AI Action Level — RUN-001
 | field | value |
 |---|---|
-| run_id | `{{run_id}}` |
+| run_id | `RUN-001` |
 | sample_id | sample-001-dfd-crop |
-| mode | `{{mode}}` |
-| output_root | `{{output_root}}` |
+| mode | `folder_first_test` |
+| output_root | `runs/RUN-001` |
 | step | RS-08 |
 | prompt | prompts/rs/08-ai-action-level-classify.prompt.md |
 | skill | skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md |
@@ -31,7 +16,7 @@ package_version: v0.1.2
 |---|---|
 | selected_level | `<value-from-catalogs/review/ai-action-level-catalog.yaml#AAL-L3>` |
 | confidence | `<value-from-catalogs/data-protection/confidence-level-catalog.yaml#CL-MEDIUM>` |
-| selected_at | [ISO 8601 UTC timestamp recorded at run time] |
+| selected_at | 2026-05-08T23:57:48Z |
 
 ## Supporting Evidence
 
@@ -55,3 +40,4 @@ package_version: v0.1.2
 ## Stop Conditions Recorded
 
 None at this step. The AI Action Level is recorded with medium confidence reflecting open MF-03 / MF-04.
+
