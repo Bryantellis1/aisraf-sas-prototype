@@ -461,9 +461,10 @@ if ($adapterFails -eq 0) {
 # catalogs/ is owned by Build Package 07 (active); see Check 08e for the catalogs/ allowed surface.
 # blueprints/ is owned by Build Package 08 (active); see Check 08f for the blueprints/ allowed surface.
 # templates/ is owned by Build Package 09 (active); see Check 08g for the templates/ allowed surface.
+# docs/ is partially opened by Build Package 12C-REL0-B (active) for the 5 approved
+# release docs files; remaining docs surface stays reserved for Build Package 14.
 $readmeOnlyFolders = @{
     'diagrams'         = 'Build Package 13'
-    'docs'             = 'Build Package 14'
     'release'          = 'Build Package 15'
 }
 foreach ($folder in $readmeOnlyFolders.Keys) {
@@ -477,9 +478,29 @@ foreach ($folder in $readmeOnlyFolders.Keys) {
         }
     }
 }
+$docsAbs = Resolve-PackagePath 'docs'
+$docsAllowedFiles = @(
+    'README.md',
+    'AISRAF-PRIMER.md',
+    'OPERATOR-QUICKSTART.md',
+    'SECURITY-REVIEW-WORKFLOW.md',
+    'ARCHITECTURE-OVERVIEW.md',
+    'ROADMAP.md'
+)
+if (Test-Path -LiteralPath $docsAbs -PathType Container) {
+    foreach ($c in @(Get-ChildItem -LiteralPath $docsAbs -Force)) {
+        if ($c.PSIsContainer) {
+            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Forbidden subfolder in docs/ (BP12C-REL0-B disallows nested folders; remaining docs surface is reserved for Build Package 14): docs/$($c.Name)/"
+            continue
+        }
+        if (-not ($docsAllowedFiles -contains $c.Name)) {
+            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Forbidden content in docs/ (BP12C-REL0-B fixes the docs/ inventory at README.md plus the 5 approved release docs files; remaining docs surface is reserved for Build Package 14): docs/$($c.Name)"
+        }
+    }
+}
 $folderLimitFails = @($results | Where-Object { $_.Check -eq '08-folder-content-limits' -and $_.Status -eq 'FAIL' }).Count
 if ($folderLimitFails -eq 0) {
-    Add-Result -Status PASS -Check '08-folder-content-limits' -Detail "Read-me-only folders contain only README.md."
+    Add-Result -Status PASS -Check '08-folder-content-limits' -Detail "Read-me-only folders contain only README.md; docs/ contains README.md plus the 5 approved BP12C-REL0-B release docs files."
 }
 
 # 8a. Build Package 12C Copilot skill-wrapper content limits.

@@ -1,0 +1,134 @@
+# AISRAF Release Manifest
+#
+# Authoritative public-release metadata for AISRAF v0.1.2.
+#
+# This manifest is non-executing. It declares the AL2 controlled-output
+# release surface, names current and future autonomy levels, fixes the
+# AI component pattern wording, lists the validators that must remain
+# green, names local-only paths excluded from staging, names forbidden
+# claims, and lists known warnings carried into the release.
+#
+# Promoted by: WP-12C-REL0-B (Public Release Docs).
+
+release_id: aisraf-v0.1.2
+package_name: AISRAF SAS Prototype
+package_version: v0.1.2
+commit_hash: e641699f2586fb59654d2e08338fd822ec4e2e62
+release_status: pre_release_public_safe_local_first_evidence_bound
+release_posture: not_published; not_pushed; not_diagrammed; not_orchestrated
+release_notes_doc: CHANGELOG.md
+license_doc: LICENSE
+notice_doc: NOTICE.md
+security_doc: SECURITY.md
+contributing_doc: CONTRIBUTING.md
+public_docs:
+  primer: docs/AISRAF-PRIMER.md
+  operator_quickstart: docs/OPERATOR-QUICKSTART.md
+  security_review_workflow: docs/SECURITY-REVIEW-WORKFLOW.md
+  architecture_overview: docs/ARCHITECTURE-OVERVIEW.md
+  roadmap: docs/ROADMAP.md
+
+current_autonomy_level: AL2
+current_autonomy_description: >-
+  Controlled-output local workbench: operator selects an AISRAF role,
+  role writes governed outputs only inside an approved scratch run
+  folder, hooks enforce path guards and run validators.
+current_autonomy_proof: runs/RUN-SMOKE-PLUGIN-L2B-001
+future_autonomy_level: AL3_ORCH
+future_autonomy_description: >-
+  AL3 orchestrated multi-agent runtime is future WP-ORCH; AL4 external
+  adapter / post-back execution is future adapter work; AL5 closed-loop
+  autonomy is out of scope.
+external_execution_status: not_claimed
+
+ai_component_pattern_current: AI_for_outside_component
+ai_component_pattern_near_term: AI_beside_on_component
+ai_component_pattern_not_current: AI_inside_component
+
+validators:
+  - script: tools/Test-AisrafPackage.ps1
+    expected_status: 0_FAIL
+    last_run_pass_count: 83
+    last_run_warn_count: 2
+    last_run_fail_count: 0
+  - script: tools/Test-AisrafBp12AReadiness.ps1
+    expected_status: 0_FAIL
+    last_run_pass_count: 77
+    last_run_fail_count: 0
+  - script: tools/Test-AisrafRunProfile.ps1
+    target: runs/RUN-001/run-profile.yaml
+    mode: ExecutionReady
+    expected_status: 0_FAIL
+    last_run_pass_count: 12
+    last_run_fail_count: 0
+  - script: tools/Test-AisrafRunProfile.ps1
+    target: runs/RUN-SMOKE-PLUGIN-L2B-001/run-profile.yaml
+    mode: ExecutionReady
+    expected_status: 0_FAIL
+    last_run_pass_count: 12
+    last_run_fail_count: 0
+
+local_only_paths:
+  - .claude/
+  - runs/RUN-SMOKE-LOCAL-001/
+  - runs/RUN-SMOKE-PLUGIN-L2B-001/
+local_only_policy: >-
+  These paths are local-only smoke or environment evidence. They are
+  excluded from git staging via local ignore rules. They are not part
+  of the v0.1.2 public release surface and must not be committed or
+  published.
+
+forbidden_claims:
+  - AL3_orchestrated_multi_agent_runtime_as_current
+  - AL4_external_tool_post_back_execution_as_current
+  - AL5_closed_loop_autonomy
+  - live_jira_integration
+  - live_confluence_integration
+  - live_lucidchart_integration
+  - live_mcp_runtime
+  - live_anthropic_claude_runtime_adapter
+  - live_azure_ai_foundry_runtime_adapter
+  - live_google_adk_adapter
+  - live_microsoft_agent_framework_adapter
+  - live_database_backed_runtime
+  - live_terraform_or_cloud_deployment
+  - live_cloud_runtime
+  - live_event_bus
+  - live_telemetry_backend
+  - live_external_post_back_execution
+  - production_use_readiness
+  - marketplace_publication
+  - release_automation_as_implemented
+  - autonomous_agents_for_production_use
+
+known_warnings:
+  - id: KW-001
+    source: Test-AisrafPackage.ps1 Check 14-runs-readme-only
+    detail: runs/RUN-SMOKE-LOCAL-001/ exists alongside the governed RUN-001 fixture
+    severity: warning
+    resolution: local_only_path; excluded from staging via local ignore
+  - id: KW-002
+    source: Test-AisrafPackage.ps1 Check 14-runs-readme-only
+    detail: runs/RUN-SMOKE-PLUGIN-L2B-001/ exists alongside the governed RUN-001 fixture
+    severity: warning
+    resolution: local_only_path; excluded from staging via local ignore; preserved as L2B controlled-output evidence
+
+next_gates:
+  - id: WP-12C-REL0-B-STAGE-COMMIT
+    description: Stage and commit the WP-12C-REL0-B public release docs surface
+    blocked_by: explicit founder approval after this REL0-B report
+  - id: WP-12C-REL0-QA
+    description: QA pass over the public release docs surface
+    blocked_by: WP-12C-REL0-B-STAGE-COMMIT
+  - id: WP-13
+    description: Release diagrams and visuals
+    blocked_by: WP-12C-REL0 closure
+  - id: WP-ORCH0
+    description: AL3 orchestrated multi-agent runtime design
+    blocked_by: WP-13 closure and explicit founder authorization
+
+license_status: pending_founder_legal_confirmation
+license_note: >-
+  LICENSE is a public-safe placeholder (all rights reserved) until founder
+  / legal selects the final public license. NOTICE.md mirrors the placeholder
+  posture. No open-source rights are granted by this placeholder.

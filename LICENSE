@@ -1,0 +1,43 @@
+AISRAF SAS Prototype v0.1.2 — License (Pending Founder / Legal Confirmation)
+
+Status: PLACEHOLDER. License pending founder / legal confirmation.
+
+Until the project owner selects and publishes a final license, the contents of
+this repository (the "AISRAF Materials") are provided as-is for evaluation,
+review, and governed contribution under the work-package discipline described
+in CONTRIBUTING.md. No open-source rights are granted by this placeholder.
+
+All rights reserved by the project owner pending publication of the final
+license.
+
+The following limited evaluation use is permitted while this placeholder is
+in effect:
+
+1. You may read the AISRAF Materials.
+2. You may run the local validators (`tools/Test-AisrafPackage.ps1`,
+   `tools/Test-AisrafBp12AReadiness.ps1`,
+   `tools/Test-AisrafRunProfile.ps1`) against your own local checkout.
+3. You may use the AISRAF plugin under your own provider surface against
+   your own local inputs, subject to the Local-First and Sensitive Data
+   Rules in SECURITY.md.
+4. You may contribute changes back to the project under the governance
+   model in CONTRIBUTING.md.
+
+The following are NOT granted by this placeholder:
+
+- No right to redistribute the AISRAF Materials in modified or unmodified
+  form.
+- No right to publish the AISRAF Materials to a public marketplace.
+- No right to claim AISRAF integration with, endorsement by, or runtime
+  on, any third-party platform.
+- No warranty. THE AISRAF MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY
+  OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+  WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+  LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION
+  OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
+  WITH THE AISRAF MATERIALS OR THE USE OR OTHER DEALINGS IN THE AISRAF
+  MATERIALS.
+
+When the final license is selected, this file will be replaced. Until then,
+treat all use as evaluation-only under the limits stated above.
