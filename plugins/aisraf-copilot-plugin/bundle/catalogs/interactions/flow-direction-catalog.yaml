@@ -1,0 +1,116 @@
+catalog_id: flow-direction-catalog
+catalog_name: Flow Direction Catalog
+schema_version: aisraf_flow_direction_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of flow-direction values used to record whether a
+  flow is one-way, request/response, bidirectional, broadcast/fan-out, or
+  unknown. Direction is read from arrow heads and source notes; it does not
+  imply protocol, transport, or authorization characteristics.
+
+consumers:
+  prompts:
+    - prompts/dfd/05-flow-extract.prompt.md
+    - prompts/rs/04-design-fact-extract.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+  skills:
+    - skills/rs/SK-FLOW-EXTRACT.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/dfd/SK-DFD-04-FLOW-EXTRACT.md
+  pras:
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-FD-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-FD-02
+    rule: A direction claim is supported by visible arrow head(s), bidirectional indicator, or explicit source note. Otherwise the direction is unknown.
+  - rule_id: ER-FD-03
+    rule: Direction does not declare protocol, transport encryption, payload, or authorization properties.
+
+prohibited_claims:
+  - protocol_assertion_from_direction_alone
+  - transport_encryption_from_direction_alone
+  - authorization_scope_from_direction_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Direction does not imply protocol, transport encryption, or authorization characteristics.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/interactions/data-flow-interactions.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: FD-ONE-WAY
+    label: one_way
+    description: A unidirectional flow with one arrow head pointing at the destination.
+    when_to_use: A single arrow head is visible from source to destination.
+    when_not_to_use: Two arrow heads are visible, or the flow is plainly request/response.
+    evidence_required: visible single arrow head
+    confidence_guidance: High when arrow is unambiguous; medium when arrow style is partial; unknown when arrow is unreadable.
+    notes: One-way does not imply async; record interaction type separately.
+
+  - id: FD-REQUEST-RESPONSE
+    label: request_response
+    description: A request-response flow where the source sends a request and receives a response.
+    when_to_use: The flow is plainly a synchronous request/response, often labeled "API call" with a return path.
+    when_not_to_use: The flow is one-way without a return, or is bidirectional in a streaming sense.
+    evidence_required: visible request/response label, paired arrows, or source note
+    confidence_guidance: High when labeled; medium when inferred from API/tool surfaces; unknown when ambiguous.
+    notes: Request/response often pairs with tool_call or model_call interaction types.
+
+  - id: FD-BIDIRECTIONAL
+    label: bidirectional
+    description: A flow with traffic in both directions but not strictly request/response (e.g., long-lived sync, websocket, peer-to-peer agent communication).
+    when_to_use: Two arrow heads are visible and the flow is not a discrete request/response.
+    when_not_to_use: The flow is request/response or one-way.
+    evidence_required: two visible arrow heads or source note describing peer/streaming traffic
+    confidence_guidance: High when explicitly labeled; medium when inferred; unknown when ambiguous.
+    notes: Bidirectional flows often appear in agent_to_agent and hitl_approval interactions.
+
+  - id: FD-BROADCAST
+    label: broadcast
+    description: A fan-out or broadcast flow where one source delivers to multiple destinations.
+    when_to_use: A single arrow fans out to multiple destinations, or a pub/sub topic distributes events.
+    when_not_to_use: The flow has a single destination.
+    evidence_required: visible fan-out arrows or queue/topic component at the source
+    confidence_guidance: High when explicitly labeled; medium when inferred from queue/topic; unknown when ambiguous.
+    notes: Broadcast flows require per-destination boundary review.
+
+  - id: FD-UNKNOWN
+    label: unknown
+    description: The flow direction is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When arrow direction is plainly visible.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Direction unknown drives a targeted question only when materiality applies.
+
+version_notes: >
+  Initial Build Package 07 release. New v0.1.2 design that separates
+  direction from interaction type so each is independently classified.

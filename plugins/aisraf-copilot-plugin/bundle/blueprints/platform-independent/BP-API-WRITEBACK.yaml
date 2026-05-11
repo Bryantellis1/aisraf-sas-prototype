@@ -1,0 +1,288 @@
+blueprint_id: BP-API-WRITEBACK
+blueprint_name: API Write-Back
+owning_build_package: Build Package 08
+status: active
+
+purpose: >
+  Recognize patterns in which AI model or agent output is written back to
+  a data store, system of record, or downstream service via an API call.
+  The blueprint scopes catalog evidence required to identify the
+  write-back, surfaces missing facts about authorization, HITL gating, and
+  data class on the target, and lists the finding and recommendation
+  categories the consuming skills may select from.
+
+applicability:
+  category: platform-independent
+  ai_action_levels:
+    - AAL-L3
+    - AAL-L4
+    - AAL-UNKNOWN
+  primary_interaction_types:
+    - IT-WRITE-BACK
+    - IT-MODEL-CALL
+    - IT-HITL-APPROVAL
+  primary_concerns:
+    - Is write-back authorization visible at the write target?
+    - Is a HITL gate present before the write-back at AAL-L3+?
+    - What data class is on the target store?
+    - Is the write-back triggered by a model recommendation or an autonomous agent decision?
+  not_applicable_when: |
+    No IT-WRITE-BACK is supported in the chain (use BP-MODEL-ENDPOINT-CALL,
+    BP-RAG-RETRIEVAL, or BP-NON-AI-DATAFLOW-BASELINE depending on what is
+    in scope). Write-back is part of a larger multi-step composition
+    (BP-AI-WORKFLOW may be primary; this blueprint becomes a sub-pattern).
+    Write-back target is the same external SaaS providing the model
+    (BP-AI-SAAS-INTEGRATION may be primary).
+
+catalog_dependencies:
+  - catalog_id: interaction-type-catalog
+    family_id: interactions
+    path: catalogs/interactions/interaction-type-catalog.yaml
+    use: confirm IT-WRITE-BACK is supported and identify presence/absence of IT-HITL-APPROVAL
+  - catalog_id: flow-direction-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-direction-catalog.yaml
+    use: classify write-back flow direction
+  - catalog_id: flow-evidence-rule-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-evidence-rule-catalog.yaml
+    use: enforce per-flow evidence rules
+  - catalog_id: boundary-type-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-type-catalog.yaml
+    use: identify data-store and downstream-API boundaries
+  - catalog_id: boundary-crossing-rule-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-crossing-rule-catalog.yaml
+    use: detect internet exposure of write-back targets
+  - catalog_id: trust-zone-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/trust-zone-catalog.yaml
+    use: classify write-source and write-target trust zones
+  - catalog_id: authentication-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authentication-catalog.yaml
+    use: identify auth markers at the write-back endpoint
+  - catalog_id: authorization-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authorization-catalog.yaml
+    use: identify authorization values for the write-back action
+  - catalog_id: identity-evidence-rule-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/identity-evidence-rule-catalog.yaml
+    use: enforce identity evidence rules including approval authority for write actions
+  - catalog_id: data-class-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/data-class-catalog.yaml
+    use: identify data class on the write-back target store
+  - catalog_id: transport-protection-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/transport-protection-catalog.yaml
+    use: identify transit encryption on the write-back API call
+  - catalog_id: at-rest-protection-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/at-rest-protection-catalog.yaml
+    use: identify at-rest protection on the write-back target
+  - catalog_id: confidence-level-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/confidence-level-catalog.yaml
+    use: cross-cutting confidence levels for blueprint match disposition
+  - catalog_id: security-stack-marker-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/security-stack-marker-catalog.yaml
+    use: identify gateway / identity-checkpoint markers at the write target
+  - catalog_id: control-signal-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/control-signal-catalog.yaml
+    use: classify control signal value (visible / partial / missing) for write-back authorization
+  - catalog_id: ai-action-level-catalog
+    family_id: review
+    path: catalogs/review/ai-action-level-catalog.yaml
+    use: scope of AI Action Levels supported by this pattern
+  - catalog_id: finding-category-catalog
+    family_id: review
+    path: catalogs/review/finding-category-catalog.yaml
+    use: scope of supported finding categories
+  - catalog_id: recommendation-type-catalog
+    family_id: review
+    path: catalogs/review/recommendation-type-catalog.yaml
+    use: scope of supported recommendation types
+  - catalog_id: proof-vs-signal-rule-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    use: global signal-vs-proof rule referenced by every blueprint claim
+
+required_inputs:
+  - input_id: review_table_chain
+    description: chain of flow rows with interaction types resolved
+    source: skills/rs/SK-DATA-FLOW-TABLE-BUILD.md output
+  - input_id: ai_action_level_classification
+    description: AI Action Level result for the highest-action-level step
+    source: skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md output
+  - input_id: boundary_crossing_records
+    description: boundary-crossing detection results for the write-back target
+    source: skills/rs/SK-BOUNDARY-CROSSING-DETECT.md output
+  - input_id: confidence_levels
+    description: per-row confidence values
+    source: catalogs/data-protection/confidence-level-catalog.yaml
+
+match_conditions:
+  - condition_id: BP-API-WRITEBACK-MATCH-01
+    description: An IT-WRITE-BACK interaction is supported in the chain, triggered by an IT-MODEL-CALL or IT-AGENT-TO-AGENT output.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        required_values: [IT-WRITE-BACK]
+      - catalog_id: interaction-type-catalog
+        accompanying_values: [IT-MODEL-CALL, IT-AGENT-TO-AGENT]
+
+candidate_conditions:
+  - condition_id: BP-API-WRITEBACK-CANDIDATE-01
+    description: An IT-DATA-FLOW following IT-MODEL-CALL ends at an external store but write-back semantics are unclear (read vs write).
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        partial_support_values: [IT-WRITE-BACK, IT-DATA-FLOW, IT-UNKNOWN]
+      - catalog_id: confidence-level-catalog
+        partial_support_values: [medium, low]
+
+no_match_conditions:
+  - condition_id: BP-API-WRITEBACK-NO-MATCH-01
+    description: No IT-WRITE-BACK interaction is supported in the chain.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        absent_or_conflicting_values: [IT-WRITE-BACK]
+
+unknown_conditions:
+  - condition_id: BP-API-WRITEBACK-UNKNOWN-01
+    description: Write-back semantics are unresolved or the trigger relationship to model/agent output is undetermined.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        unknown_when_value: IT-UNKNOWN
+      - catalog_id: confidence-level-catalog
+        unknown_when_value: unknown
+
+material_missing_facts:
+  - fact_id: BP-API-WRITEBACK-MMF-01
+    description: What authorization is required to trigger this write-back? Who can approve it?
+    catalog_reference: authorization-catalog
+    affects:
+      - finding_category
+      - ai_action_level
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-API-WRITEBACK-MMF-02
+    description: Is there a human approval step before the write-back is executed (HITL gate at AAL-L3+)?
+    catalog_reference: interaction-type-catalog
+    affects:
+      - ai_action_level
+      - finding_category
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-API-WRITEBACK-MMF-03
+    description: What data class is on the write-back target store?
+    catalog_reference: data-class-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-API-WRITEBACK-MMF-04
+    description: Is the write-back triggered by a human-approved recommendation or an autonomous agent decision?
+    catalog_reference: interaction-type-catalog
+    affects:
+      - blueprint_match
+      - ai_action_level
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+
+supported_finding_categories:
+  - finding_category_id: FC-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-DEFICIENCY
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-EVIDENCE-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-OBSERVATION
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-RISK
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-REQUIREMENT
+    catalog: catalogs/review/finding-category-catalog.yaml
+
+supported_recommendation_types:
+  - recommendation_type_id: RT-ADD-CONTROL
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-EXPAND-CONTROL-SCOPE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-FORMALIZE-GATE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-DEFINE-SCOPE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-REQUEST-OWNER-OR-EVIDENCE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-ROUTE-TO-VALIDATION-TICKET
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-ROUTE-TO-PROCESS
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+
+human_review_gate:
+  required: true
+  notes: >
+    Severity of an unauthenticated or unauthorized write-back, the AI
+    Action Level effect of HITL absence, and final disposition are owned
+    by the consuming skills and human review. The blueprint scopes
+    evidence and surfaces missing facts.
+
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - implementation_proof_from_blueprint_match
+  - severity_computed_inside_blueprint
+  - ai_action_level_computed_inside_blueprint
+  - score_computed_inside_blueprint
+  - finding_prose_inside_blueprint
+  - recommendation_prose_inside_blueprint
+  - handoff_prose_inside_blueprint
+  - validation_ticket_prose_inside_blueprint
+  - owner_routing_inside_blueprint
+  - new_catalog_value_introduced_inside_blueprint
+  - approved_security_stack_from_blueprint_match
+
+source_reference:
+  v0_01_artifact: blueprints/BP-API-WRITEBACK.md
+  v0_01_path: aisraf-sas-prototype-skill-chain-pack-v0.01/blueprints/BP-API-WRITEBACK.md
+  derivation_mode: restructured_and_improved
+  notes: >
+    Translated the v0.01 25-section Markdown form into structured YAML.
+    v0.01 used L3-L5; v0.1.2 maps to AAL-L3 and AAL-L4 (multi-agent
+    autonomous L5 is represented as AAL-L4 in conjunction with
+    BP-AGENT-TO-AGENT). Removed prose recommendation tables and owner
+    routing; finding categories and recommendation types reference
+    Package 07 catalog IDs only.
+
+version_notes: >
+  Initial Build Package 08 release. Four-state matching per founder
+  decision Q1.
+
+match_evidence_policy:
+  match_requires_supported_catalog_values: true
+  candidate_allows_partial_support: true
+  no_match_requires_clear_absence_or_conflict: true
+  unknown_when_required_inputs_missing: true
+  human_review_required: true
+
+catalog_value_policy:
+  may_reference_catalog_values_only: true
+  may_not_introduce_new_catalog_values: true
+  missing_catalog_value_action: "record material_missing_fact; do not invent"
+
+output_boundary:
+  does_not_write_outputs: true
+  does_not_create_templates: true
+  does_not_generate_handoff_text: true
+  supports_future_outputs_only_through_templates: true
+
+runtime_and_external_execution:
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false

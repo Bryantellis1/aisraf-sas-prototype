@@ -1,0 +1,151 @@
+catalog_id: at-rest-protection-catalog
+catalog_name: At-Rest Protection Catalog
+schema_version: aisraf_at_rest_protection_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of at-rest protection values driven by R# tokens
+  and storage-state words (Enc, Tok, Trun, NoCC, Clr) plus unknown. This
+  catalog is strictly storage-only; transport protection is in
+  transport-protection-catalog.yaml.
+
+consumers:
+  prompts:
+    - prompts/rs/03-legend-normalization.prompt.md
+    - prompts/rs/12-validation-note-write.prompt.md
+  skills:
+    - skills/rs/SK-LEGEND-NORMALIZE.md
+    - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+    - skills/rs/SK-FINDING-CLASSIFY.md
+  pras:
+    - prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-finding-recommender.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-AR-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-AR-02
+    rule: An R# token means at-rest encryption is shown for its scoped store. It does not prove key management or implementation.
+  - rule_id: ER-AR-03
+    rule: Storage-state words (Enc, Tok, Trun, NoCC, Clr) apply to the scoped store unless explicitly scoped to a flow.
+  - rule_id: ER-AR-04
+    rule: At-rest protection is not transport protection; do not infer one from the other.
+  - rule_id: ER-AR-05
+    rule: NoCC and Clr scopes are limited to the labeled scope; they do not apply globally.
+
+prohibited_claims:
+  - key_management_proof_from_r_marker_alone
+  - at_rest_coverage_from_r_marker_on_one_store
+  - all_storage_clear_text_from_clr_marker_on_one_store
+  - no_pci_anywhere_from_nocc_marker_on_one_store
+  - transit_protection_from_at_rest_marker_alone
+  - tokenization_scope_from_storage_tok_word_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Storage-state words apply to the scoped store, not globally.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/storage-protection-marker-catalog.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/encryption-at-rest-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/encryption-catalog.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/tokenization-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/truncation-rules.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: AR-R-MARKER
+    label: r_marker_present
+    raw_pattern: '^R[0-9]+$'
+    description: An R# token is on a store indicating at-rest encryption is named for that store scope.
+    when_to_use: An R# token is plainly visible on a store or storage scope.
+    when_not_to_use: The token is on a flow rather than a store.
+    evidence_required: visible R# token on a store or storage scope
+    confidence_guidance: High when token is plainly visible; medium when inferred from legend; unknown when token is unreadable.
+    notes: R# is at-rest, never transit. Key management, key owner, and CMEK remain unknown.
+
+  - id: AR-ENC-WORD
+    label: enc_word_present
+    raw_pattern: '^Enc$'
+    description: An Enc storage-state word indicates encrypted storage state for the scoped store.
+    when_to_use: An Enc word is plainly visible on a store or storage scope.
+    when_not_to_use: The word is scoped to a flow.
+    evidence_required: visible Enc word on store scope
+    confidence_guidance: High when explicit; medium when partial scope; unknown when ambiguous.
+    notes: Enc visibility does not prove key management or production configuration.
+
+  - id: AR-TOK-WORD
+    label: tok_word_present
+    raw_pattern: '^Tok$'
+    description: A Tok storage-state word indicates tokenized storage state for the scoped store.
+    when_to_use: A Tok word is plainly visible on a store or storage scope.
+    when_not_to_use: Tokenization is shown only as C#T#P on a flow (see data-class-catalog.yaml).
+    evidence_required: visible Tok word on store scope
+    confidence_guidance: High when explicit; medium when partial scope; unknown when ambiguous.
+    notes: Tok visibility does not prove tokenization scope, detokenization controls, or authorization.
+
+  - id: AR-TRUN-WORD
+    label: trun_word_present
+    raw_pattern: '^Trun$'
+    description: A Trun storage-state word indicates truncated storage state for the scoped store.
+    when_to_use: A Trun word is plainly visible on a store or storage scope.
+    when_not_to_use: Truncation is shown only as C#U#P on a flow.
+    evidence_required: visible Trun word on store scope
+    confidence_guidance: High when explicit; medium when partial scope; unknown when ambiguous.
+    notes: Trun visibility does not prove truncation scope or original-data disposal.
+
+  - id: AR-NOCC-WORD
+    label: nocc_word_present
+    raw_pattern: '^NoCC$'
+    description: A NoCC storage-state word indicates a no-cardholder-data claim for the scoped store.
+    when_to_use: A NoCC word is plainly visible on a store with explicit scope.
+    when_not_to_use: The reviewer is tempted to apply NoCC globally without scope.
+    evidence_required: visible NoCC word with explicit scope
+    confidence_guidance: High when explicit and scoped; medium when scope is partial; unknown when scope is missing.
+    notes: NoCC scope is limited to the labeled scope; it does not prove the absence of cardholder data anywhere else.
+
+  - id: AR-CLR-WORD
+    label: clr_word_present
+    raw_pattern: '^Clr$'
+    description: A Clr storage-state word indicates clear-text storage for the scoped store.
+    when_to_use: A Clr word is plainly visible on a store with explicit scope.
+    when_not_to_use: Clr appears on a flow (use transport-protection-catalog.yaml's plain_text_indicated).
+    evidence_required: visible Clr word with explicit scope
+    confidence_guidance: High when explicit and scoped; medium when scope is partial; unknown when scope is missing.
+    notes: Clr scope is limited to the labeled scope; it does not prove all storage is clear-text.
+
+  - id: AR-UNKNOWN
+    label: unknown
+    description: At-rest protection is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one at-rest indicator is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown drives validation-note routing when implementation evidence is required.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01
+  storage-protection-marker-catalog and the encryption-at-rest MD prose into
+  a closed list of seven controlled values (six markers plus unknown).

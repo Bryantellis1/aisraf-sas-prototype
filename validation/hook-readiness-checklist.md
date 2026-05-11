@@ -6,16 +6,16 @@ Status: **PLANNING_ONLY**. This checklist defines the gates the 4 lifecycle hook
 
 ## Purpose
 
-Define the falsifiable gates for the 4 conservative lifecycle hooks. Hooks **block, validate, or summarize** — they never generate content silently and they never claim execution.
+Define the falsifiable gates for the 4 conservative lifecycle hook scripts and the provider hook configuration. Provider config lives under `.github/hooks/*.json`; reusable PowerShell implementation lives under `tools/hooks/`. Hooks **block, validate, or summarize** — they never generate content silently and they never claim execution.
 
 ## Hook Set Under Test
 
-| # | Hook ID | Event | Behavior |
+| # | Hook ID | Provider Surface | Behavior |
 |---|---|---|---|
-| 1 | `aisraf-allowed-path-prewrite-guard` | Prewrite | Block writes outside the active build-package allow-list. |
-| 2 | `aisraf-focused-validator-postwrite` | Postwrite | Run the narrow validator that owns the touched surface. |
-| 3 | `aisraf-session-stop-summary` | Session stop | Emit a chat-only summary; no file writes. |
-| 4 | `aisraf-precommit-full-validator` | Precommit | Run BP12A readiness harness; abort commit on FAIL. |
+| 1 | `aisraf-allowed-path-prewrite-guard` | `.github/hooks/aisraf-guardrails.json` `PreToolUse` | Block writes outside the active build-package allow-list. |
+| 2 | `aisraf-focused-validator-postwrite` | `.github/hooks/aisraf-guardrails.json` `PostToolUse` | Run the narrow validator that owns the touched surface. |
+| 3 | `aisraf-session-stop-summary` | `.github/hooks/aisraf-guardrails.json` `Stop` | Emit a chat-only summary; no file writes. |
+| 4 | `aisraf-precommit-full-validator` | Direct PowerShell / local precommit route | Run BP12A readiness harness; abort commit on FAIL. |
 
 ## Gates — Discovery / Registration (D1–D4)
 

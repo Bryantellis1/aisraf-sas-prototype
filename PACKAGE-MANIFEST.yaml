@@ -14,13 +14,81 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "11A"
-  build_package_name: RUN-001 Input Refresh (byte-copy refresh from corrected sample-001 inputs; completes BP12-SAMPLE-DFD-BLOCKER resolution)
-  build_package_status: active
+  build_package_number: "12C-ED1"
+  build_package_name: Repository Editor Readability And Public-Safety Pass
+  build_package_status: active_editor_readability_pass
 next_build_package:
-  build_package_number: "13"
-  build_package_name: Diagrams
-  build_package_status: next_allowed
+  build_package_number: "12C-L3"
+  build_package_name: Install Evidence And Git Staging / Publication Decision
+  build_package_status: blocked_pending_qa1_blocker_register_closure_rb_001_through_rb_005
+wp12c_current_state:
+  active_work_package: WP-12C-ED1
+  accepted_status_through: WP-12C-QA1_PARTIAL_WITH_GAPS
+  wp12c_h_status: BLACK_CLOSED
+  wp12c_i_status: BLACK_CLOSED
+  wp12c_j1_status: BLACK_CLOSED
+  wp12c_j2a_status: BLACK_CLOSED
+  wp12c_j2b_status: BLACK_CLOSED
+  wp12c_j_status: BLACK_CLOSED
+  wp12c_k0_k1_status: BLACK_CLOSED
+  wp12c_k1a_status: BLACK_CLOSED
+  wp12c_k1b_a_status: BLACK_CLOSED
+  wp12c_k1b_b_status: BLACK_CLOSED
+  wp12c_k2_status: BLACK_CLOSED
+  wp12c_k3_status: BLACK_CLOSED
+  wp12c_k3c_status: BLACK_CLOSED
+  wp12c_k4_status: BLACK_CLOSED
+  wp12c_k_status: BLACK_CLOSED
+  wp12c_l0_status: BLACK_CLOSED
+  wp12c_l1a_status: BLACK_CLOSED
+  wp12c_l1_status: BLACK_CLOSED
+  wp12c_l2a_status: BLACK_CLOSED
+  wp12c_l2a_ux_status: BLACK_CLOSED
+  wp12c_l2b_plan_status: BLACK_CLOSED
+  wp12c_l2b_exec_status: BLACK_CLOSED
+  wp12c_qa1_status: BLACK_CLOSED_PARTIAL_WITH_GAPS
+  wp12c_ed1_status: ACTIVE
+  wp12c_l3_status: BLOCKED_PENDING_RB_001_THROUGH_RB_005_CLOSURE
+  wp12c_rel0_status: BLOCKED_PENDING_L3
+  wp13_status: BLOCKED_PENDING_POST_L3
+  wp_orch_status: FUTURE_NOT_IN_V0_1_2_SCOPE
+  current_gate: editor_readability_public_safety_pass_and_rb_003_rb_004_corrections
+  next_gate: l3_install_evidence_and_staging_decision_after_rb_001_through_rb_005_closure
+  current_autonomy_level: AL2_controlled_output_local_workbench
+  future_autonomy_level: AL3_orchestrated_multi_agent_runtime_deferred_to_wp_orch
+  plugin_scaffold_status: complete_and_validated_check_16_16a_16b_16c_pass
+  plugin_packaging_status: byte_identical_bundle_with_checksum_manifest_validated_under_runs_run_smoke_plugin_l2b_001_evidence
+  diagrams_status: blocked_until_post_l3_release_gate_authorizes_wp_13
+authority_chain:
+  law: Capability -> Value Outcome -> ProcessFlowSpecification -> TaskFlowSpecification -> Agent -> Skill -> Tool / Hook / Policy -> Memory / State -> Evaluation -> Evidence -> Platform Projection -> Plugin / Release
+  current_posture: local_first_governed_workbench
+  canonical_source_surfaces:
+    - prompts/
+    - skills/
+    - prototype-agents/
+    - templates/
+    - catalogs/
+    - blueprints/
+    - samples/
+    - config/
+    - tools/
+    - validation/
+  provider_projection_surfaces:
+    - .github/agents/
+    - .github/skills/
+    - .github/hooks/
+    - .copilot-skills/
+  local_only_surfaces:
+    - .claude/
+  smoke_evidence_surfaces:
+    - runs/RUN-SMOKE-LOCAL-*/
+  future_gated_surfaces:
+    - plugins/
+  policy_notes:
+    - Provider projections do not override canonical prompts, skills, PRAs, templates, catalogs, blueprints, samples, config, tools, or validation.
+    - Plugin packaging is a projection surface only; no plugin scaffold is current package truth.
+    - .claude/ is operator-local and must not be staged.
+    - runs/RUN-SMOKE-LOCAL-*/ is local smoke evidence and is excluded from release fixture status unless separately approved.
 build_packages:
   - build_package_number: "01"
     build_package_name: Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent standard
@@ -127,6 +195,10 @@ root_areas:
     root_area_name: authoring-agents/
     path: authoring-agents/
     owning_build_package: "01"
+  - root_area_number: "19"
+    root_area_name: .copilot-skills/
+    path: .copilot-skills/
+    owning_build_package: "12C-H"
 allowed_root_files:
   - README.md
   - START-HERE.md
@@ -137,6 +209,7 @@ allowed_root_files:
 allowed_root_folders:
   - .github
   - .agents
+  - .copilot-skills
   - config
   - tools
   - prompts
@@ -152,6 +225,22 @@ allowed_root_folders:
   - validation
   - release
   - authoring-agents
+future_gated_root_folders:
+  - path: plugins/
+    target_path: plugins/aisraf-copilot-plugin/
+    status: governed_and_validator_gated_under_test_aisraf_package_check_16_16a_16b_16c
+    may_exist_now: true
+    projection_only: true
+    source_of_truth: canonical_surfaces_not_plugin_files
+    governance_note: plugin_bundle_is_byte_identical_to_canonical_sources_validated_by_bundle_checksum_manifest
+local_excluded_root_folders:
+  - path: .claude/
+    status: local_only_never_stage
+    package_surface: false
+smoke_run_exclusion:
+  path_pattern: runs/RUN-SMOKE-LOCAL-*/
+  status: local_smoke_evidence_excluded_from_release_fixture_unless_separately_approved
+  staging_policy: do_not_stage_by_default
 build_package_01_allowed_writes:
   root_files:
     - README.md

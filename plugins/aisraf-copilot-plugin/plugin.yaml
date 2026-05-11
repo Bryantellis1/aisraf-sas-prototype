@@ -1,0 +1,341 @@
+# AISRAF Copilot Plugin — Package Validation Manifest (WP-12C-K4)
+#
+# This manifest is non-executing. It declares packaged-but-not-installed
+# lifecycle, defers install validation to WP-12C-L, disables external
+# execution, and points at canonical source surfaces by string only. No
+# canonical body is copied into this file.
+#
+# The canonical source of truth for AISRAF remains outside this folder.
+
+plugin_id: aisraf-copilot-plugin
+plugin_name: AISRAF SAS Copilot Plugin
+version: 0.0.0-scaffold
+plugin_version: 0.0.0-scaffold
+work_package: WP-12C-K4
+parent_work_package: WP-12C-K
+parent_work_package_status: WP-12C-K_PACKAGE_COMPLETE_READY_FOR_INSTALL_READINESS_PREFLIGHT
+
+provider: GitHub Copilot
+package_type: copilot_projection_package
+lifecycle_status: packaged_not_installed
+contract_status: plugin_package_validation_defined
+
+# Posture flags (falsifiable; enforced by the package and readiness validators).
+external_execution: disabled
+runtime_claims: none
+postback_execution_status: deferred
+output_destination_mode: local_only
+mcp_tool_refs: []
+memory_scope: run_scoped_files_only
+
+bundle_target: plugins/aisraf-copilot-plugin/bundle/
+checksum_manifest: plugins/aisraf-copilot-plugin/bundle-checksum-manifest.yaml
+
+# Install validation is the explicit scope of WP-12C-L.
+install_validation:
+  status: deferred
+  deferred_to: WP-12C-L
+  install_command: not_authored
+  uninstall_command: not_authored
+  validator_command: not_authored
+
+# Canonical source references required by the K4 manifest schema. Strings
+# only; no canonical bodies.
+canonical_source_references:
+  authority: "Canonical surfaces outside plugins/aisraf-copilot-plugin/"
+  source_root: "."
+  source_surfaces:
+    - .github/agents/
+    - .github/skills/
+    - .github/hooks/
+    - .copilot-skills/
+    - .agents/
+    - prompts/
+    - skills/
+    - prototype-agents/
+    - templates/
+    - catalogs/
+    - blueprints/
+    - tools/hooks/
+  selected_validator_files:
+    - tools/Test-AisrafPackage.ps1
+    - tools/Test-AisrafBp12AReadiness.ps1
+    - tools/Test-AisrafRunProfile.ps1
+
+# Legacy source-of-truth references kept for K2/K3 compatibility. Strings
+# only; no canonical bodies.
+canonical_source_of_truth:
+  authority: "Canonical surfaces outside plugins/aisraf-copilot-plugin/"
+  source_root: "."
+  source_surfaces:
+    - prompts/rs/
+    - prompts/dfd/
+    - skills/rs/
+    - skills/dfd/
+    - prototype-agents/
+    - .agents/
+    - templates/
+    - catalogs/
+    - blueprints/
+    - samples/
+    - runs/RUN-001/
+    - tools/
+    - tools/hooks/
+    - .github/agents/
+    - .github/skills/
+    - .github/hooks/
+    - .copilot-skills/
+    - validation/
+  registries:
+    prompt_registry: prompts/prompt-registry.yaml
+    skill_registry: skills/skill-registry.yaml
+    prototype_agent_registry: prototype-agents/prototype-agent-registry.yaml
+    template_registry: templates/template-registry.yaml
+  governing_documents:
+    plugin_roadmap: validation/package-12c-plugin-roadmap.md
+    solution_package_architecture: validation/package-12c-solution-package-architecture.md
+    folder_contracts: FOLDER-CONTRACTS.md
+    package_manifest: PACKAGE-MANIFEST.yaml
+    build_order: BUILD-ORDER.md
+
+# Validators that govern this package projection.
+validators:
+  package_validator: tools/Test-AisrafPackage.ps1
+  readiness_validator: tools/Test-AisrafBp12AReadiness.ps1
+  run_profile_validator: tools/Test-AisrafRunProfile.ps1
+  plugin_content_limit_check: 16-plugin-content-limits
+  plugin_bundle_checksum_check: 16b-plugin-bundle-checksum-validation
+  k4_manifest_schema_validation: executed_at_WP-12C-K4
+  k4_no_external_execution_lint: executed_at_WP-12C-K4
+
+# WP-12C-K3A defined the projection contract. WP-12C-K3C assembled the
+# bundle. WP-12C-K4 validates the manifest, lint, and checksums without
+# installing the plugin.
+projection_assembly_contract:
+  status: assembled_by_k3c_validated_by_k4
+  work_package: WP-12C-K4
+  bundle_target:
+    path: plugins/aisraf-copilot-plugin/bundle/
+    exists_now: true
+    creation_gate: WP-12C-K3C
+    validation_gate: WP-12C-K4
+  checksum_manifest:
+    path: plugins/aisraf-copilot-plugin/bundle-checksum-manifest.yaml
+    exists_now: true
+    hash_algorithm: sha256
+  source_to_bundle_surfaces:
+    - source: .github/agents/
+      target_under_bundle: .github/agents/
+      class: provider_agent_projection
+    - source: .github/skills/
+      target_under_bundle: .github/skills/
+      class: provider_agent_skills
+    - source: .github/hooks/
+      target_under_bundle: .github/hooks/
+      class: provider_hook_config
+    - source: .copilot-skills/
+      target_under_bundle: .copilot-skills/
+      class: local_skill_wrappers
+    - source: .agents/
+      target_under_bundle: .agents/
+      class: canonical_adapter_specs
+    - source: prompts/
+      target_under_bundle: prompts/
+      class: canonical_prompts
+    - source: skills/
+      target_under_bundle: skills/
+      class: canonical_skills
+    - source: prototype-agents/
+      target_under_bundle: prototype-agents/
+      class: prototype_reference_agents
+    - source: templates/
+      target_under_bundle: templates/
+      class: controlled_templates
+    - source: catalogs/
+      target_under_bundle: catalogs/
+      class: controlled_catalogs
+    - source: blueprints/
+      target_under_bundle: blueprints/
+      class: controlled_blueprints
+    - source: tools/hooks/
+      target_under_bundle: tools/hooks/
+      class: reusable_hooks
+    - source: tools/Test-AisrafPackage.ps1
+      target_under_bundle: tools/Test-AisrafPackage.ps1
+      class: selected_validator
+    - source: tools/Test-AisrafBp12AReadiness.ps1
+      target_under_bundle: tools/Test-AisrafBp12AReadiness.ps1
+      class: selected_validator
+    - source: tools/Test-AisrafRunProfile.ps1
+      target_under_bundle: tools/Test-AisrafRunProfile.ps1
+      class: selected_validator
+  excluded_from_k3a_bundle_contract:
+    - samples/
+    - runs/RUN-001/
+  build_script_proposal:
+    path: tools/Build-AisrafCopilotPluginBundle.ps1
+    status: authored_in_WP-12C-K3C
+    duties:
+      - read_source_to_bundle_projection_map
+      - copy_allow_listed_sources_to_bundle_target
+      - calculate_sha256_for_each_source_and_target
+      - emit_bundle_checksum_manifest_yaml
+      - fail_closed_on_missing_sources_unauthorized_targets_hash_mismatches_or_forbidden_paths
+  bundle_by_reference_rules:
+    no_hand_copy_canonical_bodies: true
+    build_script_copies_canonical_files: true
+    source_path_and_sha256_required: true
+    target_path_and_sha256_required: true
+    bundle_manifest_records_source_and_target_hash: true
+    drift_between_source_and_bundle_fails: true
+    plugin_remains_projection_not_source_of_truth: true
+  k3b_validator_extension_plan:
+    package_validator_check_16: allow_controlled_bundle_target_after_K3B_only
+    readiness_validator_tracked_drift: allow_exact_future_build_script_and_manifest_paths_after_K3B_only
+    future_no_canonical_body_duplication_lint: required
+    future_bundle_checksum_validator: required
+    keep_k2_five_file_scaffold_validation_active: true
+  k3a_boundaries:
+    no_bundle_assembled: true
+    no_plugin_subfolder_created: true
+    no_build_script_authored: true
+    no_validator_modified: true
+    no_install_attempted: true
+    no_smoke_test_executed: true
+    no_canonical_body_copied: true
+
+# Fields still deferred beyond K4. Bundle assembly fields are now present;
+# install and publication evidence remain blocked until WP-12C-L.
+deferred_fields:
+  install_command: deferred_to_WP-12C-L
+  uninstall_command: deferred_to_WP-12C-L
+  install_evidence: deferred_to_WP-12C-L
+  publication_evidence: deferred_to_WP-12C-L
+
+# WP-12C-K2A — UX / operability audit (no K3 work; no install).
+audit_k2a:
+  status: applied
+  scope: ux_operability_audit_only
+  audited_files:
+    - plugins/aisraf-copilot-plugin/README.md
+    - plugins/aisraf-copilot-plugin/PLUGIN-PACKAGING-PLAN.md
+    - plugins/aisraf-copilot-plugin/PLUGIN-TEST-CARD.md
+    - plugins/aisraf-copilot-plugin/EVIDENCE-CHECKLIST.md
+    - plugins/aisraf-copilot-plugin/plugin.yaml
+  anchors_added:
+    operator_quick_start: README.md#0-operator-quick-start
+    role_journey_map: README.md#4a-role-journey-map
+    layered_projection_model: README.md#4b-layered-projection-model
+    role_update_procedure: PLUGIN-PACKAGING-PLAN.md#3a-role-update--extension-procedure
+    future_interactive_smoke_script: PLUGIN-TEST-CARD.md#30-future-interactive-smoke-script
+    k2a_evidence_rows: EVIDENCE-CHECKLIST.md#25-k2a-ux--operability-evidence
+  no_install_attempted: true
+  no_bundle_assembled: true
+  no_canonical_body_copied: true
+  no_plugin_subfolder_created: true
+
+# WP-12C-K3A — projection assembly contract / validator plan (no bundle).
+audit_k3a:
+  status: applied
+  scope: projection_assembly_contract_and_validator_plan_only
+  documented_in:
+    - plugins/aisraf-copilot-plugin/PLUGIN-PACKAGING-PLAN.md
+    - plugins/aisraf-copilot-plugin/EVIDENCE-CHECKLIST.md
+    - plugins/aisraf-copilot-plugin/plugin.yaml
+  proposed_bundle_target: plugins/aisraf-copilot-plugin/bundle/
+  proposed_build_script: tools/Build-AisrafCopilotPluginBundle.ps1
+  bundle_target_created: false
+  build_script_created: false
+  validators_modified: false
+  plugin_installed: false
+  smoke_executed: false
+  k3b_may_proceed_after_k3a_pass: true
+  k3c_blocked_until_k3b_validator_patch_pass: true
+  wp12c_l_blocked: true
+  wp13_blocked: true
+
+# WP-12C-K4 — plugin manifest schema, lint, and checksum validation.
+audit_k4:
+  status: passed
+  scope: manifest_schema_lint_checksum_validation_only
+  final_status: WP-12C-K4_PLUGIN_PACKAGE_VALIDATION_PASS_READY_FOR_INSTALL_TESTING
+  parent_package_status: WP-12C-K_PACKAGE_COMPLETE_READY_FOR_INSTALL_READINESS_PREFLIGHT
+  documented_in:
+    - plugins/aisraf-copilot-plugin/PLUGIN-PACKAGING-PLAN.md
+    - plugins/aisraf-copilot-plugin/PLUGIN-TEST-CARD.md
+    - plugins/aisraf-copilot-plugin/EVIDENCE-CHECKLIST.md
+    - plugins/aisraf-copilot-plugin/plugin.yaml
+  plugin_installed: false
+  smoke_executed: false
+  external_execution_attempted: false
+  bundle_entry_count_expected: 199
+  validation_results:
+    plugin_manifest_schema: pass
+    bundle_checksum_manifest_schema: pass
+    hash_integrity: pass
+    bundle_completeness: pass
+    no_external_execution_lint: pass
+    ux_documentation_posture: pass
+    governed_validators: pass_0_fail
+    git_hygiene: pass
+  bundle_target: plugins/aisraf-copilot-plugin/bundle/
+  checksum_manifest: plugins/aisraf-copilot-plugin/bundle-checksum-manifest.yaml
+  wp12c_l0_next: true
+  wp12c_l_blocked_until_k4_acceptance: true
+  wp12c_l1_blocked: true
+  wp12c_l2_blocked: true
+  wp12c_l3_blocked: true
+  wp13_blocked: true
+
+# Future runtime adapters are documented as strategy-only at WP-15.
+future_runtime_projection:
+  status: deferred_to_WP-15
+  scope: strategy_only_no_implementation
+  candidate_runtimes:
+    - microsoft_agent_framework
+    - azure_ai_foundry
+    - google_adk
+    - anthropic_claude
+  authoring_rule: |
+    No runtime adapter is authored at WP-12C-K2, K3, K4, WP-12C-L, WP-13,
+    or WP-14. WP-15 documents per-runtime translation rules descriptively
+    only; no runtime is implemented by WP-15.
+
+# Falsifiers — break any of these and the manifest is invalid.
+falsifiers:
+  - rule: "AISRAF Copilot plugin scaffold is a projection package."
+    falsifier: "Any plugin file containing a canonical body string of length 200+ chars."
+  - rule: "Canonical source of truth remains outside the plugin."
+    falsifier: "Any plugin file overriding a canonical surface."
+  - rule: "K2 creates scaffold only."
+    falsifier: "Any subfolder under plugins/aisraf-copilot-plugin/ at K2 close."
+  - rule: "K3A defines projection assembly contract only."
+    falsifier: "Any bundle folder, build script, bundle manifest, validator patch, install attempt, or smoke execution created in K3A."
+  - rule: "K3B must patch validators before bundle creation."
+    falsifier: "plugins/aisraf-copilot-plugin/bundle/ created before K3B validator coverage passes."
+  - rule: "K3C is the first bundle creation gate."
+    falsifier: "Any plugin bundle assembled before K3C opens."
+  - rule: "K4 will validate package completeness."
+    falsifier: "A package-complete verdict before K4 lint runs."
+  - rule: "WP-12C-L will test plugin install and smoke behavior."
+    falsifier: "An install attempt before WP-12C-L opens."
+  - rule: "External execution is disabled."
+    falsifier: "Any plugin file claiming runtime, cloud, MCP, ADK, Foundry, Claude, Jira, Confluence, database, Terraform, or post-back execution."
+  - rule: "Memory scope is run-scoped files only."
+    falsifier: "Any persistent agent-side memory introduced."
+
+# Stop conditions — halt and escalate to the founder if any of these fire.
+stop_conditions:
+  - canonical_body_copied_into_plugin_file
+  - plugin_subfolder_created_in_K2
+  - plugin_subfolder_created_in_K3A
+  - bundle_target_created_before_K3B_validator_patch
+  - build_script_authored_in_K3A
+  - validator_modified_in_K3A
+  - plugin_file_claims_external_execution
+  - install_attempt_before_WP-12C-L_opens
+  - runs_RUN_001_modified_by_plugin_authoring
+  - samples_modified_by_plugin_authoring
+  - sealed_canonical_or_projection_surface_modified
+  - diagrams_or_release_touched_by_plugin_authoring
+  - claude_adapter_authored_ahead_of_WP-15

@@ -1,0 +1,164 @@
+catalog_id: component-role-catalog
+catalog_name: Component Role Catalog
+schema_version: aisraf_component_role_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of review roles a component can play in a given
+  flow context (source, destination, intermediate hop, store, actor, control
+  plane, identity authority, observability sink, group container). A role is
+  a flow-context label, not a permanent property of the component; the same
+  component may play different roles on different flows.
+
+consumers:
+  prompts:
+    - prompts/dfd/04-component-extract.prompt.md
+    - prompts/rs/04-design-fact-extract.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+  skills:
+    - skills/rs/SK-COMPONENT-EXTRACT.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/dfd/SK-DFD-03-COMPONENT-EXTRACT.md
+  pras:
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-CR-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule. A component role records flow-context, not implementation behavior.
+  - rule_id: ER-CR-02
+    rule: Role assignment is supported when the flow direction, source/destination labels, or note context plainly identify the role. A single component may legitimately play different roles on different flows.
+  - rule_id: ER-CR-03
+    rule: Control-plane and identity-authority roles are review labels, never enforcement claims. Effectiveness lives outside this catalog.
+
+prohibited_claims:
+  - control_plane_authority_proof_from_role_label_alone
+  - authorization_decision_from_identity_authority_role_alone
+  - monitoring_completeness_from_observability_sink_role_alone
+  - approval_authority_from_actor_role_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - A role label does not declare implementation, deployment, configuration, or controls.
+  - The same component can play different roles on different flows; do not generalize.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+
+source_reference:
+  old_v0_01_reference: false
+  old_reference_paths: []
+  derivation_mode: new_v0_1_2_design
+  copied_verbatim: false
+
+entries:
+  - id: CR-SOURCE
+    label: source
+    description: The component originates the flow under review.
+    when_to_use: The flow's arrow tail is at this component.
+    when_not_to_use: The component receives the flow rather than originating it.
+    evidence_required: visible flow direction or source note identifying origin
+    confidence_guidance: High when arrow direction is plainly visible; medium when inferred; unknown when arrow direction is ambiguous.
+    notes: Source role on one flow does not bind the component to source role on others.
+
+  - id: CR-DESTINATION
+    label: destination
+    description: The component receives the flow under review.
+    when_to_use: The flow's arrow head is at this component.
+    when_not_to_use: The component originates or merely transits the flow.
+    evidence_required: visible flow direction or source note identifying receipt
+    confidence_guidance: High when arrow direction is plainly visible; medium when inferred; unknown when arrow direction is ambiguous.
+    notes: Destination role on one flow does not bind the component to destination role on others.
+
+  - id: CR-INTERMEDIATE-HOP
+    label: intermediate_hop
+    description: The component sits between source and destination on a multi-hop flow (e.g., gateway in front of an application service).
+    when_to_use: The component is plainly visible on the path between source and destination on the same flow chain.
+    when_not_to_use: The component is the endpoint of the flow.
+    evidence_required: visible intermediate placement or source note describing the hop
+    confidence_guidance: High when explicitly drawn; medium when inferred; unknown when path is ambiguous.
+    notes: Intermediate hops often carry control signals; record the signal, not enforcement.
+
+  - id: CR-STORE
+    label: store
+    description: The component persists data, messages, secrets, or telemetry for the flow under review.
+    when_to_use: The flow reads from, writes to, or logs into this component.
+    when_not_to_use: The component is in-flight only and does not persist.
+    evidence_required: visible store label or source note identifying persistence role
+    confidence_guidance: High when labeled as a store; medium when inferred from interaction; unknown when ambiguous.
+    notes: Persistence does not declare at-rest protection scope or key management.
+
+  - id: CR-ACTOR
+    label: actor
+    description: A human or external system originating intent into the reviewed system on this flow.
+    when_to_use: The component is a human (internal or external) or a third-party system initiating action.
+    when_not_to_use: The component is a service inside the reviewed system without human/external initiation.
+    evidence_required: visible actor label or source note identifying origin of intent
+    confidence_guidance: High when labeled as actor; medium when role is inferred from zone; unknown when ambiguous.
+    notes: An actor role does not record authorization scope or approval authority.
+
+  - id: CR-CONTROL-PLANE
+    label: control_plane
+    description: The component issues policy, configuration, or governance decisions affecting the flow under review.
+    when_to_use: A management plane, policy engine, governance broker, or admin system is visible on the flow context.
+    when_not_to_use: The component handles only data-plane traffic.
+    evidence_required: visible control-plane label or source note identifying the management role
+    confidence_guidance: High when explicitly labeled; medium when inferred; unknown when ambiguous.
+    notes: Control-plane role is a review label, never an enforcement claim.
+
+  - id: CR-IDENTITY-AUTHORITY
+    label: identity_authority
+    description: The component issues, validates, or asserts identity tokens for the flow under review.
+    when_to_use: An IdP/IAM or token-issuing service is visible on the flow context.
+    when_not_to_use: The component is the consumer of an identity token rather than the issuer/validator.
+    evidence_required: visible identity-authority label or source note identifying the role
+    confidence_guidance: High when labeled; medium when inferred from auth markers; unknown when ambiguous.
+    notes: Identity authority role does not prove authorization decision making for the flow.
+
+  - id: CR-OBSERVABILITY-SINK
+    label: observability_sink
+    description: The component receives logs, metrics, traces, or audit events from the flow under review.
+    when_to_use: A log/monitoring/telemetry destination is plainly visible on or adjacent to the flow.
+    when_not_to_use: The component is the producer of telemetry rather than the receiver.
+    evidence_required: visible observability label or source note identifying the sink role
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: Sink visibility is not monitoring effectiveness.
+
+  - id: CR-GROUP-CONTAINER
+    label: group_container
+    description: The component is a grouping box (cluster, project, VPC, organizational box) holding other components for visual grouping.
+    when_to_use: The box is plainly a container, not a service or store.
+    when_not_to_use: The box has its own service/store identity beyond grouping.
+    evidence_required: visible grouping label
+    confidence_guidance: High when plainly visible; medium when ambiguous between group and service; unknown when label is unreadable.
+    notes: Do not invent hidden child components inside the group.
+
+  - id: CR-UNKNOWN
+    label: unknown
+    description: The component's role on the flow under review is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other role entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported by visible context.
+    evidence_required: none required; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition; materiality drives whether a question is generated.
+    notes: Do not silently force an unclear role into a precise category.
+
+version_notes: >
+  Initial Build Package 07 release. New v0.1.2 design that separates "what the
+  component is" (component-type-catalog) from "what role it plays on this
+  flow" (this catalog). The same component may legitimately appear with
+  different roles on different flow rows.

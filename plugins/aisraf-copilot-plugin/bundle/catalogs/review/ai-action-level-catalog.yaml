@@ -1,0 +1,126 @@
+catalog_id: ai-action-level-catalog
+catalog_name: AI Action Level Catalog
+schema_version: aisraf_ai_action_level_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of AI Action Level values (L0, L1, L2, L3, L4,
+  Unknown) used to classify the highest action-level step in a reviewed
+  flow chain. This catalog defines the levels only. It does not compute the
+  level for any specific review; it does not score the review; it does not
+  decide remediation. Computation/selection remains with prompts, skills,
+  and human review per founder decision Q5.
+
+consumers:
+  prompts:
+    - prompts/rs/08-ai-action-level-classify.prompt.md
+  skills:
+    - skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+  pras:
+    - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+  adapters:
+    - .agents/aisraf-blueprint-questioner.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-AAL-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-AAL-02
+    rule: AI Action Level is selected per review by skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md and confirmed by PRA-06-BLUEPRINT-QUESTIONER. This catalog only defines the controlled values.
+  - rule_id: ER-AAL-03
+    rule: AI Action Level does not declare blueprint match, severity, scoring outcome, or remediation. Each of those is owned by a separate skill/catalog.
+  - rule_id: ER-AAL-04
+    rule: AI Action Level is selected from the highest-action-level step in the reviewed flow chain. Lower-level steps do not lower the overall level.
+
+prohibited_claims:
+  - ai_action_level_computed_inside_catalog
+  - ai_action_level_implies_blueprint_match
+  - ai_action_level_implies_severity
+  - ai_action_level_implies_remediation
+  - ai_action_level_implies_scoring_outcome
+  - ai_action_level_decided_without_skill_or_human_review
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - AI Action Level is selected by skills and confirmed by human review, not by this catalog.
+
+source_reference:
+  old_v0_01_reference: false
+  old_reference_paths: []
+  derivation_mode: new_v0_1_2_design
+  copied_verbatim: false
+
+entries:
+  - id: AAL-L0
+    label: L0
+    description: No AI involvement in the reviewed flow chain. The system is fully deterministic with no model calls, retrieval grounding, or autonomous reasoning steps.
+    when_to_use: No model_call interaction is present anywhere in the chain and no retrieval-grounded inference is involved.
+    when_not_to_use: Any model invocation or retrieval grounding is present (use L1 or higher).
+    evidence_required: review-table flow rows showing no model_call interaction
+    confidence_guidance: High when chain is small and clearly model-free; medium when chain is large and visibility is partial; unknown when ambiguous.
+    notes: L0 is a real level, not a fallback for unknown.
+
+  - id: AAL-L1
+    label: L1
+    description: AI is used for assistive output (suggestion, draft, classification) without taking action on external systems. A human reviews and acts.
+    when_to_use: A model_call interaction is present but no autonomous action follows the model output.
+    when_not_to_use: The system acts on the model's output without human review (use L2 or higher).
+    evidence_required: review-table flow rows showing a model_call followed by a human review step
+    confidence_guidance: High when the human-review step is visible; medium when inferred; unknown when ambiguous.
+    notes: L1 is the most common level for review-assist tools.
+
+  - id: AAL-L2
+    label: L2
+    description: AI takes scoped, low-impact actions (read-only retrieval, narrow tool calls) under tight guardrails, with human-on-the-loop oversight.
+    when_to_use: The system performs scoped tool calls or read-only actions with policy-bound guardrails, and a human can intervene.
+    when_not_to_use: The system performs unbounded write-back or autonomous decisions (use L3 or L4).
+    evidence_required: review-table flow rows showing scoped action with explicit guardrail/HITL placement
+    confidence_guidance: Medium typically; record the guardrail evidence.
+    notes: L2 differs from L1 by performing real actions, even if scoped.
+
+  - id: AAL-L3
+    label: L3
+    description: AI takes write-back or state-changing actions on external systems with explicit human-in-the-loop approval before each action.
+    when_to_use: The system writes to external systems but each write-back is gated by HITL approval.
+    when_not_to_use: HITL approval is missing or implicit (move to L4 candidate review or record as Gap).
+    evidence_required: review-table flow rows showing write_back interactions with explicit HITL gates
+    confidence_guidance: Medium typically; record the HITL evidence.
+    notes: L3 explicitly requires the HITL gate.
+
+  - id: AAL-L4
+    label: L4
+    description: AI takes autonomous write-back or state-changing actions without per-action HITL approval, often agent-to-agent or scheduled.
+    when_to_use: The system performs autonomous actions and HITL approval is plainly absent or out-of-scope by design.
+    when_not_to_use: HITL approval is in place (use L3) or no actions are taken (use L1 or L2).
+    evidence_required: review-table flow rows showing autonomous write_back or agent_to_agent action without HITL gate
+    confidence_guidance: Medium typically; record absence-of-HITL evidence.
+    notes: L4 levels typically generate the most findings and recommendations.
+
+  - id: AAL-UNKNOWN
+    label: Unknown
+    description: AI Action Level cannot be determined from available evidence.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown AI Action Level drives a missing-fact question routed by SK-MISSING-FACT-IDENTIFY.
+
+version_notes: >
+  Initial Build Package 07 release. New v0.1.2 design that defines AI
+  Action Level as controlled values only per founder decision Q5;
+  computation/selection remains with prompts, skills, and human review.

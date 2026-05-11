@@ -1,0 +1,167 @@
+catalog_id: recommendation-type-catalog
+catalog_name: Recommendation Type Catalog
+schema_version: aisraf_recommendation_type_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of recommendation types used to classify review
+  recommendations: add_control, expand_control_scope, formalize_gate,
+  define_scope, route_to_validation_ticket, route_to_process,
+  request_owner_or_evidence, defer_to_blueprint, no_action_required, and
+  unknown. This catalog defines categories only. It does not contain
+  recommendation prose, handoff text, template language, or scripted
+  remediation language. Those belong to Build Package 09 templates and
+  Build Package 14 documentation.
+
+consumers:
+  prompts:
+    - prompts/rs/10-finding-recommendation-write.prompt.md
+  skills:
+    - skills/rs/SK-RECOMMENDATION-WRITE.md
+  pras:
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  adapters:
+    - .agents/aisraf-finding-recommender.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-RT-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-RT-02
+    rule: A recommendation type requires a finding from finding-category-catalog.yaml or an explicit observation; recommendation prose is owned by future Build Package 09 templates.
+  - rule_id: ER-RT-03
+    rule: This catalog must not contain recommendation prose, handoff text, template strings, or scripted remediation language.
+  - rule_id: ER-RT-04
+    rule: A recommendation type does not declare severity, priority, or owner.
+
+prohibited_claims:
+  - recommendation_prose_in_catalog
+  - handoff_text_in_catalog
+  - template_language_in_catalog
+  - scripted_remediation_language_in_catalog
+  - severity_assigned_inside_recommendation_type
+  - blueprint_match_implied_from_recommendation_type
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Recommendation type is a category, not prose.
+  - Recommendation prose is owned by Build Package 09 templates and Build Package 14 documentation.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/review/recommendation-rules.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: RT-ADD-CONTROL
+    label: add_control
+    description: Add a control that is missing from the design (e.g., add transit encryption, add auth, add HITL gate).
+    when_to_use: A Gap finding from finding-category-catalog.yaml requires a missing control.
+    when_not_to_use: The control is partially present (use expand_control_scope) or not yet defined (use define_scope).
+    evidence_required: a Gap finding row referencing the missing control
+    confidence_guidance: Medium-to-high typically; the underlying finding's confidence applies.
+    notes: Add-control recommendations route to review owner with template-driven prose in Package 09.
+
+  - id: RT-EXPAND-CONTROL-SCOPE
+    label: expand_control_scope
+    description: Expand the scope of an existing control to cover additional flows, components, or boundaries.
+    when_to_use: A Deficiency finding identifies partial coverage of an existing control.
+    when_not_to_use: The control is missing entirely (use add_control).
+    evidence_required: a Deficiency finding row referencing the partial control
+    confidence_guidance: Medium typically.
+    notes: Coverage expansion is a common recommendation type for boundary-crossing findings.
+
+  - id: RT-FORMALIZE-GATE
+    label: formalize_gate
+    description: Formalize a HITL approval gate or policy gate where the design has informal approval.
+    when_to_use: A HITL approval is informal or implicit.
+    when_not_to_use: A formal gate is already in place or no human review is on the flow.
+    evidence_required: a finding row identifying the informal gate or missing formality
+    confidence_guidance: Medium typically.
+    notes: Formalize-gate recommendations route to review owner.
+
+  - id: RT-DEFINE-SCOPE
+    label: define_scope
+    description: Define scope, role, or coverage for an authorization, approval, or write-back action.
+    when_to_use: Scope is unknown or partial and the unknown is material.
+    when_not_to_use: Scope is fully defined or the item is out of scope.
+    evidence_required: a finding row or missing-fact entry identifying the undefined scope
+    confidence_guidance: Medium typically.
+    notes: Define-scope recommendations often pair with route_to_process.
+
+  - id: RT-ROUTE-TO-VALIDATION-TICKET
+    label: route_to_validation_ticket
+    description: Route the gap to a separate validation ticket because implementation proof requires post-design evidence.
+    when_to_use: An Evidence Gap finding requires configuration, audit, or test artifacts.
+    when_not_to_use: The gap is design-visible (use add_control or expand_control_scope).
+    evidence_required: an Evidence Gap finding row plus pointer to the validation-note skill output
+    confidence_guidance: Medium typically.
+    notes: Validation-note prose lives in skills/rs/SK-VALIDATION-NOTE-WRITE.md outputs, not in this catalog.
+
+  - id: RT-ROUTE-TO-PROCESS
+    label: route_to_process
+    description: Route the matter to a documented process (e.g., PCI handling, model-provider approval, third-party-DPA process).
+    when_to_use: A Requirement finding invokes a documented process owner.
+    when_not_to_use: The matter is technical control coverage (use add_control or expand_control_scope).
+    evidence_required: a Requirement finding row plus process reference
+    confidence_guidance: High when process is named; medium when inferred.
+    notes: Route-to-process recommendations attach owner-and-evidence routing.
+
+  - id: RT-REQUEST-OWNER-OR-EVIDENCE
+    label: request_owner_or_evidence
+    description: Request explicit owner identification or evidence reference for an unknown or partially supported claim.
+    when_to_use: Owner or evidence reference is unknown and the unknown is material.
+    when_not_to_use: Owner and evidence are already known.
+    evidence_required: missing-fact entry identifying the unknown owner/evidence
+    confidence_guidance: Medium typically.
+    notes: Often paired with route_to_validation_ticket.
+
+  - id: RT-DEFER-TO-BLUEPRINT
+    label: defer_to_blueprint
+    description: Defer the recommendation to a future Build Package 08 blueprint match.
+    when_to_use: Build Package 08 is not yet available and the recommendation is best produced from a blueprint.
+    when_not_to_use: A non-blueprint recommendation type from this catalog directly applies.
+    evidence_required: documented reason for deferral
+    confidence_guidance: Medium typically.
+    notes: This catalog records the deferral category only; no BP-* identifier is recorded here. Blueprint identifiers belong to Build Package 08.
+
+  - id: RT-NO-ACTION-REQUIRED
+    label: no_action_required
+    description: A finding (typically Observation or Informational) does not require a recommendation action at this review.
+    when_to_use: An Observation or Informational finding does not require action.
+    when_not_to_use: Any other recommendation type applies.
+    evidence_required: documented reasoning recorded in the finding row
+    confidence_guidance: Medium typically.
+    notes: No-action-required is a real recommendation type, not a fallback for unknown.
+
+  - id: RT-UNKNOWN
+    label: unknown
+    description: The recommendation type cannot be determined from available evidence.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown drives missing-fact and validation-note routing.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01
+  recommendation-rules.md prose into a closed list of recommendation
+  categories. No prose, no template language, no remediation script per
+  founder decision Q6.

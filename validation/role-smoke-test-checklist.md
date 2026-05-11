@@ -41,23 +41,23 @@ Sub-gates a–g (same shape as R1) against:
 ### R3 — `aisraf-dfd-extraction`
 
 Sub-gates a–g against:
-- Output paths: `runs/{{run_id}}/02-..-06-*.md` and `runs/{{run_id}}/dfd/01-..-09-*.md`.
+- Output paths: `runs/{{run_id}}/02-..-05-*.md` and `runs/{{run_id}}/dfd/01-..-09-*.md`.
 - Adapter: `.agents/aisraf-dfd-extractor.agent.md`.
 - Canonical skills: 5 RS DFD-related + 9 DFD chain skills.
 
 ### R4 — `aisraf-review-table-build`
 
 Sub-gates a–g against:
-- Output paths: `runs/{{run_id}}/07-security-stack-assessment.md`, `08-internal-review-table.md`, `09-missing-facts.md`.
+- Output paths: `runs/{{run_id}}/06-boundaries.md`, `07-security-stack-assessment.md`, `08-internal-review-table.md`.
 - Adapter: `.agents/aisraf-review-table-builder.agent.md`.
-- Canonical skills: `SK-SECURITY-STACK-ASSESS`, `SK-DATA-FLOW-TABLE-BUILD`, `SK-MISSING-FACT-IDENTIFY`.
+- Canonical skills: `SK-BOUNDARY-CROSSING-DETECT`, `SK-SECURITY-STACK-ASSESS`, `SK-DATA-FLOW-TABLE-BUILD`.
 
 ### R5 — `aisraf-blueprint-questioning`
 
 Sub-gates a–g against:
-- Output paths: `runs/{{run_id}}/10-ai-action-level.md`, `11-blueprint-match.md`, `12-targeted-questions.md`.
+- Output paths: `runs/{{run_id}}/09-missing-facts.md`, `10-ai-action-level.md`, `11-blueprint-match.md`, `12-targeted-questions.md`.
 - Adapter: `.agents/aisraf-blueprint-questioner.agent.md`.
-- Canonical skills: `SK-AI-ACTION-LEVEL-CLASSIFY`, `SK-REVIEW-BLUEPRINT-MATCH`, `SK-TARGETED-QUESTION-GENERATE`.
+- Canonical skills: `SK-MISSING-FACT-IDENTIFY`, `SK-AI-ACTION-LEVEL-CLASSIFY`, `SK-REVIEW-BLUEPRINT-MATCH`, `SK-TARGETED-QUESTION-GENERATE`.
 - Extra: response must NOT enumerate AAL bands or blueprint match states beyond a `<value-from-catalogs/...>` placeholder reference.
 
 ### R6 — `aisraf-finding-recommendation`
@@ -94,3 +94,119 @@ Sub-gates a–g against:
 - Any wrapper hard-coding `RUN-001` in an output path string (must use `{{run_id}}`).
 - Any wrapper enumerating catalog values, AAL bands, blueprint match states, or accuracy bands inline.
 - Either core validator regressing.
+
+## L2A Role-Smoke Runbook (WP-12C-L2A-UX)
+
+This runbook is the operator-facing form of the BP12C role smoke gates above.
+It lists the seven preview-only prompts and the expected evidence each role
+must produce when invoked from the **installed plugin** in the isolated smoke
+workspace `D:/E-Way 2/AISRAF-PLUGIN-SMOKE-WORKSPACE`.
+
+Do not run this runbook from the governed repo workspace
+(`D:/E-Way 2/AISRAF- SAS Prototype v0.1.2`); local projection folders
+(`.agents/`, `.copilot-skills/`, `.github/agents/`, `.github/skills/`,
+`.github/hooks/`) can contaminate provider discovery and invalidate the
+evidence row.
+
+### Operator Preconditions
+
+1. Smoke workspace `D:/E-Way 2/AISRAF-PLUGIN-SMOKE-WORKSPACE` is open in VS Code.
+2. The AISRAF plugin is installed (L1A accepted).
+3. Terminal pane is large; scrollback increased.
+4. One role prompt is run at a time.
+5. Screenshots or copy / paste output captured per row.
+
+### Common Prompt Body
+
+Replace `<AISRAF role name>` per row:
+
+```text
+ROLE SMOKE TEST - WP-12C-L2A. Selected role: <AISRAF role name>. Preview only - write nothing. Do not modify RUN-001. Do not modify samples. Do not claim runtime, cloud, ADK, MCP, Jira, Confluence, Rovo, Microsoft Agent Framework, Azure AI Foundry, Google ADK, Anthropic Claude, database, Terraform, release, or post-back execution. Read only the role adapter, the operator card, and runs/RUN-001/run-profile.yaml. Return exactly these headings: Role identity; Reads; Writes; Stop conditions; Expected output; Prohibited claims.
+```
+
+### Six Expected-Evidence Items (Per Role)
+
+Mark a row PASS only when every item is satisfied.
+
+1. Role responds.
+2. Role identifies its responsibility.
+3. Role references the expected governed output shape.
+4. Role stays preview-only.
+5. No files written.
+6. No external execution claim.
+
+### Per-Role Expected Evidence
+
+| Row | Role Selection | PASS Names PRA | PASS References Output Shape (theoretical) | Notes |
+|---|---|---|---|---|
+| L2A-R1 | `@aisraf-orchestrator` | `PRA-01-SAS-REVIEW-ORCHESTRATOR` | `runs/{{run_id}}/00-run-log.md` | Orchestrator owns no skill; must say so. |
+| L2A-R2 | `@aisraf-input-reader` | `PRA-02-INPUT-READER` | `runs/{{run_id}}/01-input-inventory.md` | References `skills/rs/SK-INPUT-PACKAGE-READ.md`. |
+| L2A-R3 | `@aisraf-dfd-extractor` | `PRA-03-DFD-EXTRACTOR` and `PRA-04-LEGEND-NORMALIZER` | `runs/{{run_id}}/02-..-05-*.md` and `runs/{{run_id}}/dfd/01-..-09-*.md` | Must acknowledge PRA-04 has no separate adapter. |
+| L2A-R4 | `@aisraf-review-table-builder` | `PRA-05-REVIEW-TABLE-BUILDER` | `runs/{{run_id}}/06-boundaries.md`, `07-security-stack-assessment.md`, `08-internal-review-table.md` | Must not claim controls without evidence. |
+| L2A-R5 | `@aisraf-blueprint-questioner` | `PRA-06-BLUEPRINT-QUESTIONER` | `runs/{{run_id}}/09-missing-facts.md`, `10-ai-action-level.md`, `11-blueprint-match.md`, `12-targeted-questions.md` | Must not enumerate AAL bands or blueprint match states inline. |
+| L2A-R6 | `@aisraf-finding-recommender` | `PRA-07-FINDING-RECOMMENDER` | `runs/{{run_id}}/13-findings.md`, `14-recommendations.md` | UX caveat: output may interleave; accept if role identity and shape are still attributable; capture screenshot. |
+| L2A-R7 | `@aisraf-handoff-qa-scorer` | `PRA-08-HANDOFF-QA-SCORER` | `runs/{{run_id}}/15-handoff-pack.md`, `16-validation-notes.md`, `17-accuracy-score.md` | Must not compute or imply a numeric score. |
+
+### Falsifiers
+
+- Any role writes a file during the runbook.
+- Any role claims runtime / cloud / Jira / Confluence / Lucidchart / MCP / ADK / MAF / Foundry / Claude / database / Terraform / external post-back execution.
+- Any role hard-codes `RUN-001` in its declared output path (must use `{{run_id}}`).
+- Any row captured from the governed repo workspace instead of the smoke workspace.
+- Any row missing capture method, single-role attribution, or workspace path.
+
+### L2A Acceptance Note
+
+L2A closed with all seven rows accepted, and L2A-R6 carrying a UX caveat
+because output was interleaved, not functionally wrong. The UX caveat is
+addressed in the operator usability patch documented in
+`validation/package-12c-plugin-install-and-publication-checklist.md`
+§20.3 (terminal posture) and §20.4 (runbook).
+
+### L2A Final Status
+
+`WP-12C-L2A_PREVIEW_ROLE_SMOKE_PASS_READY_FOR_UX_FIX` (closed).
+
+## Security Architect Role Guide (WP-12C-L2B-UXA)
+
+Use this guide when a security architect asks which AISRAF role to select in
+the installed plugin. Role smoke remains preview-only. L2B controlled-output
+execution writes only after explicit founder approval and only under
+`runs/RUN-SMOKE-PLUGIN-L2B-001/`.
+
+| Role | Business Value | When To Use | Reads | May Write During L2B | Expected Output | Must Not Claim | Evidence To Capture |
+|---|---|---|---|---|---|---|---|
+| `@aisraf-orchestrator` | Coordinates the local review chain and run log. | Start, sequence, or close a run. | Run profile, accepted prior outputs, role stop rules. | `00-run-log.md` | Run identity, step ledger, stop conditions, final status. | Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform, release, or post-back execution. | Role transcript, run-log guard result, focused validator result. |
+| `@aisraf-input-reader` | Inventories the design-review package. | After the local input package is staged. | DFD source/image, legend, ticket text, notes, transcript, run profile. | `01-input-inventory.md` | Input inventory, unknowns, stop conditions. | Chat attachment movement, requester-form creation, hidden input invention. | Inventory transcript/output, files read, validator result. |
+| `@aisraf-dfd-extractor` | Extracts visible DFD facts and normalizes DFD evidence. | When DFD image/source and supporting notes are available. | Input inventory, DFD image/source, legend, notes, transcript. | `02-visible-dfd-objects.md`, `03-legend-normalization.md`, `04-components.md`, `05-flows.md`, and `dfd/01` through `dfd/09`. | Visible objects, legend normalization, components, flows, DFD subchain artifacts. | Diagram generation, hidden inference, runtime proof, or invented facts. | Per-output guard and validator results, unknown handling evidence. |
+| `@aisraf-review-table-builder` | Builds boundary, security-stack, and internal review evidence. | After DFD components and flows exist. | Components, flows, legend normalization, DFD control signals. | `06-boundaries.md`, `07-security-stack-assessment.md`, `08-internal-review-table.md` | Boundary rows, security-stack signal rows, internal review table. | Approved-control claims without evidence or proof beyond the source package. | Review table transcript/output, guard and validator results. |
+| `@aisraf-blueprint-questioner` | Identifies missing facts and targeted questions. | Before or during design review when gaps remain. | Input inventory, DFD outputs, review table, blueprints and catalogs by reference. | `09-missing-facts.md`, `10-ai-action-level.md`, `11-blueprint-match.md`, `12-targeted-questions.md` | Missing facts, AI Action Level record, blueprint match record, targeted questions. | Final blueprint/AAL claims without evidence, catalog enumeration, broad checklist invention. | Question list, source missing-fact links, validator result. |
+| `@aisraf-finding-recommender` | Drafts evidence-bound findings and recommendations. | After review table, missing facts, and blueprint outputs exist. | Boundaries, security-stack, review table, missing facts, questions, blueprint outputs. | `13-findings.md`, `14-recommendations.md` | Finding rows and recommendation rows with parent traceability. | Owner invention, implementation proof, recommendation without parent finding. | Finding/recommendation IDs, parent links, validator result. |
+| `@aisraf-handoff-qa-scorer` | Builds closeout package, validation notes, and governed score output. | At closeout after prior outputs exist. | Outputs `08` through `16`, expected baselines when scoring is enabled, run profile. | `15-handoff-pack.md`, `16-validation-notes.md`, `17-accuracy-score.md` | Handoff pack, separate validation notes, scoring eligibility and result. | Numeric score without scoring gates, expected-baseline edits, external posting. | Handoff pack, validation notes, score eligibility, validator result. |
+
+## DFD Review Annotation Requirements
+
+DFD-derived outputs should preserve these annotations when visible in the input
+package:
+
+- Data classification.
+- Source.
+- Destination.
+- Trust or boundary crossing.
+- Authentication signal.
+- Authorization signal.
+- Encryption in transit.
+- Encryption at rest for stores.
+- Logging, monitoring, or control evidence.
+- Unknown values carried forward rather than invented.
+
+If an annotation is not visible or supported by the package, record `unknown`
+and carry it forward into downstream outputs.
+
+## UXA Evidence Capture Reminder
+
+Acceptable evidence includes copied terminal output, screenshots, saved
+transcript text, validator transcript, and Git hygiene transcript. Use
+`"terminal.integrated.scrollback": 50000`, run one role at a time, and stop if
+output becomes unattributable. Copilot CLI is secondary/noisy and is not the
+blocking Local provider proof surface.

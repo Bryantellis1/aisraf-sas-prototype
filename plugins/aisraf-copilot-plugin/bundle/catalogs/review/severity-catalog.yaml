@@ -1,0 +1,125 @@
+catalog_id: severity-catalog
+catalog_name: Severity Catalog
+schema_version: aisraf_severity_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of severity values used in findings and accuracy
+  scoring inputs: Critical, High, Medium, Low, Informational, Unknown.
+  Severity is a controlled value; it does not produce prose, scoring
+  formulas, or remediation language.
+
+consumers:
+  prompts:
+    - prompts/rs/10-finding-recommendation-write.prompt.md
+    - prompts/rs/13-accuracy-score.prompt.md
+  skills:
+    - skills/rs/SK-FINDING-CLASSIFY.md
+    - skills/rs/SK-ACCURACY-SCORE.md
+  pras:
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+    - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  adapters:
+    - .agents/aisraf-finding-recommender.agent.md
+    - .agents/aisraf-handoff-qa-scorer.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-SV-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-SV-02
+    rule: Severity is recorded for each finding; rationale is recorded in the finding row's evidence_summary.
+  - rule_id: ER-SV-03
+    rule: Severity is not confidence. Confidence values come from data-protection/confidence-level-catalog.yaml.
+  - rule_id: ER-SV-04
+    rule: Severity is not produced by this catalog. Assignment is the responsibility of skills/rs/SK-FINDING-CLASSIFY.md.
+
+prohibited_claims:
+  - severity_used_as_confidence
+  - severity_used_as_recommendation_priority
+  - severity_value_implies_blueprint_match
+  - severity_assigned_without_finding
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Severity is not confidence and is not impact alone.
+
+source_reference:
+  old_v0_01_reference: false
+  old_reference_paths: []
+  derivation_mode: new_v0_1_2_design
+  copied_verbatim: false
+
+entries:
+  - id: SV-CRITICAL
+    label: Critical
+    description: A finding whose materiality, exposure, or regulatory exposure is the most significant level the review program defines.
+    when_to_use: PCI/PAN exposure with no protection, internet-facing flow with no auth/transport protection, or other equivalently severe condition.
+    when_not_to_use: Lesser conditions exist that fit High or Medium.
+    evidence_required: documented impact-and-likelihood reasoning recorded in the finding row
+    confidence_guidance: Severity assignment is a review judgment; record reasoning explicitly.
+    notes: Critical findings typically generate multiple recommendations and validation-note routes.
+
+  - id: SV-HIGH
+    label: High
+    description: A finding with significant material impact short of Critical.
+    when_to_use: Major Gap or Deficiency with material exposure but not catastrophic.
+    when_not_to_use: A Critical-level condition exists or the finding is Medium.
+    evidence_required: documented impact-and-likelihood reasoning
+    confidence_guidance: Severity assignment is a review judgment.
+    notes: High findings typically drive route-to-validation tickets.
+
+  - id: SV-MEDIUM
+    label: Medium
+    description: A finding with moderate material impact.
+    when_to_use: Partial coverage gaps, mid-scope deficiencies, evidence gaps with manageable impact.
+    when_not_to_use: A High or Critical condition exists.
+    evidence_required: documented impact-and-likelihood reasoning
+    confidence_guidance: Severity assignment is a review judgment.
+    notes: Medium findings drive recommendations and may or may not require validation tickets.
+
+  - id: SV-LOW
+    label: Low
+    description: A finding with minor material impact.
+    when_to_use: Minor scope gaps, observations that should be tracked.
+    when_not_to_use: A Medium or higher condition exists.
+    evidence_required: documented impact-and-likelihood reasoning
+    confidence_guidance: Severity assignment is a review judgment.
+    notes: Low findings drive lightweight recommendations or observation tracking.
+
+  - id: SV-INFORMATIONAL
+    label: Informational
+    description: A finding that records a noteworthy observation without action requirements at this review.
+    when_to_use: Observations that inform future blueprints or future reviews but do not require action now.
+    when_not_to_use: The finding requires any action by the design owner.
+    evidence_required: documented context
+    confidence_guidance: Severity assignment is a review judgment.
+    notes: Informational findings are first-class outputs and are not silently dropped.
+
+  - id: SV-UNKNOWN
+    label: Unknown
+    description: Severity cannot be determined from available evidence.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown severity drives a missing-fact question.
+
+version_notes: >
+  Initial Build Package 07 release. New v0.1.2 design that defines severity
+  as controlled values without producing scoring formulas or prose.

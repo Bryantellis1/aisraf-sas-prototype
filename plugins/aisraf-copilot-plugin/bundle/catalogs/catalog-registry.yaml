@@ -1,0 +1,863 @@
+registry_id: aisraf-catalog-registry
+schema_version: aisraf_catalog_registry.v0_1_2
+package_version: v0.1.2
+owning_build_package: Build Package 07
+status: active
+
+# Headline counts.
+# The catalog inventory below is the authoritative list. The numerical totals
+# match the actual files committed in Build Package 07.
+catalog_count: 24
+catalog_family_count: 7
+readme_count: 8
+total_files_under_catalogs: 33
+
+# Note on count freeze.
+# The founder Build Package 07 approval (Q7) recorded "catalog_count: 28" and
+# "38 total files under catalogs/" alongside an explicit file list. The
+# explicit file list contains 24 controlled-vocabulary YAML catalogs (not 28)
+# and 33 total files (not 38). Build Package 07 implements the explicit file
+# list verbatim and records the accurate counts here. The 28/38 figures are
+# captured in compatibility_notes as documented arithmetic discrepancy for
+# human review, with no upstream edits.
+
+unknown_value: unknown
+
+global_evidence_rules:
+  - rule_id: GER-01
+    rule: Visible label is a review signal, not implementation proof. Every catalog references catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml in its evidence_rules.
+  - rule_id: GER-02
+    rule: Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - rule_id: GER-03
+    rule: Authentication evidence does not prove authorization scope.
+  - rule_id: GER-04
+    rule: Transport protection does not prove at-rest protection.
+  - rule_id: GER-05
+    rule: Marker presence does not prove control effectiveness.
+  - rule_id: GER-06
+    rule: Unknown stays unknown until supported by evidence.
+  - rule_id: GER-07
+    rule: Component-level marker is a component signal only and does not propagate to every connected flow.
+  - rule_id: GER-08
+    rule: Future-state diagram labels do not prove current runtime.
+
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - implementation_proof_from_marker_alone
+  - approved_security_stack_from_diamond_alone
+  - authorization_from_authentication_marker_alone
+  - blueprint_match_from_catalog_entry_alone
+  - severity_or_scoring_outcome_from_catalog_entry_alone
+
+cross_cutting_catalogs:
+  - catalog_id: proof-vs-signal-rule-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    flag: global_rule
+    referenced_by_every_catalog_in_evidence_rules: true
+  - catalog_id: confidence-level-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/confidence-level-catalog.yaml
+    flag: cross_cutting_catalog
+    primary_family: data-protection
+    applies_to:
+      - dfd extraction
+      - annotation resolution
+      - component classification
+      - boundary classification
+      - finding confidence
+      - accuracy scoring
+
+catalog_families:
+  - family_id: components
+    title: Components
+    path: catalogs/components/
+    purpose: Component types, component roles in flow context, and component evidence rules.
+    catalog_files:
+      - catalogs/components/component-type-catalog.yaml
+      - catalogs/components/component-role-catalog.yaml
+      - catalogs/components/component-evidence-rule-catalog.yaml
+    catalog_file_count: 3
+  - family_id: interactions
+    title: Interactions
+    path: catalogs/interactions/
+    purpose: Interaction types, flow direction, and flow evidence rules.
+    catalog_files:
+      - catalogs/interactions/interaction-type-catalog.yaml
+      - catalogs/interactions/flow-direction-catalog.yaml
+      - catalogs/interactions/flow-evidence-rule-catalog.yaml
+    catalog_file_count: 3
+  - family_id: boundaries
+    title: Boundaries
+    path: catalogs/boundaries/
+    purpose: Boundary types and extraction order, boundary-crossing rules, and trust zones.
+    catalog_files:
+      - catalogs/boundaries/boundary-type-catalog.yaml
+      - catalogs/boundaries/boundary-crossing-rule-catalog.yaml
+      - catalogs/boundaries/trust-zone-catalog.yaml
+    catalog_file_count: 3
+  - family_id: identity-access
+    title: Identity And Access
+    path: catalogs/identity-access/
+    purpose: Authentication marker families, authorization values, and identity evidence rules.
+    catalog_files:
+      - catalogs/identity-access/authentication-catalog.yaml
+      - catalogs/identity-access/authorization-catalog.yaml
+      - catalogs/identity-access/identity-evidence-rule-catalog.yaml
+    catalog_file_count: 3
+  - family_id: data-protection
+    title: Data Protection
+    path: catalogs/data-protection/
+    purpose: Data class, transport protection, at-rest protection, and the cross-cutting confidence catalog.
+    catalog_files:
+      - catalogs/data-protection/data-class-catalog.yaml
+      - catalogs/data-protection/transport-protection-catalog.yaml
+      - catalogs/data-protection/at-rest-protection-catalog.yaml
+      - catalogs/data-protection/confidence-level-catalog.yaml
+    catalog_file_count: 4
+  - family_id: security-stacks
+    title: Security Stacks
+    path: catalogs/security-stacks/
+    purpose: Security-stack markers, control signals, and the global proof-vs-signal rule catalog.
+    catalog_files:
+      - catalogs/security-stacks/security-stack-marker-catalog.yaml
+      - catalogs/security-stacks/control-signal-catalog.yaml
+      - catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    catalog_file_count: 3
+  - family_id: review
+    title: Review
+    path: catalogs/review/
+    purpose: Finding categories, severity, recommendation type, AI Action Level, and review status.
+    catalog_files:
+      - catalogs/review/finding-category-catalog.yaml
+      - catalogs/review/severity-catalog.yaml
+      - catalogs/review/recommendation-type-catalog.yaml
+      - catalogs/review/ai-action-level-catalog.yaml
+      - catalogs/review/review-status-catalog.yaml
+    catalog_file_count: 5
+
+catalogs:
+  - catalog_id: component-type-catalog
+    family_id: components
+    path: catalogs/components/component-type-catalog.yaml
+    purpose: Closed list of component types for visible DFD boxes, actors, services, stores, and grouping containers.
+  - catalog_id: component-role-catalog
+    family_id: components
+    path: catalogs/components/component-role-catalog.yaml
+    purpose: Closed list of review roles a component plays in a given flow context.
+  - catalog_id: component-evidence-rule-catalog
+    family_id: components
+    path: catalogs/components/component-evidence-rule-catalog.yaml
+    purpose: Evidence rules governing component type and role claims.
+  - catalog_id: interaction-type-catalog
+    family_id: interactions
+    path: catalogs/interactions/interaction-type-catalog.yaml
+    purpose: Closed list of interaction types (data flow, model call, tool call, write-back, agent-to-agent, HITL approval, observability, control plane).
+  - catalog_id: flow-direction-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-direction-catalog.yaml
+    purpose: Closed list of flow direction values (one_way, request_response, bidirectional, broadcast, unknown).
+  - catalog_id: flow-evidence-rule-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-evidence-rule-catalog.yaml
+    purpose: Evidence rules governing flow-level claims and the artifact-class non-propagation rule.
+  - catalog_id: boundary-type-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-type-catalog.yaml
+    purpose: Closed list of boundary types and the largest-to-smallest extraction order.
+  - catalog_id: boundary-crossing-rule-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-crossing-rule-catalog.yaml
+    purpose: Rules determining whether a flow crosses a boundary and what evidence is required.
+  - catalog_id: trust-zone-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/trust-zone-catalog.yaml
+    purpose: Closed list of trust/functional zone labels for source and destination zone fields.
+  - catalog_id: authentication-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authentication-catalog.yaml
+    purpose: Closed list of authentication marker families (SA#, CA#, IA#, GSA#, unknown).
+  - catalog_id: authorization-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authorization-catalog.yaml
+    purpose: Closed list of authorization values (present, partial, planned, unknown).
+  - catalog_id: identity-evidence-rule-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/identity-evidence-rule-catalog.yaml
+    purpose: Evidence rules covering token validation, least privilege, role scope, approval authority, and implementation proof.
+  - catalog_id: data-class-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/data-class-catalog.yaml
+    purpose: Closed list of data class values (C1-C5) plus PCI/PAN suffix and protection sub-markers (E#, T#, U#, H#).
+  - catalog_id: transport-protection-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/transport-protection-catalog.yaml
+    purpose: Closed list of transport-protection values (T# token, HTTPS/TLS label, mutual TLS, plain text, unknown).
+  - catalog_id: at-rest-protection-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/at-rest-protection-catalog.yaml
+    purpose: Closed list of at-rest protection values driven by R# tokens and storage-state words (Enc, Tok, Trun, NoCC, Clr).
+  - catalog_id: confidence-level-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/confidence-level-catalog.yaml
+    purpose: Cross-cutting closed list of confidence levels (high, medium, low, unknown) used by every catalog.
+    cross_cutting_catalog: true
+  - catalog_id: security-stack-marker-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/security-stack-marker-catalog.yaml
+    purpose: Closed list of visible stack-marker forms (diamond, gateway, identity checkpoint, logging, encryption, secret-management, S# protocol, unknown).
+  - catalog_id: control-signal-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/control-signal-catalog.yaml
+    purpose: Closed list of derived control signal values (visible, partial, missing, planned, unknown).
+  - catalog_id: proof-vs-signal-rule-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    purpose: Global rule catalog enumerating signal-vs-proof rules referenced by every other catalog in evidence_rules.
+    global_rule: true
+  - catalog_id: finding-category-catalog
+    family_id: review
+    path: catalogs/review/finding-category-catalog.yaml
+    purpose: Closed list of finding categories (Gap, Deficiency, Evidence Gap, Observation, Requirement, Risk, Out of Scope, Unknown).
+  - catalog_id: severity-catalog
+    family_id: review
+    path: catalogs/review/severity-catalog.yaml
+    purpose: Closed list of severity values (Critical, High, Medium, Low, Informational, Unknown).
+  - catalog_id: recommendation-type-catalog
+    family_id: review
+    path: catalogs/review/recommendation-type-catalog.yaml
+    purpose: Closed list of recommendation type categories (no prose, no template language).
+  - catalog_id: ai-action-level-catalog
+    family_id: review
+    path: catalogs/review/ai-action-level-catalog.yaml
+    purpose: Closed list of AI Action Levels (L0-L4 plus Unknown). Definitions only; computation belongs to skills and human review.
+  - catalog_id: review-status-catalog
+    family_id: review
+    path: catalogs/review/review-status-catalog.yaml
+    purpose: Closed list of review workflow status values (in_progress, awaiting_inputs, awaiting_human_review, complete, blocked, withdrawn, unknown).
+
+prompt_consumption_map:
+  PR-RS-00-RUN-FULL-CHAIN:
+    prompt_path: prompts/rs/00-run-full-chain.prompt.md
+    catalogs: []
+    notes: PR-RS-00 is status=planned per Build Package 04 founder decision Q2 and produces no output of its own; no catalog consumption is asserted.
+  PR-RS-01-INPUT-PACKAGE-READ:
+    prompt_path: prompts/rs/01-input-package-read.prompt.md
+    catalogs:
+      - confidence-level-catalog
+  PR-RS-02-DFD-VISUAL-READ:
+    prompt_path: prompts/rs/02-dfd-visual-read.prompt.md
+    catalogs:
+      - component-type-catalog
+      - boundary-type-catalog
+      - confidence-level-catalog
+  PR-RS-03-LEGEND-NORMALIZATION:
+    prompt_path: prompts/rs/03-legend-normalization.prompt.md
+    catalogs:
+      - data-class-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - authentication-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PR-RS-04-DESIGN-FACT-EXTRACT:
+    prompt_path: prompts/rs/04-design-fact-extract.prompt.md
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - confidence-level-catalog
+  PR-RS-05-BOUNDARY-STACK-DETECT:
+    prompt_path: prompts/rs/05-boundary-stack-detect.prompt.md
+    catalogs:
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - transport-protection-catalog
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - proof-vs-signal-rule-catalog
+      - confidence-level-catalog
+  PR-RS-06-REVIEW-TABLE-BUILD:
+    prompt_path: prompts/rs/06-review-table-build.prompt.md
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - data-class-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PR-RS-07-MISSING-FACT-QUESTION-GENERATE:
+    prompt_path: prompts/rs/07-missing-fact-question-generate.prompt.md
+    catalogs:
+      - component-evidence-rule-catalog
+      - flow-evidence-rule-catalog
+      - identity-evidence-rule-catalog
+      - authorization-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PR-RS-08-AI-ACTION-LEVEL-CLASSIFY:
+    prompt_path: prompts/rs/08-ai-action-level-classify.prompt.md
+    catalogs:
+      - ai-action-level-catalog
+      - interaction-type-catalog
+      - confidence-level-catalog
+  PR-RS-09-BLUEPRINT-MATCH:
+    prompt_path: prompts/rs/09-blueprint-match.prompt.md
+    catalogs:
+      - trust-zone-catalog
+      - confidence-level-catalog
+    notes: Blueprint match is deferred to Build Package 08; this catalog consumption is read-only context only.
+  PR-RS-10-FINDING-RECOMMENDATION-WRITE:
+    prompt_path: prompts/rs/10-finding-recommendation-write.prompt.md
+    catalogs:
+      - finding-category-catalog
+      - severity-catalog
+      - recommendation-type-catalog
+      - authorization-catalog
+      - transport-protection-catalog
+      - control-signal-catalog
+      - proof-vs-signal-rule-catalog
+      - confidence-level-catalog
+  PR-RS-11-HANDOFF-PACK-BUILD:
+    prompt_path: prompts/rs/11-handoff-pack-build.prompt.md
+    catalogs:
+      - review-status-catalog
+      - confidence-level-catalog
+  PR-RS-12-VALIDATION-NOTE-WRITE:
+    prompt_path: prompts/rs/12-validation-note-write.prompt.md
+    catalogs:
+      - at-rest-protection-catalog
+      - identity-evidence-rule-catalog
+      - finding-category-catalog
+      - proof-vs-signal-rule-catalog
+      - confidence-level-catalog
+  PR-RS-13-ACCURACY-SCORE:
+    prompt_path: prompts/rs/13-accuracy-score.prompt.md
+    catalogs:
+      - severity-catalog
+      - review-status-catalog
+      - flow-evidence-rule-catalog
+      - identity-evidence-rule-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PR-DFD-02-DFD-INTAKE-QUALITY-CHECK:
+    prompt_path: prompts/dfd/02-dfd-intake-quality-check.prompt.md
+    catalogs:
+      - confidence-level-catalog
+  PR-DFD-03-BOUNDARY-EXTRACT:
+    prompt_path: prompts/dfd/03-boundary-extract.prompt.md
+    catalogs:
+      - boundary-type-catalog
+      - trust-zone-catalog
+      - confidence-level-catalog
+  PR-DFD-04-COMPONENT-EXTRACT:
+    prompt_path: prompts/dfd/04-component-extract.prompt.md
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - confidence-level-catalog
+  PR-DFD-05-FLOW-EXTRACT:
+    prompt_path: prompts/dfd/05-flow-extract.prompt.md
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - authentication-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PR-DFD-06-ANNOTATION-RESOLVE:
+    prompt_path: prompts/dfd/06-annotation-resolve.prompt.md
+    catalogs:
+      - data-class-catalog
+      - authentication-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PR-DFD-07-BOUNDARY-CROSSING-DETECT:
+    prompt_path: prompts/dfd/07-boundary-crossing-detect.prompt.md
+    catalogs:
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PR-DFD-08-CONTROL-SIGNAL-DETECT:
+    prompt_path: prompts/dfd/08-control-signal-detect.prompt.md
+    catalogs:
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - authentication-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PR-DFD-09-CONFIDENCE-SCORE:
+    prompt_path: prompts/dfd/09-confidence-score.prompt.md
+    catalogs:
+      - confidence-level-catalog
+  PR-DFD-10-DFD-EXTRACTION-SUMMARIZE:
+    prompt_path: prompts/dfd/10-dfd-extraction-summarize.prompt.md
+    catalogs:
+      - confidence-level-catalog
+
+skill_consumption_map:
+  SK-INPUT-PACKAGE-READ:
+    skill_path: skills/rs/SK-INPUT-PACKAGE-READ.md
+    catalogs:
+      - confidence-level-catalog
+  SK-DFD-VISUAL-READ:
+    skill_path: skills/rs/SK-DFD-VISUAL-READ.md
+    catalogs:
+      - component-type-catalog
+      - boundary-type-catalog
+      - confidence-level-catalog
+  SK-LEGEND-NORMALIZE:
+    skill_path: skills/rs/SK-LEGEND-NORMALIZE.md
+    catalogs:
+      - data-class-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - authentication-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-COMPONENT-EXTRACT:
+    skill_path: skills/rs/SK-COMPONENT-EXTRACT.md
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - component-evidence-rule-catalog
+      - confidence-level-catalog
+  SK-FLOW-EXTRACT:
+    skill_path: skills/rs/SK-FLOW-EXTRACT.md
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-BOUNDARY-CROSSING-DETECT:
+    skill_path: skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+    catalogs:
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-SECURITY-STACK-ASSESS:
+    skill_path: skills/rs/SK-SECURITY-STACK-ASSESS.md
+    catalogs:
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - authentication-catalog
+      - transport-protection-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-DATA-FLOW-TABLE-BUILD:
+    skill_path: skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - data-class-catalog
+      - authentication-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-MISSING-FACT-IDENTIFY:
+    skill_path: skills/rs/SK-MISSING-FACT-IDENTIFY.md
+    catalogs:
+      - component-evidence-rule-catalog
+      - flow-evidence-rule-catalog
+      - identity-evidence-rule-catalog
+      - authorization-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-AI-ACTION-LEVEL-CLASSIFY:
+    skill_path: skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md
+    catalogs:
+      - ai-action-level-catalog
+      - interaction-type-catalog
+      - confidence-level-catalog
+  SK-REVIEW-BLUEPRINT-MATCH:
+    skill_path: skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md
+    catalogs:
+      - trust-zone-catalog
+      - confidence-level-catalog
+    notes: Blueprint match is deferred to Build Package 08; this catalog consumption is read-only context only.
+  SK-TARGETED-QUESTION-GENERATE:
+    skill_path: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+    catalogs:
+      - authorization-catalog
+      - identity-evidence-rule-catalog
+      - confidence-level-catalog
+  SK-FINDING-CLASSIFY:
+    skill_path: skills/rs/SK-FINDING-CLASSIFY.md
+    catalogs:
+      - finding-category-catalog
+      - severity-catalog
+      - control-signal-catalog
+      - proof-vs-signal-rule-catalog
+      - confidence-level-catalog
+  SK-RECOMMENDATION-WRITE:
+    skill_path: skills/rs/SK-RECOMMENDATION-WRITE.md
+    catalogs:
+      - recommendation-type-catalog
+      - finding-category-catalog
+      - authorization-catalog
+      - transport-protection-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-HANDOFF-PACK-BUILD:
+    skill_path: skills/rs/SK-HANDOFF-PACK-BUILD.md
+    catalogs:
+      - review-status-catalog
+      - confidence-level-catalog
+  SK-VALIDATION-NOTE-WRITE:
+    skill_path: skills/rs/SK-VALIDATION-NOTE-WRITE.md
+    catalogs:
+      - at-rest-protection-catalog
+      - identity-evidence-rule-catalog
+      - finding-category-catalog
+      - proof-vs-signal-rule-catalog
+      - confidence-level-catalog
+  SK-ACCURACY-SCORE:
+    skill_path: skills/rs/SK-ACCURACY-SCORE.md
+    catalogs:
+      - severity-catalog
+      - review-status-catalog
+      - flow-evidence-rule-catalog
+      - identity-evidence-rule-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-DFD-01-INTAKE-QUALITY-CHECK:
+    skill_path: skills/dfd/SK-DFD-01-INTAKE-QUALITY-CHECK.md
+    catalogs:
+      - confidence-level-catalog
+  SK-DFD-02-BOUNDARY-EXTRACT:
+    skill_path: skills/dfd/SK-DFD-02-BOUNDARY-EXTRACT.md
+    catalogs:
+      - boundary-type-catalog
+      - trust-zone-catalog
+      - confidence-level-catalog
+  SK-DFD-03-COMPONENT-EXTRACT:
+    skill_path: skills/dfd/SK-DFD-03-COMPONENT-EXTRACT.md
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - component-evidence-rule-catalog
+      - confidence-level-catalog
+  SK-DFD-04-FLOW-EXTRACT:
+    skill_path: skills/dfd/SK-DFD-04-FLOW-EXTRACT.md
+    catalogs:
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - confidence-level-catalog
+  SK-DFD-05-ANNOTATION-RESOLVE:
+    skill_path: skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md
+    catalogs:
+      - data-class-catalog
+      - authentication-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-DFD-06-BOUNDARY-CROSSING-DETECT:
+    skill_path: skills/dfd/SK-DFD-06-BOUNDARY-CROSSING-DETECT.md
+    catalogs:
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-DFD-07-CONTROL-SIGNAL-DETECT:
+    skill_path: skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+    catalogs:
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - authentication-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  SK-DFD-08-CONFIDENCE-SCORE:
+    skill_path: skills/dfd/SK-DFD-08-CONFIDENCE-SCORE.md
+    catalogs:
+      - confidence-level-catalog
+  SK-DFD-09-EXTRACTION-SUMMARIZE:
+    skill_path: skills/dfd/SK-DFD-09-EXTRACTION-SUMMARIZE.md
+    catalogs:
+      - confidence-level-catalog
+
+pra_consumption_map:
+  PRA-01-SAS-REVIEW-ORCHESTRATOR:
+    pra_path: prototype-agents/PRA-01-SAS-REVIEW-ORCHESTRATOR.md
+    catalogs:
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+    notes: Orchestrator references the cross-cutting catalogs only; per-step catalog consumption is recorded under each owned PRA.
+  PRA-02-INPUT-READER:
+    pra_path: prototype-agents/PRA-02-INPUT-READER.md
+    catalogs:
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PRA-03-DFD-EXTRACTOR:
+    pra_path: prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - component-evidence-rule-catalog
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - data-class-catalog
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PRA-04-LEGEND-NORMALIZER:
+    pra_path: prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+    catalogs:
+      - data-class-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - authentication-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PRA-05-REVIEW-TABLE-BUILDER:
+    pra_path: prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PRA-06-BLUEPRINT-QUESTIONER:
+    pra_path: prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+    catalogs:
+      - interaction-type-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - identity-evidence-rule-catalog
+      - ai-action-level-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PRA-07-FINDING-RECOMMENDER:
+    pra_path: prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+    catalogs:
+      - finding-category-catalog
+      - severity-catalog
+      - recommendation-type-catalog
+      - authorization-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - data-class-catalog
+      - control-signal-catalog
+      - identity-evidence-rule-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  PRA-08-HANDOFF-QA-SCORER:
+    pra_path: prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+    catalogs:
+      - severity-catalog
+      - review-status-catalog
+      - finding-category-catalog
+      - flow-evidence-rule-catalog
+      - identity-evidence-rule-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+
+adapter_consumption_map:
+  aisraf-orchestrator:
+    adapter_path: .agents/aisraf-orchestrator.agent.md
+    canonical_pra: PRA-01-SAS-REVIEW-ORCHESTRATOR
+    catalogs:
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  aisraf-input-reader:
+    adapter_path: .agents/aisraf-input-reader.agent.md
+    canonical_pra: PRA-02-INPUT-READER
+    catalogs:
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  aisraf-dfd-extractor:
+    adapter_path: .agents/aisraf-dfd-extractor.agent.md
+    canonical_pras: [PRA-03-DFD-EXTRACTOR, PRA-04-LEGEND-NORMALIZER]
+    notes: Per Build Package 06 founder decision Q1, this adapter wraps PRA-03 and PRA-04 jointly.
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - component-evidence-rule-catalog
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - authentication-catalog
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  aisraf-review-table-builder:
+    adapter_path: .agents/aisraf-review-table-builder.agent.md
+    canonical_pra: PRA-05-REVIEW-TABLE-BUILDER
+    catalogs:
+      - component-type-catalog
+      - component-role-catalog
+      - interaction-type-catalog
+      - flow-direction-catalog
+      - flow-evidence-rule-catalog
+      - boundary-type-catalog
+      - boundary-crossing-rule-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - data-class-catalog
+      - transport-protection-catalog
+      - security-stack-marker-catalog
+      - control-signal-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  aisraf-blueprint-questioner:
+    adapter_path: .agents/aisraf-blueprint-questioner.agent.md
+    canonical_pra: PRA-06-BLUEPRINT-QUESTIONER
+    catalogs:
+      - interaction-type-catalog
+      - trust-zone-catalog
+      - authentication-catalog
+      - authorization-catalog
+      - identity-evidence-rule-catalog
+      - ai-action-level-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  aisraf-finding-recommender:
+    adapter_path: .agents/aisraf-finding-recommender.agent.md
+    canonical_pra: PRA-07-FINDING-RECOMMENDER
+    catalogs:
+      - finding-category-catalog
+      - severity-catalog
+      - recommendation-type-catalog
+      - authorization-catalog
+      - transport-protection-catalog
+      - at-rest-protection-catalog
+      - data-class-catalog
+      - control-signal-catalog
+      - identity-evidence-rule-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+  aisraf-handoff-qa-scorer:
+    adapter_path: .agents/aisraf-handoff-qa-scorer.agent.md
+    canonical_pra: PRA-08-HANDOFF-QA-SCORER
+    catalogs:
+      - severity-catalog
+      - review-status-catalog
+      - finding-category-catalog
+      - flow-evidence-rule-catalog
+      - identity-evidence-rule-catalog
+      - confidence-level-catalog
+      - proof-vs-signal-rule-catalog
+
+future_blueprint_consumption_notes:
+  status: future_only
+  blueprint_consumers: deferred_to_build_package_08
+  blueprint_identifiers_recorded: false
+  note: |
+    Build Package 08 will introduce reusable review patterns (blueprints).
+    Build Package 07 catalogs are designed to be read-only inputs to those
+    blueprints. No BP-* identifier is recorded in any Build Package 07
+    catalog or in this registry. Build Package 08 must not require any
+    Build Package 07 catalog change; if a blueprint needs a controlled
+    value, the catalog change is a separate governed update with
+    founder approval.
+  expected_blueprint_inputs:
+    - trust-zone-catalog
+    - interaction-type-catalog
+    - boundary-crossing-rule-catalog
+    - authentication-catalog
+    - authorization-catalog
+    - data-class-catalog
+    - transport-protection-catalog
+    - at-rest-protection-catalog
+    - security-stack-marker-catalog
+    - control-signal-catalog
+    - finding-category-catalog
+    - recommendation-type-catalog
+    - ai-action-level-catalog
+    - confidence-level-catalog
+    - proof-vs-signal-rule-catalog
+
+sealed_upstream_registries:
+  - prompts/prompt-registry.yaml
+  - skills/skill-registry.yaml
+  - prototype-agents/prototype-agent-registry.yaml
+  policy: Build Package 07 must not modify any of these registries. All catalog consumer mapping is recorded in this catalog-registry.yaml and in validation/catalog-consumption-checklist.md.
+
+compatibility_notes:
+  documented_count_arithmetic_discrepancy:
+    issue: |
+      The Build Package 07 founder approval (Q7) recorded
+      catalog_count: 28 and 38 total files under catalogs/, alongside an
+      explicit file list. The explicit file list contains 24
+      controlled-vocabulary YAML catalogs (3+3+3+3+4+3+5) and 33 total
+      files (24 + 1 catalog-registry.yaml + 8 READMEs).
+    package_07_action: |
+      Implement the explicit file list verbatim and record the accurate
+      counts (24 catalogs, 33 total files) in this registry. The 28/38
+      figures from the approval are documented here for transparency.
+    recommended_future_fix: |
+      Founder confirms the catalog inventory at next governed update
+      (either accept 24 as the final count or expand to 28 by adding
+      four additional controlled-vocabulary catalogs through a separate
+      governed change).
+
+  known_upstream_drift:
+    known_upstream_drift: true
+    source_file: prototype-agents/prototype-agent-registry.yaml
+    reason: |
+      Package 06 registry contains a non-Package-02 variable reference
+      ({{catalog_root}}) inside its rejected_non_schema_variables list at
+      line 45. The reference is an explicit "rejected" listing — the
+      registry is calling out variables that must NOT be introduced.
+      Build Package 07 has confirmed this and will not introduce
+      {{catalog_root}} anywhere. No upstream edit is performed in
+      Build Package 07.
+    package_07_action: documented only; no upstream edit.
+    recommended_future_fix: |
+      Controlled cleanup in a future package allowed to update the
+      prototype-agent registry. Until then, the rejected_non_schema_variables
+      block is correctly serving its purpose by signaling that
+      {{catalog_root}} is forbidden.
+
+version_notes: >
+  Initial Build Package 07 release. Catalog registry indexes 24
+  controlled-vocabulary YAML catalogs across 7 families, plus the
+  cross-cutting confidence-level-catalog and the global
+  proof-vs-signal-rule-catalog. Consumer mapping covers 23 prompts (with
+  PR-RS-00 catalog-empty per Build Package 04 status=planned), 26 skills,
+  8 PRAs, and 7 .agent.md adapters. No upstream prompt, skill, PRA, or
+  adapter registry was modified.

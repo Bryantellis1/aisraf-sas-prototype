@@ -1,0 +1,137 @@
+catalog_id: review-status-catalog
+catalog_name: Review Status Catalog
+schema_version: aisraf_review_status_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of review status values used in handoff packs and
+  scoring outputs: in_progress, awaiting_inputs, awaiting_human_review,
+  complete, blocked, withdrawn, and unknown. This catalog defines the
+  status names only; status assignment is owned by handoff and scoring
+  skills, not by this catalog.
+
+consumers:
+  prompts:
+    - prompts/rs/11-handoff-pack-build.prompt.md
+    - prompts/rs/13-accuracy-score.prompt.md
+  skills:
+    - skills/rs/SK-HANDOFF-PACK-BUILD.md
+    - skills/rs/SK-ACCURACY-SCORE.md
+  pras:
+    - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  adapters:
+    - .agents/aisraf-handoff-qa-scorer.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-RS-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-RS-02
+    rule: Status is recorded once per review and may transition. Transitions are documented in the review run log.
+  - rule_id: ER-RS-03
+    rule: Status is not a finding category, severity, or recommendation. It is a workflow state.
+  - rule_id: ER-RS-04
+    rule: Status assignment is owned by skills/rs/SK-HANDOFF-PACK-BUILD.md and skills/rs/SK-ACCURACY-SCORE.md. This catalog only defines the controlled values.
+
+prohibited_claims:
+  - status_used_as_finding_category
+  - status_used_as_severity
+  - status_implies_blueprint_match
+  - status_assigned_outside_handoff_or_scoring_skill
+  - postback_execution_implied_from_complete_status
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - "Complete" status does not imply Jira/Confluence/Rovo post-back; post-back execution requires postback_execution_status=executed_by_operator and a recorded run-log entry.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/review/disposition-catalog.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/review/validation-note-catalog.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: RS-IN-PROGRESS
+    label: in_progress
+    description: The review is actively in progress; outputs are partially produced.
+    when_to_use: At least one review-step output exists but the review is not yet at handoff.
+    when_not_to_use: The review has not started (no outputs) or has reached handoff.
+    evidence_required: at least one review-step output present
+    confidence_guidance: High; the status is plainly visible from outputs.
+    notes: In-progress is the default status for a review with outputs.
+
+  - id: RS-AWAITING-INPUTS
+    label: awaiting_inputs
+    description: The review cannot proceed until additional inputs (DFD, notes, missing-fact answers) are provided.
+    when_to_use: A missing-fact question or input gap blocks further review steps.
+    when_not_to_use: The review can proceed with the current inputs.
+    evidence_required: pointer to the missing input or missing-fact entry
+    confidence_guidance: High when the gap is explicit; medium when partial.
+    notes: Awaiting-inputs is a workflow state, not a finding.
+
+  - id: RS-AWAITING-HUMAN-REVIEW
+    label: awaiting_human_review
+    description: Outputs are produced and the review is waiting on a human reviewer to confirm or correct findings, recommendations, or AI Action Level.
+    when_to_use: A handoff pack is ready and a human review gate is the next step.
+    when_not_to_use: Outputs are not yet produced (use in_progress) or the human review is complete (use complete).
+    evidence_required: handoff pack present and human-review gate noted
+    confidence_guidance: High when the gate is plainly visible.
+    notes: Awaiting-human-review is the explicit gate status.
+
+  - id: RS-COMPLETE
+    label: complete
+    description: The review has been completed by the human reviewer; the handoff pack and scoring outputs are final for this run.
+    when_to_use: The human-review gate has closed and outputs are final.
+    when_not_to_use: Outputs are still in progress or awaiting input.
+    evidence_required: human-review acknowledgement recorded in the run log
+    confidence_guidance: High when the acknowledgement is recorded.
+    notes: Complete does not imply any external post-back; see anti-inference rules.
+
+  - id: RS-BLOCKED
+    label: blocked
+    description: The review is blocked by a non-input issue (broken inputs, scope conflict, governance issue) that cannot be resolved by adding inputs.
+    when_to_use: A non-input blocker is documented.
+    when_not_to_use: The blocker is a missing input (use awaiting_inputs).
+    evidence_required: documented blocker reason and reference
+    confidence_guidance: High when reason is explicit; medium when partial.
+    notes: Blocked status drives escalation to review owner.
+
+  - id: RS-WITHDRAWN
+    label: withdrawn
+    description: The review has been formally withdrawn (canceled, deduplicated, replaced) and outputs are not final.
+    when_to_use: A formal withdrawal decision is documented.
+    when_not_to_use: The review is paused (use blocked) or in progress.
+    evidence_required: documented withdrawal reason and reference
+    confidence_guidance: High when reason is explicit.
+    notes: Withdrawn reviews retain their outputs but are not final.
+
+  - id: RS-UNKNOWN
+    label: unknown
+    description: The review status cannot be determined from available evidence.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown status drives a missing-fact question.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured the old v0.01 disposition
+  and validation-note prose into a closed list of seven workflow status
+  values plus unknown.

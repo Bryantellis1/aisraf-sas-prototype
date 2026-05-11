@@ -1,0 +1,158 @@
+catalog_id: security-stack-marker-catalog
+catalog_name: Security Stack Marker Catalog
+schema_version: aisraf_security_stack_marker_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of visible security-stack marker forms used in the
+  reviewed-system DFD: stack diamond, gateway/policy checkpoint, identity
+  checkpoint, logging checkpoint, encryption checkpoint, secret-management
+  marker, SSH/SFTP/SCP protocol marker, and unknown. Each marker is recorded
+  as a review signal; conversion to implementation proof is governed by
+  proof-vs-signal-rule-catalog.yaml.
+
+consumers:
+  prompts:
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/dfd/08-control-signal-detect.prompt.md
+  skills:
+    - skills/rs/SK-SECURITY-STACK-ASSESS.md
+    - skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+  pras:
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+  adapters:
+    - .agents/aisraf-review-table-builder.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-SS-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-SS-02
+    rule: Marker visibility is a review signal. It does not prove approved-stack confirmation, policy enforcement, identity coverage, logging quality, encryption scope, owner, or evidence.
+  - rule_id: ER-SS-03
+    rule: S# is a protocol marker (SSH/SFTP/SCP), not a security-stack diamond, and never sets security_stack_present=true on its own.
+  - rule_id: ER-SS-04
+    rule: SA#, CA#, IA#, GSA# are authentication markers, never security-stack diamonds (see authentication-catalog.yaml).
+
+prohibited_claims:
+  - approved_stack_confirmation_from_diamond_alone
+  - policy_enforcement_from_gateway_label_alone
+  - authorization_coverage_from_gateway_label_alone
+  - monitoring_effectiveness_from_logging_label_alone
+  - encryption_scope_from_encryption_marker_alone
+  - key_management_proof_from_secret_marker_alone
+  - approved_security_stack_from_protocol_marker_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Diamond is a review signal, never approved-stack confirmation.
+  - Gateway is a checkpoint signal, never policy-enforcement proof.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/security-stack-marker-catalog.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/boundaries/security-stack-placement-rules.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: SSM-STACK-DIAMOND
+    label: stack_diamond
+    visible_forms: [diamond, security_stack_diamond, control_diamond]
+    description: A diamond shape on the DFD indicating that a stack/control is named at this point.
+    when_to_use: A diamond shape is plainly visible on the flow path or at a component edge.
+    when_not_to_use: The shape is a generic marker, an arrow, or an unrelated icon.
+    evidence_required: visible diamond shape with label
+    confidence_guidance: High when diamond and label are clear; medium when label is missing; unknown when shape is unreadable.
+    notes: Stack diamond visibility is not approved-stack confirmation.
+
+  - id: SSM-GATEWAY-OR-POLICY-CHECKPOINT
+    label: gateway_or_policy_checkpoint
+    visible_forms: [API Gateway, gateway policy, ingress policy, policy checkpoint, WAF, edge gateway]
+    description: A gateway, policy checkpoint, ingress, WAF, or edge component on the flow path.
+    when_to_use: A gateway or policy-checkpoint label is plainly visible on the path.
+    when_not_to_use: The component is a generic application service or store.
+    evidence_required: visible gateway/checkpoint label
+    confidence_guidance: High when labeled; medium when shape implies gateway; unknown when ambiguous.
+    notes: Gateway visibility is a checkpoint signal, never policy-enforcement proof.
+
+  - id: SSM-IDENTITY-CHECKPOINT
+    label: identity_checkpoint
+    visible_forms: [SA#, CA#, IA#, SSO, OAuth, SAML, auth note]
+    description: An authentication marker (SA#, CA#, IA#) or auth label (SSO, OAuth, SAML) acting as an identity checkpoint signal.
+    when_to_use: An identity marker is visible at a flow or component point.
+    when_not_to_use: No identity marker or auth label is visible.
+    evidence_required: visible auth marker or auth label
+    confidence_guidance: High when explicit; medium when partial; unknown when ambiguous.
+    notes: Identity checkpoint visibility is authentication signal only; authorization remains unknown unless explicit.
+
+  - id: SSM-LOGGING-CHECKPOINT
+    label: logging_checkpoint
+    visible_forms: [logs, logging, monitoring, telemetry, tracing, observability store]
+    description: A logging, monitoring, telemetry, or tracing label/component acting as an observability checkpoint signal.
+    when_to_use: A logging/monitoring/telemetry label or component is plainly visible.
+    when_not_to_use: No log/monitor/telemetry indicator is visible.
+    evidence_required: visible log/monitor label or sink component
+    confidence_guidance: High when explicit; medium when shape implies sink; unknown when ambiguous.
+    notes: Logging visibility is not monitoring effectiveness.
+
+  - id: SSM-ENCRYPTION-CHECKPOINT
+    label: encryption_checkpoint
+    visible_forms: [HTTPS, T#, R#, Enc, C#E#P]
+    description: An encryption-related marker indicating transit and/or at-rest protection signals.
+    when_to_use: An HTTPS, T#, R#, Enc, or C#E#P marker is plainly visible.
+    when_not_to_use: No encryption-related marker is visible.
+    evidence_required: visible encryption marker per transport-protection or at-rest-protection catalog
+    confidence_guidance: High when marker is plainly visible; medium when scope is partial; unknown when ambiguous.
+    notes: Per ER-SS-04, transit and at-rest are independent fields.
+
+  - id: SSM-SECRET-MANAGEMENT-MARKER
+    label: secret_management_marker
+    visible_forms: [SM1, SM2, secret marker, Secret Manager, Key Vault, KMS]
+    description: A secret/key/KMS marker indicating that secret/key management is named at this point.
+    when_to_use: An SM# marker, Secret Manager label, KMS label, or Key Vault label is plainly visible.
+    when_not_to_use: No secret/key marker is visible.
+    evidence_required: visible secret/key marker or label
+    confidence_guidance: High when explicit; medium when partial; unknown when ambiguous.
+    notes: Secret/key marker visibility is not key-management proof.
+
+  - id: SSM-SSH-SFTP-SCP-PROTOCOL
+    label: ssh_sftp_scp_protocol_marker
+    visible_forms: [S1, S2]
+    raw_pattern: '^S[0-9]+$'
+    description: An S# protocol marker indicating SSH/SFTP/SCP usage on the flow.
+    when_to_use: An S# token is plainly visible on a flow.
+    when_not_to_use: The token is SA#, CA#, IA#, or GSA# (those are auth markers).
+    evidence_required: visible S# token
+    confidence_guidance: High when token is plainly visible; medium when partial; unknown when ambiguous.
+    notes: S# is a protocol signal only; it never sets security_stack_present=true on its own.
+
+  - id: SSM-UNKNOWN
+    label: unknown
+    description: A stack-related signal exists but the marker form is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one supported marker form is visible.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Materiality drives whether a question is generated.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01
+  security-stack-marker-catalog into a closed list of seven marker forms
+  plus unknown. S# is kept as a protocol marker, not a stack diamond.

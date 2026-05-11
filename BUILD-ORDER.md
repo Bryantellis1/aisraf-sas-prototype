@@ -4,6 +4,49 @@ Package: AISRAF SAS Prototype v0.1.2
 
 This file defines the governed Build Package sequence. Build Package numbers are implementation phases, not Root Area numbers or folder paths. Root Area numbering is defined in [FOLDER-CONTRACTS.md](FOLDER-CONTRACTS.md) and [PACKAGE-MANIFEST.yaml](PACKAGE-MANIFEST.yaml).
 
+## Current WP-12C K/L Gate Overlay
+
+This overlay governs the active plugin-gate path. It records WP-12C-K plugin packaging complete, WP-12C-L0..L2B controlled-output execution complete, WP-12C-QA1 release-readiness QA report closed with documentation-class warnings, and WP-12C-ED1 active. WP-12C-L3 staging / publication, WP-12C-REL0 release-manifest, WP-13 diagrams, and WP-ORCH (true AL3 orchestrated multi-agent runtime) remain blocked. Current autonomy level is AL2 controlled-output local workbench.
+
+| Gate | Status | Next Action Constraint |
+|---|---|---|
+| WP-12C-H | BLACK / CLOSED | No action. |
+| WP-12C-I | BLACK / CLOSED | No action. |
+| WP-12C-J1 | BLACK / CLOSED | No action. |
+| WP-12C-J2A | BLACK / CLOSED | No action. |
+| WP-12C-J2B | BLACK / CLOSED | No action. |
+| Full WP-12C-J | BLACK / CLOSED | No action. |
+| WP-12C-K0/K1 | BLACK / CLOSED | No action. |
+| WP-12C-K1A | BLACK / CLOSED | No action. |
+| WP-12C-K1B-A | BLACK / CLOSED | No action. |
+| WP-12C-K1B-B | BLACK / CLOSED | No action. |
+| WP-12C-K2 | BLACK / CLOSED | No action. |
+| WP-12C-K3 | BLACK / CLOSED | No action. |
+| WP-12C-K3C | BLACK / CLOSED | Bundle checksum manifest complete and validated by Check 16b. |
+| WP-12C-K4 | BLACK / CLOSED | Status `WP-12C-K4_PLUGIN_PACKAGE_VALIDATION_PASS_READY_FOR_INSTALL_TESTING`. |
+| WP-12C-K | BLACK / CLOSED | Status `WP-12C-K_PACKAGE_COMPLETE_READY_FOR_INSTALL_READINESS_PREFLIGHT`. |
+| WP-12C-L0 | BLACK / CLOSED | Install readiness preflight complete. |
+| WP-12C-L1A | BLACK / CLOSED | Provider install surface patch (`plugin.json`) complete; Check 16c PASS. |
+| WP-12C-L1 | BLACK / CLOSED | Local plugin install complete. |
+| WP-12C-L2A | BLACK / CLOSED | Preview-only role smoke pass from clean smoke workspace. |
+| WP-12C-L2A-UX | BLACK / CLOSED | Operator usability runbook patch complete. |
+| WP-12C-L2B-PLAN | BLACK / CLOSED | Controlled-output smoke plan accepted under founder approval. |
+| WP-12C-L2B-EXEC | BLACK / CLOSED | Controlled-output execution complete under `runs/RUN-SMOKE-PLUGIN-L2B-001/`; 0 FAIL across the four validators; 17 RS + 9 DFD outputs captured; no overclaim. |
+| WP-12C-QA1 | BLACK / CLOSED | `WP-12C-QA1_PARTIAL_WITH_GAPS`; RB-001..RB-005 recorded in `validation/package-12c-release-blocker-register.md`. |
+| WP-12C-ED1 | CURRENT | Repository editor readability and public-safety pass; closes RB-003 (manifest / charter / build-order alignment) and RB-004 (install-checklist frontmatter refresh); no docs/ promotion, no release artifact, no staging. |
+| WP-12C-L3 | BLOCKED | Install evidence and Git staging / publication decision blocked until RB-001..RB-005 close. |
+| WP-12C-REL0 | BLOCKED | Release manifest, license, notice, changelog, contribution; blocked until L3 publication readiness. |
+| WP-13 | BLOCKED | Diagrams blocked until post-L3 release-gate authorization. |
+| WP-14 | FUTURE | Solution package only after WP-13 evidence. |
+| WP-15 | FUTURE | Future runtime projection strategy only; no runtime implementation. |
+| WP-ORCH | FUTURE | True AL3 orchestrated multi-agent runtime — not in v0.1.2 scope. |
+
+Required order through WP-12C: WP-12C-K1B-A -> WP-12C-K1B-B -> WP-12C-K2 -> WP-12C-K3 -> WP-12C-K3C -> WP-12C-K4 -> WP-12C-K closeout -> WP-12C-L0 -> WP-12C-L1A -> WP-12C-L1 -> WP-12C-L2A -> WP-12C-L2A-UX -> WP-12C-L2B-PLAN -> WP-12C-L2B-EXEC -> WP-12C-QA1 -> WP-12C-ED1 -> WP-12C-L3 -> WP-12C-REL0 -> WP-13 -> WP-14 -> WP-15.
+
+WP-ORCH (true AL3 orchestrated multi-agent runtime) sits outside this ordered chain as a separately sponsored future work package; it is not a v0.1.2 release prerequisite.
+
+Projection rule: plugin packaging is a projection layer governed by `tools/Test-AisrafPackage.ps1` Checks 16, 16a (no canonical body duplication), 16b (bundle checksum validation), and 16c (provider install manifest). Canonical authority remains in prompts, skills, PRAs, templates, catalogs, blueprints, samples, config, tools, validation, and governed provider projections.
+
 ## Build Package 01 — Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent standard
 
 Mission: create the clean governed shell future agents can trust.
@@ -204,43 +247,43 @@ Inputs: Build Packages 01-12 and old diagram lessons for naming and pitfalls.
 
 Outputs: diagram sources, rendered assets, alt text, diagram index, and diagram validation evidence.
 
-Dependencies: Build Packages 01-12.
+Dependencies: Build Packages 01-12 plus WP-12C-L plugin install validation evidence.
 
 Validation gate: diagrams are readable, accurately scoped, parity is tracked, future-state views do not claim current implementation, and stale assets are not promoted.
 
 Prohibited actions: release binaries, runtime/cloud proof, prompt/skill/PRA changes unless separately authorized.
 
-Ready-for-next condition: Build Package 14 can reference approved diagrams in practitioner documentation.
+Ready-for-next condition: WP-14 / Build Package 14 can reference approved diagrams in the governed solution package or practitioner documentation only after WP-13 evidence passes.
 
-## Build Package 14 — Practitioner documentation and runbooks
+## Build Package 14 — Practitioner documentation, runbooks, and WP-14 solution package
 
-Mission: create operator-facing documentation, practitioner guides, mappings, and runbooks.
+Mission: create operator-facing documentation, practitioner guides, mappings, runbooks, and, when WP-14 is authorized, the descriptive solution package built from canonical assets and WP-12C-L/WP-13 evidence.
 
 Inputs: Build Packages 01-13.
 
 Outputs: docs, runbooks, mappings, guides, and documentation validation checks.
 
-Dependencies: Build Packages 01-13.
+Dependencies: Build Packages 01-13 and the WP-12C-L/WP-13 evidence chain for any WP-14 solution package material.
 
 Validation gate: docs match charter, manifest, folder contracts, build order, prompts, skills, PRAs, catalogs, blueprints, templates, samples, runs, validation, and diagrams.
 
-Prohibited actions: release binaries, ZIPs, runtime/cloud claims, unsupported integration claims.
+Prohibited actions: release binaries, ZIPs, runtime/cloud claims, unsupported integration claims, TM Forum compliance/certification claims, or any canonical asset rewrite.
 
-Ready-for-next condition: Build Package 15 can package reader artifacts from stable documentation.
+Ready-for-next condition: Build Package 15 / WP-15 can proceed only with stable documentation, approved solution-package evidence, and no unsupported implementation claim.
 
-## Build Package 15 — Release packaging
+## Build Package 15 — Release packaging and WP-15 future runtime projection strategy
 
-Mission: generate reader artifacts only when release packaging is authorized.
+Mission: generate reader artifacts only when release packaging is authorized and, for WP-15, document future runtime projection strategy only. WP-15 does not implement runtime adapters, cloud deployment, MCP servers, databases, Terraform, or external post-back.
 
-Inputs: Build Packages 01-14 and release readiness evidence.
+Inputs: Build Packages 01-14, WP-12C-L/WP-13/WP-14 evidence when applicable, and release readiness evidence.
 
-Outputs: release notes, release manifest, generated DOCX/PDF/PPTX/ZIP artifacts if authorized, and release validation evidence.
+Outputs: release notes, release manifest, generated DOCX/PDF/PPTX/ZIP artifacts if authorized, release validation evidence, and future runtime projection strategy documents if separately authorized.
 
 Dependencies: Build Packages 01-14.
 
 Validation gate: release outputs match source, diagrams are approved or waived, no runtime/cloud proof is implied, and controlled-release status is honest.
 
-Prohibited actions: final QA seal without Build Package 16, unauthorized ZIP, release claims without evidence, cloud/MCP/ADK proof claims.
+Prohibited actions: final QA seal without Build Package 16, unauthorized ZIP, release claims without evidence, cloud/MCP/ADK proof claims, runtime adapter scaffolding, cloud deployment artifacts, or autonomy-level promotion without a separate sponsoring work package.
 
 Ready-for-next condition: Build Package 16 can perform final QA, seal, and export review.
 

@@ -1,0 +1,280 @@
+blueprint_id: BP-RAG-RETRIEVAL
+blueprint_name: RAG Retrieval
+owning_build_package: Build Package 08
+status: active
+
+purpose: >
+  Recognize retrieval-augmented generation patterns in which an application
+  reads context from a retrieval surface (vector store, search index, or
+  document store) and passes that context to a model endpoint to produce a
+  response. The blueprint scopes the catalog values that support a match,
+  identifies missing facts that block the match, and lists the finding and
+  recommendation categories the consuming skills may select from.
+
+applicability:
+  category: platform-independent
+  ai_action_levels:
+    - AAL-L1
+    - AAL-L2
+    - AAL-L3
+    - AAL-L4
+    - AAL-UNKNOWN
+  primary_interaction_types:
+    - IT-MODEL-CALL
+    - IT-DATA-FLOW
+  primary_concerns:
+    - Is the retrieval surface internal/managed or an external SaaS?
+    - What data class is stored in the retrieval surface?
+    - Is the model output displayed only or written back / forwarded?
+  not_applicable_when: |
+    No IT-MODEL-CALL is supported in the chain (use BP-NON-AI-DATAFLOW-BASELINE).
+    The model endpoint is plainly external SaaS (escalate primary match to
+    BP-AI-SAAS-INTEGRATION; keep BP-RAG-RETRIEVAL as a secondary candidate when
+    retrieval is part of the chain). Model output triggers a write_back interaction
+    (add BP-API-WRITEBACK as a secondary candidate). The pattern is composed with
+    multiple AI sub-patterns (consider BP-AI-WORKFLOW as the primary match).
+
+catalog_dependencies:
+  - catalog_id: interaction-type-catalog
+    family_id: interactions
+    path: catalogs/interactions/interaction-type-catalog.yaml
+    use: confirm IT-MODEL-CALL plus retrieval IT-DATA-FLOW
+  - catalog_id: flow-direction-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-direction-catalog.yaml
+    use: classify retrieval and model-call flow directions
+  - catalog_id: flow-evidence-rule-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-evidence-rule-catalog.yaml
+    use: enforce per-flow evidence rules
+  - catalog_id: boundary-type-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-type-catalog.yaml
+    use: identify retrieval-store and model-endpoint boundaries
+  - catalog_id: boundary-crossing-rule-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-crossing-rule-catalog.yaml
+    use: detect SaaS or internet boundary crossings
+  - catalog_id: trust-zone-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/trust-zone-catalog.yaml
+    use: classify source and destination trust zones
+  - catalog_id: authentication-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authentication-catalog.yaml
+    use: identify auth markers at retrieval and model endpoints
+  - catalog_id: authorization-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authorization-catalog.yaml
+    use: identify authorization values for retrieval-store access
+  - catalog_id: data-class-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/data-class-catalog.yaml
+    use: identify Class 5 / PCI labels on retrieval and prompt flows
+  - catalog_id: transport-protection-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/transport-protection-catalog.yaml
+    use: identify transit encryption on retrieval and model call paths
+  - catalog_id: at-rest-protection-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/at-rest-protection-catalog.yaml
+    use: identify at-rest protection on retrieval store
+  - catalog_id: confidence-level-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/confidence-level-catalog.yaml
+    use: cross-cutting confidence levels for blueprint match disposition
+  - catalog_id: ai-action-level-catalog
+    family_id: review
+    path: catalogs/review/ai-action-level-catalog.yaml
+    use: scope of AI Action Levels supported by this pattern
+  - catalog_id: finding-category-catalog
+    family_id: review
+    path: catalogs/review/finding-category-catalog.yaml
+    use: scope of supported finding categories
+  - catalog_id: recommendation-type-catalog
+    family_id: review
+    path: catalogs/review/recommendation-type-catalog.yaml
+    use: scope of supported recommendation types
+  - catalog_id: proof-vs-signal-rule-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    use: global signal-vs-proof rule referenced by every blueprint claim
+
+required_inputs:
+  - input_id: review_table_chain
+    description: chain of flow rows with interaction types resolved
+    source: skills/rs/SK-DATA-FLOW-TABLE-BUILD.md output
+  - input_id: ai_action_level_classification
+    description: AI Action Level result for the highest-action-level step
+    source: skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md output
+  - input_id: boundary_crossing_records
+    description: boundary-crossing detection results for retrieval and model endpoints
+    source: skills/rs/SK-BOUNDARY-CROSSING-DETECT.md output
+  - input_id: confidence_levels
+    description: per-row confidence values
+    source: catalogs/data-protection/confidence-level-catalog.yaml
+
+match_conditions:
+  - condition_id: BP-RAG-RETRIEVAL-MATCH-01
+    description: Both an IT-MODEL-CALL and an IT-DATA-FLOW into a retrieval surface are supported in the chain, with no SaaS provider boundary identified for the model endpoint.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        required_values: [IT-MODEL-CALL, IT-DATA-FLOW]
+      - catalog_id: boundary-crossing-rule-catalog
+        absent_values: [internet_boundary_crossing_to_external_saas]
+
+candidate_conditions:
+  - condition_id: BP-RAG-RETRIEVAL-CANDIDATE-01
+    description: IT-MODEL-CALL is supported but the retrieval IT-DATA-FLOW is unclear or marked unknown; or the model endpoint provider is unclear (internal vs SaaS).
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        partial_support_values: [IT-MODEL-CALL, IT-UNKNOWN]
+      - catalog_id: confidence-level-catalog
+        partial_support_values: [medium, low]
+
+no_match_conditions:
+  - condition_id: BP-RAG-RETRIEVAL-NO-MATCH-01
+    description: No IT-MODEL-CALL is supported anywhere in the chain.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        absent_or_conflicting_values: [IT-MODEL-CALL]
+      - catalog_id: ai-action-level-catalog
+        conflicting_values: [AAL-L0]
+  - condition_id: BP-RAG-RETRIEVAL-NO-MATCH-02
+    description: IT-MODEL-CALL is present but no retrieval IT-DATA-FLOW exists; the chain matches BP-MODEL-ENDPOINT-CALL or another non-RAG pattern instead.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        absent_or_conflicting_values: [IT-DATA-FLOW]
+
+unknown_conditions:
+  - condition_id: BP-RAG-RETRIEVAL-UNKNOWN-01
+    description: Interaction types and boundary crossings are unresolved across the chain; required inputs are partial.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        unknown_when_value: IT-UNKNOWN
+      - catalog_id: confidence-level-catalog
+        unknown_when_value: unknown
+
+material_missing_facts:
+  - fact_id: BP-RAG-RETRIEVAL-MMF-01
+    description: Is the model endpoint internally hosted, managed-cloud, or external AI SaaS?
+    catalog_reference: boundary-crossing-rule-catalog
+    affects:
+      - blueprint_match
+      - ai_action_level
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-RAG-RETRIEVAL-MMF-02
+    description: What data class is stored in the retrieval surface, and what data class is in the model prompt?
+    catalog_reference: data-class-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-RAG-RETRIEVAL-MMF-03
+    description: Is the model output displayed only, or written back to a data store / forwarded to a downstream system?
+    catalog_reference: interaction-type-catalog
+    affects:
+      - blueprint_match
+      - ai_action_level
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-RAG-RETRIEVAL-MMF-04
+    description: Is transit encryption applied to the retrieval and model call paths?
+    catalog_reference: transport-protection-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+
+supported_finding_categories:
+  - finding_category_id: FC-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-DEFICIENCY
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-EVIDENCE-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-OBSERVATION
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-RISK
+    catalog: catalogs/review/finding-category-catalog.yaml
+
+supported_recommendation_types:
+  - recommendation_type_id: RT-ADD-CONTROL
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-EXPAND-CONTROL-SCOPE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-DEFINE-SCOPE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-REQUEST-OWNER-OR-EVIDENCE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-ROUTE-TO-VALIDATION-TICKET
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+
+human_review_gate:
+  required: true
+  notes: >
+    The blueprint scopes catalog evidence and missing-fact questions; the
+    consuming skills (SK-AI-ACTION-LEVEL-CLASSIFY, SK-FINDING-CLASSIFY,
+    SK-RECOMMENDATION-WRITE) and human review select the AI Action Level,
+    finding categories, recommendation types, severity, and final
+    disposition.
+
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - implementation_proof_from_blueprint_match
+  - severity_computed_inside_blueprint
+  - ai_action_level_computed_inside_blueprint
+  - score_computed_inside_blueprint
+  - finding_prose_inside_blueprint
+  - recommendation_prose_inside_blueprint
+  - handoff_prose_inside_blueprint
+  - validation_ticket_prose_inside_blueprint
+  - owner_routing_inside_blueprint
+  - new_catalog_value_introduced_inside_blueprint
+  - approved_security_stack_from_blueprint_match
+
+source_reference:
+  v0_01_artifact: blueprints/BP-RAG-RETRIEVAL.md
+  v0_01_path: aisraf-sas-prototype-skill-chain-pack-v0.01/blueprints/BP-RAG-RETRIEVAL.md
+  derivation_mode: restructured_and_improved
+  notes: >
+    Translated the v0.01 25-section Markdown form into structured YAML
+    aligned to Package 07 catalog vocabulary. v0.01 used vector_retrieval
+    as a typed interaction; v0.1.2 represents retrieval as IT-DATA-FLOW
+    into a retrieval-class component and reserves IT-MODEL-CALL for the
+    model invocation. Old AI Action Levels L1-L5 mapped to AAL-L1 through
+    AAL-L4 plus AAL-UNKNOWN. Recommendation prose, owner routing, and
+    severity computation were removed; finding and recommendation
+    categories reference catalog IDs only.
+
+version_notes: >
+  Initial Build Package 08 release. Four-state matching per founder
+  decision Q1.
+
+match_evidence_policy:
+  match_requires_supported_catalog_values: true
+  candidate_allows_partial_support: true
+  no_match_requires_clear_absence_or_conflict: true
+  unknown_when_required_inputs_missing: true
+  human_review_required: true
+
+catalog_value_policy:
+  may_reference_catalog_values_only: true
+  may_not_introduce_new_catalog_values: true
+  missing_catalog_value_action: "record material_missing_fact; do not invent"
+
+output_boundary:
+  does_not_write_outputs: true
+  does_not_create_templates: true
+  does_not_generate_handoff_text: true
+  supports_future_outputs_only_through_templates: true
+
+runtime_and_external_execution:
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false

@@ -1,0 +1,154 @@
+catalog_id: authentication-catalog
+catalog_name: Authentication Catalog
+schema_version: aisraf_authentication_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of authentication marker families used to classify
+  visible auth markers in a reviewed-system DFD: service authentication
+  (SA#), customer authentication (CA#), internal/workforce authentication
+  (IA#), managed service account or workload identity (GSA#), and unknown.
+  Authentication markers are review signals that the design names auth at a
+  point. They never prove authorization, MFA, SSO enforcement, token
+  validation, least privilege, role scope, approval authority, or
+  implementation evidence.
+
+consumers:
+  prompts:
+    - prompts/rs/03-legend-normalization.prompt.md
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/dfd/05-flow-extract.prompt.md
+    - prompts/dfd/06-annotation-resolve.prompt.md
+    - prompts/dfd/08-control-signal-detect.prompt.md
+  skills:
+    - skills/rs/SK-LEGEND-NORMALIZE.md
+    - skills/rs/SK-SECURITY-STACK-ASSESS.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md
+    - skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+  pras:
+    - prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-blueprint-questioner.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-AU-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-AU-02
+    rule: An authentication-marker claim is supported when (a) a visible token (SA#, CA#, IA#, GSA#) is on a flow or component or (b) a source note explicitly identifies the authentication mechanism.
+  - rule_id: ER-AU-03
+    rule: Authentication evidence does not prove authorization, MFA, SSO enforcement, token validation, least privilege, role scope, approval authority, or implementation evidence.
+  - rule_id: ER-AU-04
+    rule: A marker on a component box describes that component. It does not propagate to every connected flow; per-flow coverage requires per-flow support.
+  - rule_id: ER-AU-05
+    rule: Optional O/S suffix on SA#/CA#/IA# markers may indicate OAuth or SAML only when attached to an auth marker. The suffix does not appear on GSA#.
+  - rule_id: ER-AU-06
+    rule: GSA# is a future-state managed service account or workload identity marker. It does not prove current cloud runtime, deployed service account, credential safety, keyless status, authorization, or least privilege.
+
+prohibited_claims:
+  - authorization_from_authentication_marker_alone
+  - mfa_proof_from_customer_auth_marker_alone
+  - sso_enforcement_from_auth_marker_alone
+  - token_validation_proof_from_auth_marker_alone
+  - least_privilege_from_auth_marker_alone
+  - approval_authority_from_internal_auth_marker_alone
+  - approved_security_stack_from_auth_marker_alone
+  - current_cloud_service_account_from_gsa_marker_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Component-level marker is a component signal only and does not propagate to every connected flow.
+  - GSA# is a future-state marker and does not prove current runtime.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/authn-authz-marker-catalog.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/identity-access/authentication-catalog.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/identity-access/customer-authentication-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/identity-access/internal-authentication-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/identity-access/service-authentication-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/identity-access/non-human-identity-rules.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: AU-SERVICE-AUTHENTICATION
+    label: service_authentication
+    raw_pattern: '^SA[0-9]+[OS]?$'
+    examples: [SA1, SA1O, SA1S]
+    description: Service-to-service authentication marker shown in the design.
+    when_to_use: A flow or component carries an SA# token.
+    when_not_to_use: The marker is CA#, IA#, or GSA# (use the matching entry).
+    evidence_required: visible SA# token on flow or component, or source note describing service-to-service auth
+    confidence_guidance: High when SA# is plainly visible on a flow; medium when on a component box; unknown when token is unreadable.
+    notes: SA# does not prove authorization, mechanism, or implementation. Optional O/S suffix indicates OAuth or SAML only when attached to an auth marker.
+
+  - id: AU-CUSTOMER-AUTHENTICATION
+    label: customer_authentication
+    raw_pattern: '^CA[0-9]+[OS]?$'
+    examples: [CA1, CA1O, CA1S]
+    description: Customer or consumer authentication marker shown in the design.
+    when_to_use: A flow or component carries a CA# token.
+    when_not_to_use: The marker is SA#, IA#, or GSA#.
+    evidence_required: visible CA# token on flow or component, or source note describing customer auth
+    confidence_guidance: High when CA# is plainly visible on a flow; medium when on a component box; unknown when token is unreadable.
+    notes: CA# does not prove MFA, SSO, token validation, or implementation. Optional O/S suffix indicates OAuth or SAML only when attached to an auth marker.
+
+  - id: AU-INTERNAL-AUTHENTICATION
+    label: internal_authentication
+    raw_pattern: '^IA[0-9]+[OS]?$'
+    examples: [IA1, IA1O, IA1S]
+    description: Internal/workforce/employee/contractor authentication marker shown in the design.
+    when_to_use: A flow or component carries an IA# token.
+    when_not_to_use: The marker is SA#, CA#, or GSA#.
+    evidence_required: visible IA# token on flow or component, or source note describing internal auth
+    confidence_guidance: High when IA# is plainly visible on a flow; medium when on a component box; unknown when token is unreadable.
+    notes: IA# does not prove authorization, approval authority, or role scope. Optional O/S suffix indicates OAuth or SAML only when attached to an auth marker.
+
+  - id: AU-MANAGED-SERVICE-ACCOUNT-OR-WORKLOAD-IDENTITY
+    label: managed_service_account_or_workload_identity
+    raw_pattern: '^GSA[0-9]+$'
+    examples: [GSA1]
+    description: Managed service account or workload identity marker, typically used in future-state or cloud-roadmap diagrams.
+    when_to_use: A flow or component carries a GSA# token in a future-state diagram.
+    when_not_to_use: The marker is SA# (use service_authentication) or the diagram is a current-state diagram without GSA# semantics.
+    evidence_required: visible GSA# token plus future-state context
+    confidence_guidance: High when GSA# is plainly visible on a future-state diagram; medium when on a component box; unknown when token is unreadable.
+    notes: GSA# does not prove current cloud runtime, service account existence, credential safety, keyless status, authorization, or implementation evidence.
+
+  - id: AU-UNKNOWN
+    label: unknown
+    description: The authentication marker is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one supported auth token is visible.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Materiality drives whether a question is generated for missing auth detail.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01
+  authn-authz-marker-catalog and the four authentication-rules MD files into
+  a closed list of authentication-marker families plus unknown. Authorization
+  is split into a sibling catalog (authorization-catalog.yaml) so the
+  authn-vs-authz separation is visible in the catalog file structure.

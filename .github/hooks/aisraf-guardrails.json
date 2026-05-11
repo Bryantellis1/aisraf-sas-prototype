@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "pwsh -NoProfile -Command \"$eventJson = [Console]::In.ReadToEnd(); $event = $eventJson | ConvertFrom-Json; $paths = @(); $toolInput = $event.tool_input; if ($null -ne $toolInput) { foreach ($name in @('filePath','file_path','path','targetPath')) { if ($toolInput.PSObject.Properties.Name -contains $name) { $paths += $toolInput.$name } }; foreach ($name in @('files','paths','filePaths')) { if ($toolInput.PSObject.Properties.Name -contains $name) { $paths += @($toolInput.$name) } } }; $paths = @($paths | Where-Object { $null -ne $_ -and $_.ToString().Trim().Length -gt 0 } | Select-Object -Unique); if ($paths.Count -eq 0) { '{\\\"continue\\\":true}' ; exit 0 }; foreach ($path in $paths) { $result = & pwsh -NoProfile -File './tools/hooks/aisraf-allowed-path-prewrite-guard.ps1' -TargetPath $path 2>&1; if ($LASTEXITCODE -ne 0) { [Console]::Error.WriteLine(($result -join [Environment]::NewLine)); exit 2 } }; '{\\\"continue\\\":true}'\"",
+        "timeout": 30
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "pwsh -NoProfile -Command \"$eventJson = [Console]::In.ReadToEnd(); $event = $eventJson | ConvertFrom-Json; $paths = @(); $toolInput = $event.tool_input; if ($null -ne $toolInput) { foreach ($name in @('filePath','file_path','path','targetPath')) { if ($toolInput.PSObject.Properties.Name -contains $name) { $paths += $toolInput.$name } }; foreach ($name in @('files','paths','filePaths')) { if ($toolInput.PSObject.Properties.Name -contains $name) { $paths += @($toolInput.$name) } } }; $paths = @($paths | Where-Object { $null -ne $_ -and $_.ToString().Trim().Length -gt 0 } | Select-Object -Unique); if ($paths.Count -eq 0) { '{\\\"continue\\\":true}' ; exit 0 }; foreach ($path in $paths) { $result = & pwsh -NoProfile -File './tools/hooks/aisraf-focused-validator-postwrite.ps1' -TargetPath $path 2>&1; if ($LASTEXITCODE -ne 0) { [Console]::Error.WriteLine(($result -join [Environment]::NewLine)); exit 2 } }; '{\\\"continue\\\":true}'\"",
+        "timeout": 120
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "pwsh -NoProfile -Command \"$summary = & pwsh -NoProfile -File './tools/hooks/aisraf-session-stop-summary.ps1' -WrapperId provider-hook -InputsRead none -OutputsWritten none -ValidatorsInvoked none -Status PROVIDER_STOP 2>&1; $message = (($summary -join '; ') -replace '\\\\','/') -replace '\"',''''; '{\\\"continue\\\":true,\\\"systemMessage\\\":\\\"' + $message + '\\\"}'\"",
+        "timeout": 30
+      }
+    ]
+  }
+}

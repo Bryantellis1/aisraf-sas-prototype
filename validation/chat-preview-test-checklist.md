@@ -42,25 +42,25 @@ Sub-gates a–f against:
 ### P3 — `aisraf-dfd-extraction`
 
 Sub-gates a–f against:
-- Templates: `templates/output/output-02-..-06-*-template.md` (5 RS) plus `templates/output/output-dfd-01-..-09-*-template.md` (9 DFD).
-- Output paths: `runs/{{run_id}}/02-..-06-*.md` and `runs/{{run_id}}/dfd/01-..-09-*.md`.
+- Templates: `templates/output/output-02-..-05-*-template.md` (4 RS) plus `templates/output/output-dfd-01-..-09-*-template.md` (9 DFD).
+- Output paths: `runs/{{run_id}}/02-..-05-*.md` and `runs/{{run_id}}/dfd/01-..-09-*.md`.
 - Inputs: `runs/RUN-001/inputs/dfd-crop.mmd`, `dfd-crop.png`, `dfd-legend-excerpt.md`.
-- Byte-stability targets: the 5 root and 9 dfd/ outputs in RUN-001.
+- Byte-stability targets: the 4 root and 9 dfd/ outputs in RUN-001.
 - Extra sub-gate g — DFD subchain ordering: Preview demonstrates the 9-step DFD subchain in canonical order (intake-quality-check → boundary-catalog → component-catalog → flow-inventory → annotation-resolution → boundary-crossings → control-signals → confidence-score → extraction-summary).
 
 ### P4 — `aisraf-review-table-build`
 
 Sub-gates a–f against:
-- Templates: `templates/output/output-07-security-stack-assessment-template.md`, `output-08-internal-review-table-template.md`, `output-09-missing-facts-template.md`.
-- Output paths: `runs/{{run_id}}/07-..-09-*.md`.
+- Templates: `templates/output/output-06-boundaries-template.md`, `output-07-security-stack-assessment-template.md`, `output-08-internal-review-table-template.md`.
+- Output paths: `runs/{{run_id}}/06-..-08-*.md`.
 - Byte-stability targets: same 3 files in RUN-001.
 
 ### P5 — `aisraf-blueprint-questioning`
 
 Sub-gates a–f against:
-- Templates: `templates/output/output-10-ai-action-level-template.md`, `output-11-blueprint-match-template.md`, `output-12-targeted-questions-template.md`.
-- Output paths: `runs/{{run_id}}/10-..-12-*.md`.
-- Byte-stability targets: same 3 files in RUN-001.
+- Templates: `templates/output/output-09-missing-facts-template.md`, `output-10-ai-action-level-template.md`, `output-11-blueprint-match-template.md`, `output-12-targeted-questions-template.md`.
+- Output paths: `runs/{{run_id}}/09-..-12-*.md`.
+- Byte-stability targets: same 4 files in RUN-001.
 - Extra sub-gate h — Blueprint match states demonstrated as placeholders only (`<value-from-blueprints/blueprint-registry.yaml>`); no enumeration of `matched / candidate / no_match / unknown` outside a reference path.
 
 ### P6 — `aisraf-finding-recommendation`

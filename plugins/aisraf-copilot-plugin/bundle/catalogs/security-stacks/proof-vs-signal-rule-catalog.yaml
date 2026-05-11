@@ -1,0 +1,239 @@
+catalog_id: proof-vs-signal-rule-catalog
+catalog_name: Proof vs. Signal Rule Catalog
+schema_version: aisraf_proof_vs_signal_rule_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+global_rule: true
+applies_to_all_catalogs: true
+
+purpose: >
+  Define the global rules that prevent visible markers, icons, labels, gateway
+  shapes, diamonds, cloud service names, secret-management labels, and naming
+  conventions from being treated as implementation proof. Every other catalog
+  in catalogs/ references this catalog in evidence_rules. Whenever a reviewer is
+  tempted to convert a visible signal into a runtime, control-effectiveness, or
+  policy-enforcement claim, the rule that disallows that conversion lives here.
+
+consumers:
+  prompts:
+    - prompts/rs/03-legend-normalization.prompt.md
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+    - prompts/rs/07-missing-fact-question-generate.prompt.md
+    - prompts/rs/10-finding-recommendation-write.prompt.md
+    - prompts/rs/12-validation-note-write.prompt.md
+    - prompts/rs/13-accuracy-score.prompt.md
+    - prompts/dfd/05-flow-extract.prompt.md
+    - prompts/dfd/06-annotation-resolve.prompt.md
+    - prompts/dfd/07-boundary-crossing-detect.prompt.md
+    - prompts/dfd/08-control-signal-detect.prompt.md
+  skills:
+    - skills/rs/SK-LEGEND-NORMALIZE.md
+    - skills/rs/SK-BOUNDARY-CROSSING-DETECT.md
+    - skills/rs/SK-SECURITY-STACK-ASSESS.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+    - skills/rs/SK-FINDING-CLASSIFY.md
+    - skills/rs/SK-RECOMMENDATION-WRITE.md
+    - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+    - skills/rs/SK-ACCURACY-SCORE.md
+    - skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md
+    - skills/dfd/SK-DFD-06-BOUNDARY-CROSSING-DETECT.md
+    - skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+  pras:
+    - prototype-agents/PRA-01-SAS-REVIEW-ORCHESTRATOR.md
+    - prototype-agents/PRA-02-INPUT-READER.md
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+    - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  adapters:
+    - .agents/aisraf-orchestrator.agent.md
+    - .agents/aisraf-input-reader.agent.md
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-blueprint-questioner.agent.md
+    - .agents/aisraf-finding-recommender.agent.md
+    - .agents/aisraf-handoff-qa-scorer.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-PVS-01
+    rule: This catalog IS the global proof-vs-signal rule. All other catalogs reference it.
+  - rule_id: ER-PVS-02
+    rule: A review signal is something visible in the design (a label, marker, icon, shape, name) or supported by source notes. A signal does not, by itself, prove implementation, deployment, runtime, configuration, enforcement, coverage, key management, ownership, or policy effectiveness.
+  - rule_id: ER-PVS-03
+    rule: Implementation proof requires source-supported, materially scoped evidence (e.g., a configuration extract, an audit log entry, a control-test result, a documented change record, or a verifiable artifact reference). Catalogs do not produce proof; they record what level of support exists.
+  - rule_id: ER-PVS-04
+    rule: When a marker is visible but proof is not available, fields requiring proof remain unknown. The reviewer routes the gap to a missing-fact question or a validation-note ticket, never silently fills it.
+
+prohibited_claims:
+  - implementation_proof_from_marker_alone
+  - approved_security_stack_from_diamond_alone
+  - authorization_from_authentication_marker_alone
+  - at_rest_protection_from_transit_marker_alone
+  - transit_protection_from_at_rest_marker_alone
+  - key_management_from_secret_management_label_alone
+  - runtime_deployment_from_cloud_service_name_alone
+  - production_configuration_from_design_label_alone
+  - control_effectiveness_from_marker_visibility_alone
+  - identity_authorization_scope_from_identity_provider_label_alone
+  - monitoring_effectiveness_from_logging_label_alone
+  - encryption_scope_from_encryption_marker_alone
+  - blueprint_match_from_catalog_entry_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Future-state diagram labels do not prove current runtime.
+  - Component-level marker is a component signal only and does not propagate to every connected flow.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/security-stack-marker-catalog.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/annotation-semantics-registry.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/storage-protection-marker-catalog.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/authn-authz-marker-catalog.yaml
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: SR-MARKER-NOT-PROOF
+    label: Marker visibility is not implementation proof
+    description: A visible marker (icon, label, diamond, gateway shape, cloud service name) records that the design names something. It does not record that the named thing is implemented, deployed, configured, enforced, or producing the claimed control outcome.
+    when_to_use: Apply this rule whenever any catalog field requires implementation evidence (deployed, enforced, configured, covered, key-managed, owned, monitored, audited, residency-compliant).
+    when_not_to_use: Do not invoke this rule to suppress a recorded signal. Signals are recorded as visible/partial/missing/unknown; this rule only blocks the conversion of a signal into proof.
+    evidence_required: source-supported configuration, audit, change, or test artifact for the proof claim
+    confidence_guidance: When only a marker is visible, the implementation-proof field is unknown and confidence on the proof claim is low or unknown. Confidence on the signal itself can be higher when the marker is plainly visible.
+    notes: This rule is the shared backstop referenced by every other catalog's evidence_rules.
+
+  - id: SR-CLOUD-LABEL-NOT-RUNTIME
+    label: Cloud service label does not prove runtime
+    description: A cloud service name (Vertex AI, Cloud SQL, Spanner, S3, KMS, Secret Manager, Apigee, Pub/Sub, GCS) on a DFD box records a label or future intent. It does not prove a deployed resource, an active service account, a working IAM policy, configured encryption, key rotation, network reachability, residency posture, or any runtime state.
+    when_to_use: Apply when a flow or component carries a cloud-provider service name and the reviewer is tempted to claim runtime, configuration, or controls.
+    when_not_to_use: Do not invoke this rule to drop the cloud label from the review. The label is recorded as a component signal; only its conversion to runtime is blocked.
+    evidence_required: deployment manifest, configuration extract, observability or audit reference for the specific resource
+    confidence_guidance: Cloud-label visibility supports component classification at medium confidence at most; runtime claims drawn from the label remain unknown.
+    notes: Future-state diagrams especially trigger this rule.
+
+  - id: SR-AUTHN-NOT-AUTHZ
+    label: Authentication does not prove authorization
+    description: SA#, CA#, IA#, GSA#, SSO, OAuth, and SAML markers indicate that authentication is shown in the design. They do not prove authorization scope, role assignment, entitlement, policy enforcement, least privilege, token validation, or approval authority.
+    when_to_use: Apply whenever a flow or component carries an authentication marker and any authorization-related field is required by the review.
+    when_not_to_use: Do not invoke this rule to omit the authentication marker. Authentication is recorded; only the authorization conversion is blocked.
+    evidence_required: explicit authorization, policy, role/entitlement, or approval-authority statement supported by source
+    confidence_guidance: Authentication signal can be recorded at medium-to-high confidence when clearly visible; authorization confidence remains unknown unless separately supported.
+    notes: This is the most frequent source of unsupported review claims.
+
+  - id: SR-TRANSIT-NOT-AT-REST
+    label: Transit protection does not prove at-rest protection
+    description: A standalone T# token or HTTPS/TLS protocol indicator records transport encryption on a flow. It does not record encryption at rest, key management, storage scope, retention, or storage owner.
+    when_to_use: Apply whenever a flow has visible transit protection and a review field about at-rest protection is required.
+    when_not_to_use: Do not invoke this rule to claim that transit is missing. Transit visibility is recorded independently.
+    evidence_required: at-rest configuration, key-management reference, or storage-control test for the at-rest claim
+    confidence_guidance: Transit-encryption signal can be high-confidence when the marker is plainly visible; at-rest fields remain unknown unless separately supported.
+    notes: This rule applies symmetrically — at-rest does not prove transit either.
+
+  - id: SR-AT-REST-NOT-TRANSIT
+    label: At-rest protection does not prove transit protection
+    description: An R# token, Enc storage-state word, or store-level encryption marker records storage protection. It does not record transport encryption, TLS version, certificate management, or in-flight scope.
+    when_to_use: Apply whenever a store has visible at-rest protection and a review field about transit protection is required.
+    when_not_to_use: Do not invoke this rule to claim transit is missing without checking the flow itself.
+    evidence_required: transit configuration, protocol indicator, or transit-control test for the transit claim
+    confidence_guidance: At-rest signal can be high-confidence when the marker is plainly visible; transit fields remain unknown unless separately supported.
+    notes: This is the symmetric counterpart of SR-TRANSIT-NOT-AT-REST.
+
+  - id: SR-MARKER-NOT-COVERAGE
+    label: Marker presence does not prove coverage
+    description: One visible marker on one flow or one store does not prove that every related flow or store carries the same control. Coverage is a separate claim that requires source-supported evidence across the relevant scope.
+    when_to_use: Apply whenever a single visible marker is in scope and any field implies coverage (all flows, all stores, all components, every interaction).
+    when_not_to_use: Do not invoke this rule for fields that record per-row scope.
+    evidence_required: scope-aligned configuration, audit, or test reference covering the claimed extent
+    confidence_guidance: Per-row coverage from a single visible marker is unknown unless explicitly scoped.
+    notes: Common error: claiming "all storage encrypted" from one R# on one store.
+
+  - id: SR-DIAMOND-NOT-APPROVED-STACK
+    label: Stack diamond is not approved-stack confirmation
+    description: A security-stack diamond, control diamond, or visible stack icon indicates that a stack is named or referenced. It does not confirm that the named stack is the enterprise-approved security stack, that approval is current, or that the stack is enforcing policy.
+    when_to_use: Apply whenever a diamond or stack icon is present and the review needs approved-stack confirmation.
+    when_not_to_use: Do not invoke this rule to omit the diamond. Stack visibility is recorded; only the approval conversion is blocked.
+    evidence_required: approved-stack registry reference, governance approval record, or controlled-stack inventory for the named stack
+    confidence_guidance: Stack visibility can be medium-to-high confidence when the marker is plainly visible; approved-stack confidence remains unknown unless separately supported.
+    notes: S# protocol marker is not a stack diamond and never sets approved-stack-visible.
+
+  - id: SR-GATEWAY-NOT-ENFORCEMENT
+    label: Gateway presence is not policy enforcement
+    description: An API gateway, edge gateway, ingress, WAF, or policy checkpoint label indicates that a checkpoint is named in the design. It does not prove that the checkpoint enforces a specific policy, validates tokens, applies authorization, blocks risky traffic, or is configured.
+    when_to_use: Apply whenever a gateway or policy-checkpoint label appears and a review field about enforcement, policy, authorization, or blocking is required.
+    when_not_to_use: Do not invoke this rule to omit the gateway. Checkpoint visibility is recorded; only the enforcement conversion is blocked.
+    evidence_required: configured rule set, policy document, or test result for the specific checkpoint
+    confidence_guidance: Gateway visibility supports a checkpoint signal at medium confidence; enforcement is unknown unless separately supported.
+    notes: Gateway-as-enforcement is a common over-read of ingress/edge labels.
+
+  - id: SR-LOG-NOT-MONITORING
+    label: Log flow is not monitoring effectiveness
+    description: A log, monitoring, telemetry, or observability label indicates that a logging path is named in the design. It does not prove alerting effectiveness, retention coverage, payload-class controls, audit completeness, or operator response.
+    when_to_use: Apply whenever a log/observability path is visible and a review field implies monitoring effectiveness.
+    when_not_to_use: Do not invoke this rule to omit the logging path. Log visibility is recorded; only the effectiveness conversion is blocked.
+    evidence_required: alerting policy, retention policy, payload-class control, or operational runbook for the log/monitor
+    confidence_guidance: Logging visibility supports observability signal at medium confidence; monitoring effectiveness is unknown unless separately supported.
+    notes: Logging payload class is also unknown unless explicitly recorded.
+
+  - id: SR-SECRET-LABEL-NOT-KEY-MANAGEMENT
+    label: Secret-management label does not prove key management
+    description: Secret Manager, KMS, Key Vault, or SM# markers indicate that a secret/key store is named in the design. They do not prove key rotation, key ownership, CMEK, scope coverage, secret-storage proof, or operational key-management evidence.
+    when_to_use: Apply whenever a secret/key marker is present and any review field about key management, rotation, scope, or coverage is required.
+    when_not_to_use: Do not invoke this rule to omit the secret-management marker. Secret/key visibility is recorded; only the key-management conversion is blocked.
+    evidence_required: rotation schedule, ownership record, scope inventory, or KMS configuration extract
+    confidence_guidance: Secret/key marker visibility supports a key-management signal at medium confidence; key-management proof remains unknown unless separately supported.
+    notes: Stating "no secrets in code" or "credentials safe" from a marker alone is prohibited.
+
+  - id: SR-FUTURE-NOT-CURRENT
+    label: Future-state label does not prove current runtime
+    description: Roadmap, future-state, planned, or aspirational labels (including future cloud diagrams and GSA# markers) record intent. They do not prove that the named runtime, service account, identity, deployment, or configuration is currently in place.
+    when_to_use: Apply whenever a future-state diagram, roadmap label, or planned-state annotation is in scope.
+    when_not_to_use: Do not invoke this rule to drop the future-state record. Future state is recorded as future state; only the conversion to current runtime is blocked.
+    evidence_required: explicit current-state source, deployment record, or runtime configuration for the current claim
+    confidence_guidance: Future-state signal can be recorded at high confidence as future state; current-state fields remain unknown unless separately supported.
+    notes: Roadmap-only items must be marked future-only.
+
+  - id: SR-COMPONENT-MARKER-NO-PROPAGATION
+    label: Component-level marker does not propagate to all flows
+    description: A marker attached to a component box (e.g., SA# on an actor box, Enc on a store, R# on a vault) describes that component. It does not automatically apply to every flow connected to the component.
+    when_to_use: Apply whenever a marker is visible at the component level and review fields are flow-scoped.
+    when_not_to_use: Do not invoke this rule when a marker is attached to the flow arrow itself.
+    evidence_required: per-flow marker, per-flow source note, or per-flow configuration reference
+    confidence_guidance: Component-level signal is recorded at the component; flow-level fields remain unknown unless flow-scoped support exists.
+    notes: This is a common cause of over-propagation in automated extraction.
+
+  - id: SR-UNKNOWN
+    label: Unknown stays unknown
+    description: When a field has no visible marker, no source note, and no supported derivation, the field value is unknown. Unknown is a controlled value, not a placeholder. Unknown drives missing-fact questions and validation-note routes; it is never silently filled.
+    when_to_use: Apply whenever no source supports a value, when a marker is unreadable, when scope is unclear, or when interpretation is contradictory.
+    when_not_to_use: Do not use unknown to suppress a clearly visible marker.
+    evidence_required: none required; absence of evidence is the evidence
+    confidence_guidance: Confidence on unknown is unknown by definition. Materiality of the unknown drives whether a question or validation-note is generated.
+    notes: Unknown is the most important value in every catalog.
+
+version_notes: >
+  Initial Build Package 07 release of the global proof-vs-signal rule catalog.
+  Restructured and improved from old v0.01 references to be a single
+  cross-cutting catalog that all other Package 07 catalogs reference in
+  evidence_rules. Marked global_rule: true and applies_to_all_catalogs: true
+  per founder decision Q3.

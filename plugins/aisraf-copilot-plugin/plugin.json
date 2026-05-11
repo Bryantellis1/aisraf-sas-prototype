@@ -1,0 +1,18 @@
+{
+  "name": "aisraf-copilot-plugin",
+  "description": "AISRAF SAS governed security and solution architecture review workbench plugin.",
+  "version": "0.0.0-scaffold",
+  "author": {
+    "name": "E-Way"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "aisraf",
+    "security-review",
+    "solution-architecture",
+    "agentic-review"
+  ],
+  "agents": "bundle/.github/agents/",
+  "skills": "bundle/.github/skills/",
+  "hooks": "bundle/.github/hooks/aisraf-guardrails.json"
+}

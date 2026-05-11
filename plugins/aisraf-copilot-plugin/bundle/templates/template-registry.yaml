@@ -1,0 +1,1245 @@
+registry_id: aisraf-template-registry
+schema_version: aisraf_template_registry.v0_1_2
+package_version: v0.1.2
+title: AISRAF SAS Template Registry
+owning_build_package: Build Package 09
+status: active
+
+# Headline counts (founder decision Q5 — Build Package 09 plan).
+template_count: 31
+template_family_count: 4
+template_family_counts:
+  output: 27
+  jira: 1
+  confluence: 1
+  run: 2
+total_files_under_templates: 37   # 31 templates + 1 registry + 5 READMEs (root + 4 family)
+
+unknown_value: unknown
+
+purpose: >
+  Index every Build Package 09 template, declare its consumers, declare its
+  output boundary, and pin its allowed placeholder set. Templates define
+  output shape only. They do not execute the review; do not compute
+  severity, score, AI Action Level, or blueprint match; do not invent
+  finding facts or recommendation prose; do not claim Jira, Confluence,
+  Rovo, MCP, runtime, cloud, ADK, database, Terraform, or release
+  execution; and do not override catalogs or blueprints.
+
+scope:
+  canonical_template_root: templates
+  template_subfolders:
+    - templates/output
+    - templates/jira
+    - templates/confluence
+    - templates/run
+  templates_are_runtime_tools: false
+  templates_compute_severity_or_score_or_action_level_or_match: false
+  templates_invent_findings_or_recommendations: false
+  templates_claim_external_postback: false
+  templates_claim_runtime_or_cloud_execution: false
+  templates_override_catalogs_or_blueprints: false
+
+# Allowed run-profile variable set (the 7 approved placeholders only).
+parameter_contract:
+  run_profile_source: runs/{{run_id}}/run-profile.yaml
+  required_run_profile_fields:
+    - "{{run_id}}"
+    - "{{input_root}}"
+    - "{{expected_root}}"
+    - "{{output_root}}"
+    - "{{mode}}"
+    - "{{postback_execution_status}}"
+    - "{{output_destination_mode}}"
+  rejected_non_schema_variables:
+    - "{{catalog_root}}"
+    - "{{prompt_root}}"
+    - "{{skill_root}}"
+    - "{{template_root}}"
+    - "{{diagram_root}}"
+    - "{{validation_root}}"
+  output_root_rule: every_template_write_path_must_resolve_under_output_root
+  schema_authority: config/run-profile.schema.yaml
+  field_catalog: config/run-profile.field-catalog.md
+  validation_rules: config/run-profile.validation-rules.md
+  path_resolution_rules: config/path-resolution-rules.md
+  sensitive_data_rules: config/sensitive-data-rules.md
+  descriptive_field_reference_pattern: "[copy from runs/{{run_id}}/run-profile.yaml#field_name]"
+  descriptive_field_reference_use_when: >
+    Other run-profile schema fields (sample_id, source_ticket_url,
+    destination_ticket_url, destination_confluence_url,
+    jira_connector_status, confluence_connector_status,
+    rovo_mcp_available, mcp_execution_status, operator_name,
+    reviewer_name) are referenced descriptively in template bodies as
+    [copy from runs/{{run_id}}/run-profile.yaml#field_name] rather than
+    as templated {{placeholders}}.
+
+# Required metadata block in every template (founder Q-block).
+required_template_metadata_fields:
+  - template_id
+  - template_name
+  - owning_build_package
+  - status
+  - purpose
+  - intended_output
+  - consumers
+  - inputs_expected
+  - placeholders
+  - required_sections
+  - prohibited_content
+  - output_boundary
+  - source_reference
+  - version_notes
+
+# Global prohibited claims (mirrors Package 07/08 shape).
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - severity_computed_inside_template
+  - score_computed_inside_template
+  - ai_action_level_computed_inside_template
+  - blueprint_match_decided_inside_template
+  - finding_facts_invented_inside_template
+  - recommendation_prose_invented_inside_template
+  - external_postback_claimed_inside_template
+  - catalog_value_introduced_inside_template
+  - controlled_value_enumerated_inside_template
+  - blueprint_definition_overridden_inside_template
+  - implementation_proof_claimed_inside_template
+
+# Founder Q-block — six explicit runtime/external execution flags.
+runtime_and_external_execution:
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false
+
+# Build Package 09 must not edit any of these registries.
+sealed_upstream_registries:
+  - prompts/prompt-registry.yaml
+  - skills/skill-registry.yaml
+  - prototype-agents/prototype-agent-registry.yaml
+  - catalogs/catalog-registry.yaml
+  - blueprints/blueprint-registry.yaml
+sealed_upstream_policy: >
+  Build Package 09 must not modify any of the upstream registries above.
+  All template-level consumer mapping is recorded in this
+  template-registry.yaml, in validation/template-registry-checklist.md,
+  and in validation/template-consumption-checklist.md.
+
+# Founder decision summary (recorded for audit).
+founder_decisions:
+  q1_run_log_template_split: approved_two_template_model_file_shape_in_output_row_pattern_in_run
+  q2_connector_field_placeholders: approved_use_only_fields_present_in_current_run_profile_schema
+  q3_controlled_catalog_values: approved_placeholder_by_catalog_path_no_enumeration
+  q4_naming_convention: approved_output_NN_name_template_md
+  q5_template_count: approved_lock_at_31_with_4_families_27_1_1_2
+  q6_test_aisraf_package_patch: approved_surgical_five_change_patch
+
+# Output destination modes that templates can format for (from run-profile schema enum).
+output_destination_modes_supported:
+  - local_only
+  - jira_draft
+  - confluence_draft
+  - jira_and_confluence_draft
+  - external_postback_executed
+
+# Postback execution status values templates may surface in claim blocks.
+postback_execution_status_values:
+  - deferred
+  - formatted_only
+  - executed_by_operator
+  - not_attempted
+
+# ============================================================================
+# Templates inventory (31 entries).
+# ============================================================================
+templates:
+
+  # --- Output family — RS chain (18 templates: 00-run-log + 01..17) -----------
+
+  - template_id: TPL-OUT-00-RUN-LOG
+    template_name: Run Log Output File Shape
+    template_file: templates/output/output-00-run-log-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Define the file-level shape of {{output_root}}/00-run-log.md (header, append-only entry sections, post-back evidence section).
+    intended_output: "{{output_root}}/00-run-log.md"
+    consumers:
+      prompts: []
+      skills: []
+      pras:
+        - PRA-01-SAS-REVIEW-ORCHESTRATOR
+      adapters:
+        - aisraf-orchestrator
+      blueprints: []
+      catalogs: []
+    inputs_expected: []
+    placeholders:
+      - "{{run_id}}"
+      - "{{output_root}}"
+      - "{{mode}}"
+      - "{{postback_execution_status}}"
+      - "{{output_destination_mode}}"
+    required_sections:
+      - File Header
+      - Run Identity
+      - Step Entries (append-only, one row per templates/run/run-log-entry-row-template.md)
+      - Post-Back Evidence (append-only, one row per templates/run/postback-log-entry-row-template.md)
+      - Stop Conditions Recorded
+    prohibited_content:
+      - severity_computation
+      - score_computation
+      - ai_action_level_computation
+      - blueprint_match_computation
+      - finding_prose
+      - recommendation_prose
+      - external_postback_claim_without_executed_by_operator_evidence
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/run-log-entry-template.md (conceptual reuse only; renamed and rebuilt for v0.1.2)
+    version_notes: New for Build Package 09; v0.01 conflated file shape with row pattern.
+
+  - template_id: TPL-OUT-01-INPUT-INVENTORY
+    template_name: Input Inventory Output Shape
+    template_file: templates/output/output-01-input-inventory-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/01-input-inventory.md, written by PR-RS-01 / SK-INPUT-PACKAGE-READ / PRA-02.
+    intended_output: "{{output_root}}/01-input-inventory.md"
+    consumers:
+      prompts: [PR-RS-01]
+      skills: [SK-INPUT-PACKAGE-READ]
+      pras: [PRA-02-INPUT-READER]
+      adapters: [aisraf-input-reader]
+      blueprints: []
+      catalogs: []
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Inventory Table, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [severity_computation, score_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/input-inventory-template.md (rebuilt; v0.01 was a stub)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-02-VISIBLE-DFD-OBJECTS
+    template_name: Visible DFD Objects Output Shape
+    template_file: templates/output/output-02-visible-dfd-objects-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/02-visible-dfd-objects.md, written by PR-RS-02 / SK-DFD-VISUAL-READ / PRA-03.
+    intended_output: "{{output_root}}/02-visible-dfd-objects.md"
+    consumers:
+      prompts: [PR-RS-02]
+      skills: [SK-DFD-VISUAL-READ]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/components/component-type-catalog.yaml, catalogs/components/component-role-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Visible Object Table, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, severity_computation, score_computation, finding_prose, recommendation_prose, controlled_value_enumeration]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/dfd-visible-object-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt; v0.01 had two near-duplicate templates (dfd-visible-object and visible-dfd-object) — collapsed.
+
+  - template_id: TPL-OUT-03-LEGEND-NORMALIZATION
+    template_name: Legend Normalization Output Shape
+    template_file: templates/output/output-03-legend-normalization-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/03-legend-normalization.md, written by PR-RS-03 / SK-LEGEND-NORMALIZE / PRA-04.
+    intended_output: "{{output_root}}/03-legend-normalization.md"
+    consumers:
+      prompts: [PR-RS-03]
+      skills: [SK-LEGEND-NORMALIZE]
+      pras: [PRA-04-LEGEND-NORMALIZER]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: []
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Normalization Table (raw label → normalized term → source location), Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/legend-normalization-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-04-COMPONENTS
+    template_name: Components Output Shape
+    template_file: templates/output/output-04-components-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/04-components.md, written by PR-RS-04 / SK-COMPONENT-EXTRACT / PRA-03.
+    intended_output: "{{output_root}}/04-components.md"
+    consumers:
+      prompts: [PR-RS-04]
+      skills: [SK-COMPONENT-EXTRACT]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/components/component-type-catalog.yaml, catalogs/components/component-role-catalog.yaml, catalogs/components/component-evidence-rule-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Components Table, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/component-table-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-05-FLOWS
+    template_name: Flows Output Shape
+    template_file: templates/output/output-05-flows-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/05-flows.md, written by PR-RS-04 / SK-FLOW-EXTRACT / PRA-03.
+    intended_output: "{{output_root}}/05-flows.md"
+    consumers:
+      prompts: [PR-RS-04]
+      skills: [SK-FLOW-EXTRACT]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/interactions/interaction-type-catalog.yaml, catalogs/interactions/flow-direction-catalog.yaml, catalogs/interactions/flow-evidence-rule-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Flows Table, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/flow-table-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-06-BOUNDARIES
+    template_name: Boundaries Output Shape
+    template_file: templates/output/output-06-boundaries-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/06-boundaries.md, written by PR-RS-05 / SK-BOUNDARY-CROSSING-DETECT / PRA-05.
+    intended_output: "{{output_root}}/06-boundaries.md"
+    consumers:
+      prompts: [PR-RS-05]
+      skills: [SK-BOUNDARY-CROSSING-DETECT]
+      pras: [PRA-05-REVIEW-TABLE-BUILDER]
+      adapters: [aisraf-review-table-builder]
+      blueprints: []
+      catalogs: [catalogs/boundaries/boundary-type-catalog.yaml, catalogs/boundaries/boundary-crossing-rule-catalog.yaml, catalogs/boundaries/trust-zone-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Boundary Table, Boundary Crossing Table, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/boundary-crossing-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-07-SECURITY-STACK-ASSESSMENT
+    template_name: Security Stack Assessment Output Shape
+    template_file: templates/output/output-07-security-stack-assessment-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/07-security-stack-assessment.md, written by PR-RS-05 / SK-SECURITY-STACK-ASSESS / PRA-05.
+    intended_output: "{{output_root}}/07-security-stack-assessment.md"
+    consumers:
+      prompts: [PR-RS-05]
+      skills: [SK-SECURITY-STACK-ASSESS]
+      pras: [PRA-05-REVIEW-TABLE-BUILDER]
+      adapters: [aisraf-review-table-builder]
+      blueprints: []
+      catalogs: [catalogs/security-stacks/security-stack-marker-catalog.yaml, catalogs/security-stacks/control-signal-catalog.yaml, catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml, catalogs/identity-access/authentication-catalog.yaml, catalogs/identity-access/authorization-catalog.yaml, catalogs/identity-access/identity-evidence-rule-catalog.yaml, catalogs/data-protection/transport-protection-catalog.yaml, catalogs/data-protection/at-rest-protection-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Security Stack Marker Table (proof vs signal), Identity Markers, Data Protection Markers, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose, approved_security_stack_claim]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/security-stack-assessment-template.md (rebuilt; v0.01 was a stub)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-08-INTERNAL-REVIEW-TABLE
+    template_name: Internal Review Table Output Shape
+    template_file: templates/output/output-08-internal-review-table-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/08-internal-review-table.md, written by PR-RS-06 / SK-DATA-FLOW-TABLE-BUILD / PRA-05.
+    intended_output: "{{output_root}}/08-internal-review-table.md"
+    consumers:
+      prompts: [PR-RS-06]
+      skills: [SK-DATA-FLOW-TABLE-BUILD]
+      pras: [PRA-05-REVIEW-TABLE-BUILDER]
+      adapters: [aisraf-review-table-builder]
+      blueprints: []
+      catalogs: [catalogs/components/component-type-catalog.yaml, catalogs/interactions/interaction-type-catalog.yaml, catalogs/boundaries/boundary-type-catalog.yaml, catalogs/security-stacks/security-stack-marker-catalog.yaml, catalogs/data-protection/data-class-catalog.yaml, catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Review Table Rows, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/internal-data-flow-review-table-template.md (rebuilt; v0.01 was a stub)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-09-MISSING-FACTS
+    template_name: Missing Facts Output Shape
+    template_file: templates/output/output-09-missing-facts-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/09-missing-facts.md, written by PR-RS-07 / SK-MISSING-FACT-IDENTIFY / PRA-06.
+    intended_output: "{{output_root}}/09-missing-facts.md"
+    consumers:
+      prompts: [PR-RS-07]
+      skills: [SK-MISSING-FACT-IDENTIFY]
+      pras: [PRA-06-BLUEPRINT-QUESTIONER]
+      adapters: [aisraf-blueprint-questioner]
+      blueprints: [BP-NON-AI-DATAFLOW-BASELINE, BP-RAG-RETRIEVAL, BP-MODEL-ENDPOINT-CALL, BP-TOOL-USING-AGENT, BP-API-WRITEBACK, BP-HITL-APPROVAL, BP-AGENT-TO-AGENT, BP-AI-WORKFLOW, BP-AI-SAAS-INTEGRATION]
+      catalogs: [catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Missing Material Fact Rows, Cross-Reference to Blueprint material_missing_facts, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose, blueprint_match_decision]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/missing-material-fact-template.md (rebuilt; v0.01 was a stub)
+    version_notes: Rebuilt for v0.1.2; references blueprint material_missing_facts but does not invent or modify them.
+
+  - template_id: TPL-OUT-10-AI-ACTION-LEVEL
+    template_name: AI Action Level Output Shape
+    template_file: templates/output/output-10-ai-action-level-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/10-ai-action-level.md, written by PR-RS-08 / SK-AI-ACTION-LEVEL-CLASSIFY / PRA-06. Selection itself is performed by the skill plus human review; the template only records the result and supporting evidence.
+    intended_output: "{{output_root}}/10-ai-action-level.md"
+    consumers:
+      prompts: [PR-RS-08]
+      skills: [SK-AI-ACTION-LEVEL-CLASSIFY]
+      pras: [PRA-06-BLUEPRINT-QUESTIONER]
+      adapters: [aisraf-blueprint-questioner]
+      blueprints: []
+      catalogs: [catalogs/review/ai-action-level-catalog.yaml, catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/08-internal-review-table.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Selected AI Action Level (value-from-catalog), Supporting Evidence, Unknowns, Human Review Gate Status, Stop Conditions Recorded]
+    prohibited_content: [ai_action_level_computation_inside_template, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01 had no dedicated AI Action Level template; new for v0.1.2.
+    version_notes: New for v0.1.2.
+
+  - template_id: TPL-OUT-11-BLUEPRINT-MATCH
+    template_name: Blueprint Match Output Shape
+    template_file: templates/output/output-11-blueprint-match-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/11-blueprint-match.md, written by PR-RS-09 / SK-REVIEW-BLUEPRINT-MATCH / PRA-06. Match-state selection is performed by the skill plus human review; the template only records the resulting state, supporting catalog evidence, and material missing facts.
+    intended_output: "{{output_root}}/11-blueprint-match.md"
+    consumers:
+      prompts: [PR-RS-09]
+      skills: [SK-REVIEW-BLUEPRINT-MATCH]
+      pras: [PRA-06-BLUEPRINT-QUESTIONER]
+      adapters: [aisraf-blueprint-questioner]
+      blueprints: [BP-NON-AI-DATAFLOW-BASELINE, BP-RAG-RETRIEVAL, BP-MODEL-ENDPOINT-CALL, BP-TOOL-USING-AGENT, BP-API-WRITEBACK, BP-HITL-APPROVAL, BP-AGENT-TO-AGENT, BP-AI-WORKFLOW, BP-AI-SAAS-INTEGRATION]
+      catalogs: [catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/10-ai-action-level.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Candidate Blueprint, Match State (matched/candidate/no_match/unknown), Supporting Catalog Evidence, Material Missing Facts, Human Review Gate Status, Stop Conditions Recorded]
+    prohibited_content: [blueprint_match_computation_inside_template, blueprint_definition_override, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose, approval_claim]
+    output_boundary: under_resolved_output_root_only
+    source_reference: New for v0.1.2 (v0.01 had no dedicated blueprint-match template)
+    version_notes: New for v0.1.2; uses the four-state match model from blueprint-registry.yaml.
+
+  - template_id: TPL-OUT-12-TARGETED-QUESTIONS
+    template_name: Targeted Questions Output Shape
+    template_file: templates/output/output-12-targeted-questions-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/12-targeted-questions.md, written by PR-RS-07 / SK-TARGETED-QUESTION-GENERATE / PRA-06.
+    intended_output: "{{output_root}}/12-targeted-questions.md"
+    consumers:
+      prompts: [PR-RS-07]
+      skills: [SK-TARGETED-QUESTION-GENERATE]
+      pras: [PRA-06-BLUEPRINT-QUESTIONER]
+      adapters: [aisraf-blueprint-questioner]
+      blueprints: [BP-NON-AI-DATAFLOW-BASELINE, BP-RAG-RETRIEVAL, BP-MODEL-ENDPOINT-CALL, BP-TOOL-USING-AGENT, BP-API-WRITEBACK, BP-HITL-APPROVAL, BP-AGENT-TO-AGENT, BP-AI-WORKFLOW, BP-AI-SAAS-INTEGRATION]
+      catalogs: []
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/09-missing-facts.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Targeted Question Rows (question, evidence requested, source missing-fact id, blueprint cross-reference), Stop Conditions Recorded]
+    prohibited_content: [finding_prose, recommendation_prose, blueprint_match_decision, severity_computation]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/targeted-question-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-13-FINDINGS
+    template_name: Findings Output Shape
+    template_file: templates/output/output-13-findings-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/13-findings.md, written by PR-RS-10 / SK-FINDING-CLASSIFY / PRA-07. Severity selection is performed by the skill plus human review; the template only records the result and supporting evidence.
+    intended_output: "{{output_root}}/13-findings.md"
+    consumers:
+      prompts: [PR-RS-10]
+      skills: [SK-FINDING-CLASSIFY]
+      pras: [PRA-07-FINDING-RECOMMENDER]
+      adapters: [aisraf-finding-recommender]
+      blueprints: []
+      catalogs: [catalogs/review/finding-category-catalog.yaml, catalogs/review/severity-catalog.yaml, catalogs/review/review-status-catalog.yaml, catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Finding Rows (id, source_fact_refs, finding_statement, finding_category, severity, supporting_evidence, review_status), Unknowns, Human Review Gate Status, Stop Conditions Recorded]
+    prohibited_content: [severity_computation_inside_template, controlled_value_enumeration, recommendation_prose_inside_template, blueprint_match_decision, approval_claim]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/finding-register-template.md (column shape reused; rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2 with controlled-vocabulary-by-catalog-path style (no enumeration inside template).
+
+  - template_id: TPL-OUT-14-RECOMMENDATIONS
+    template_name: Recommendations Output Shape
+    template_file: templates/output/output-14-recommendations-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/14-recommendations.md, written by PR-RS-10 / SK-RECOMMENDATION-WRITE / PRA-07.
+    intended_output: "{{output_root}}/14-recommendations.md"
+    consumers:
+      prompts: [PR-RS-10]
+      skills: [SK-RECOMMENDATION-WRITE]
+      pras: [PRA-07-FINDING-RECOMMENDER]
+      adapters: [aisraf-finding-recommender]
+      blueprints: []
+      catalogs: [catalogs/review/recommendation-type-catalog.yaml, catalogs/review/review-status-catalog.yaml, catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/13-findings.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Recommendation Rows (id, source_finding_id, recommendation_type, recommendation_statement, supporting_concern, expected_next_action, owner_or_route_if_known, review_status), Unknowns, Human Review Gate Status, Stop Conditions Recorded]
+    prohibited_content: [recommendation_prose_invented_inside_template, controlled_value_enumeration, owner_invention, evidence_invention, implementation_proof_claim, approval_claim]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/recommendation-template.md (column shape reused; rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2; recommendation_rule-template from v0.01 rejected (catalogs/review/recommendation-type-catalog.yaml owns the taxonomy).
+
+  - template_id: TPL-OUT-15-HANDOFF-PACK
+    template_name: Handoff Pack Output Shape
+    template_file: templates/output/output-15-handoff-pack-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/15-handoff-pack.md, written by PR-RS-11 / SK-HANDOFF-PACK-BUILD / PRA-08. Assembles prior accepted RS outputs into a single review-closeout artifact.
+    intended_output: "{{output_root}}/15-handoff-pack.md"
+    consumers:
+      prompts: [PR-RS-11]
+      skills: [SK-HANDOFF-PACK-BUILD]
+      pras: [PRA-08-HANDOFF-QA-SCORER]
+      adapters: [aisraf-handoff-qa-scorer]
+      blueprints: []
+      catalogs: []
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Review Summary, Scope and Inputs, Flow and Boundary Summary, Findings and Recommendations, Targeted Questions, Material Missing Facts, AI Action Level, Blueprint Match, Human Review Gate Status, Separation From Validation Notes, Stop Conditions Recorded]
+    prohibited_content: [final_execution_proof, implementation_proof_claim, external_postback_claim, severity_computation, score_computation, recommendation_prose_invention]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/handoff-pack-template.md (rebuilt; v0.01 was a stub)
+    version_notes: Rebuilt for v0.1.2; explicit separation from validation-notes section.
+
+  - template_id: TPL-OUT-16-VALIDATION-NOTES
+    template_name: Validation Notes Output Shape
+    template_file: templates/output/output-16-validation-notes-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/16-validation-notes.md, written by PR-RS-12 / SK-VALIDATION-NOTE-WRITE / PRA-08. Validation-ticket follow-up that must remain separate from the design-review handoff pack.
+    intended_output: "{{output_root}}/16-validation-notes.md"
+    consumers:
+      prompts: [PR-RS-12]
+      skills: [SK-VALIDATION-NOTE-WRITE]
+      pras: [PRA-08-HANDOFF-QA-SCORER]
+      adapters: [aisraf-handoff-qa-scorer]
+      blueprints: []
+      catalogs: [catalogs/review/review-status-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Validation Note Rows (id, concern, evidence_required_for_validation_ticket, owner_or_route_if_known, review_status), Separation From Findings/Recommendations, Stop Conditions Recorded]
+    prohibited_content: [implementation_proof_claim, finding_severity_computation, recommendation_prose, mixing_design_review_closeout_with_validation_followup]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/validation-ticket-note-template.md (rebuilt; v0.01 was a stub)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-17-ACCURACY-SCORE
+    template_name: Accuracy Score Output Shape
+    template_file: templates/output/output-17-accuracy-score-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/17-accuracy-score.md, written by PR-RS-13 / SK-ACCURACY-SCORE / PRA-08. Conditional output produced only when scoring_enabled=true, expected_baseline_required=true, and {{expected_root}} is non-empty.
+    intended_output: "{{output_root}}/17-accuracy-score.md"
+    consumers:
+      prompts: [PR-RS-13]
+      skills: [SK-ACCURACY-SCORE]
+      pras: [PRA-08-HANDOFF-QA-SCORER]
+      adapters: [aisraf-handoff-qa-scorer]
+      blueprints: []
+      catalogs: [catalogs/review/review-status-catalog.yaml, catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{expected_root}}/"
+      - "{{output_root}}/01-input-inventory.md"
+      - "{{output_root}}/02-visible-dfd-objects.md"
+      - "{{output_root}}/03-legend-normalization.md"
+      - "{{output_root}}/04-components.md"
+      - "{{output_root}}/05-flows.md"
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+      - "{{output_root}}/15-handoff-pack.md"
+      - "{{output_root}}/16-validation-notes.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{expected_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Scoring Eligibility Check (records scoring_enabled, expected_baseline_required, expected_root_populated), Per-Output Comparison Table, Critical Miss Status, Qualitative Score / Verdict, Stop Conditions Recorded]
+    prohibited_content: [scoring_outside_sk_accuracy_score, baseline_modification_under_expected_root, severity_computation, finding_prose, recommendation_prose, controlled_value_enumeration, lowering_expected_score_threshold_to_force_pass]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/accuracy-score-template.md (rebuilt; v0.01 was a stub)
+    version_notes: Rebuilt for v0.1.2.
+
+  # --- Output family — DFD subskill chain (9 templates) -----------------------
+
+  - template_id: TPL-OUT-DFD-01-INTAKE-QUALITY-CHECK
+    template_name: DFD Intake Quality Check Output Shape
+    template_file: templates/output/output-dfd-01-intake-quality-check-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/dfd/01-intake-quality-check.md, written by PR-DFD-02 / SK-DFD-01-INTAKE-QUALITY-CHECK / PRA-03.
+    intended_output: "{{output_root}}/dfd/01-intake-quality-check.md"
+    consumers:
+      prompts: [PR-DFD-02]
+      skills: [SK-DFD-01-INTAKE-QUALITY-CHECK]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Intake Quality Findings, Material Gaps, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_dfd_subfolder_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01 had no first-class DFD intake-quality template; new for v0.1.2.
+    version_notes: New for v0.1.2.
+
+  - template_id: TPL-OUT-DFD-02-BOUNDARY-CATALOG
+    template_name: DFD Boundary Catalog Output Shape
+    template_file: templates/output/output-dfd-02-boundary-catalog-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/dfd/02-boundary-catalog.md.
+    intended_output: "{{output_root}}/dfd/02-boundary-catalog.md"
+    consumers:
+      prompts: [PR-DFD-03]
+      skills: [SK-DFD-02-BOUNDARY-EXTRACT]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/boundaries/boundary-type-catalog.yaml, catalogs/boundaries/trust-zone-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Boundary Catalog Rows, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_dfd_subfolder_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/dfd-boundary-catalog-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-DFD-03-COMPONENT-CATALOG
+    template_name: DFD Component Catalog Output Shape
+    template_file: templates/output/output-dfd-03-component-catalog-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/dfd/03-component-catalog.md.
+    intended_output: "{{output_root}}/dfd/03-component-catalog.md"
+    consumers:
+      prompts: [PR-DFD-04]
+      skills: [SK-DFD-03-COMPONENT-EXTRACT]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/components/component-type-catalog.yaml, catalogs/components/component-role-catalog.yaml, catalogs/components/component-evidence-rule-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Component Catalog Rows, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_dfd_subfolder_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/dfd-component-catalog-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-DFD-04-FLOW-INVENTORY
+    template_name: DFD Flow Inventory Output Shape
+    template_file: templates/output/output-dfd-04-flow-inventory-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/dfd/04-flow-inventory.md.
+    intended_output: "{{output_root}}/dfd/04-flow-inventory.md"
+    consumers:
+      prompts: [PR-DFD-05]
+      skills: [SK-DFD-04-FLOW-EXTRACT]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/interactions/interaction-type-catalog.yaml, catalogs/interactions/flow-direction-catalog.yaml, catalogs/interactions/flow-evidence-rule-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Raw Flow Inventory, Normalized Flow Table, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_dfd_subfolder_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/dfd-raw-flow-inventory-template.md plus dfd-normalized-flow-table-template.md (collapsed and rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2; v0.01 had two separate raw/normalized templates — collapsed into one file with two sections.
+
+  - template_id: TPL-OUT-DFD-05-ANNOTATION-RESOLUTION
+    template_name: DFD Annotation Resolution Output Shape
+    template_file: templates/output/output-dfd-05-annotation-resolution-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/dfd/05-annotation-resolution.md.
+    intended_output: "{{output_root}}/dfd/05-annotation-resolution.md"
+    consumers:
+      prompts: [PR-DFD-06]
+      skills: [SK-DFD-05-ANNOTATION-RESOLVE]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/data-protection/data-class-catalog.yaml, catalogs/data-protection/transport-protection-catalog.yaml, catalogs/data-protection/at-rest-protection-catalog.yaml, catalogs/identity-access/authentication-catalog.yaml, catalogs/identity-access/authorization-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{input_root}}/"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Resolved Annotations, Unresolved Annotations (unknowns), Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_dfd_subfolder_only
+    source_reference: New for v0.1.2 (v0.01 had no dedicated annotation-resolution template).
+    version_notes: New for v0.1.2.
+
+  - template_id: TPL-OUT-DFD-06-BOUNDARY-CROSSINGS
+    template_name: DFD Boundary Crossings Output Shape
+    template_file: templates/output/output-dfd-06-boundary-crossings-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/dfd/06-boundary-crossings.md.
+    intended_output: "{{output_root}}/dfd/06-boundary-crossings.md"
+    consumers:
+      prompts: [PR-DFD-07]
+      skills: [SK-DFD-06-BOUNDARY-CROSSING-DETECT]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/boundaries/boundary-crossing-rule-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Boundary Crossing Rows, Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_dfd_subfolder_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/boundary-crossing-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-DFD-07-CONTROL-SIGNALS
+    template_name: DFD Control Signals Output Shape
+    template_file: templates/output/output-dfd-07-control-signals-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/dfd/07-control-signals.md.
+    intended_output: "{{output_root}}/dfd/07-control-signals.md"
+    consumers:
+      prompts: [PR-DFD-08]
+      skills: [SK-DFD-07-CONTROL-SIGNAL-DETECT]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/security-stacks/control-signal-catalog.yaml, catalogs/security-stacks/security-stack-marker-catalog.yaml, catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Control Signal Rows (proof vs signal), Unknowns, Stop Conditions Recorded]
+    prohibited_content: [hidden_inference, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose, approved_security_stack_claim]
+    output_boundary: under_resolved_output_root_dfd_subfolder_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/dfd-control-assessment-template.md (rebuilt for v0.1.2)
+    version_notes: Rebuilt for v0.1.2.
+
+  - template_id: TPL-OUT-DFD-08-CONFIDENCE-SCORE
+    template_name: DFD Confidence Score Output Shape
+    template_file: templates/output/output-dfd-08-confidence-score-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/dfd/08-confidence-score.md. This is per-row extraction confidence; not the accuracy score (which lives in 17-accuracy-score.md).
+    intended_output: "{{output_root}}/dfd/08-confidence-score.md"
+    consumers:
+      prompts: [PR-DFD-09]
+      skills: [SK-DFD-08-CONFIDENCE-SCORE]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+      - "{{output_root}}/dfd/07-control-signals.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Per-Row Confidence Assignments, Confidence Level Distribution, Stop Conditions Recorded]
+    prohibited_content: [accuracy_score_claim, scoring_outside_sk_accuracy_score, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_dfd_subfolder_only
+    source_reference: New for v0.1.2.
+    version_notes: New for v0.1.2; explicit "not an accuracy score" disclaimer.
+
+  - template_id: TPL-OUT-DFD-09-EXTRACTION-SUMMARY
+    template_name: DFD Extraction Summary Output Shape
+    template_file: templates/output/output-dfd-09-extraction-summary-template.md
+    template_family: output
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Shape for {{output_root}}/dfd/09-extraction-summary.md.
+    intended_output: "{{output_root}}/dfd/09-extraction-summary.md"
+    consumers:
+      prompts: [PR-DFD-10]
+      skills: [SK-DFD-09-EXTRACTION-SUMMARIZE]
+      pras: [PRA-03-DFD-EXTRACTOR]
+      adapters: [aisraf-dfd-extractor]
+      blueprints: []
+      catalogs: [catalogs/data-protection/confidence-level-catalog.yaml]
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/dfd/01-intake-quality-check.md"
+      - "{{output_root}}/dfd/02-boundary-catalog.md"
+      - "{{output_root}}/dfd/03-component-catalog.md"
+      - "{{output_root}}/dfd/04-flow-inventory.md"
+      - "{{output_root}}/dfd/05-annotation-resolution.md"
+      - "{{output_root}}/dfd/06-boundary-crossings.md"
+      - "{{output_root}}/dfd/07-control-signals.md"
+      - "{{output_root}}/dfd/08-confidence-score.md"
+    placeholders: ["{{run_id}}", "{{input_root}}", "{{output_root}}", "{{mode}}", "{{postback_execution_status}}", "{{output_destination_mode}}"]
+    required_sections: [Header, Extraction State Summary, Residual Gaps, Cross-Reference to RS Outputs, Stop Conditions Recorded]
+    prohibited_content: [accuracy_score_claim, scoring_outside_sk_accuracy_score, controlled_value_enumeration, severity_computation, finding_prose, recommendation_prose]
+    output_boundary: under_resolved_output_root_dfd_subfolder_only
+    source_reference: New for v0.1.2.
+    version_notes: New for v0.1.2.
+
+  # --- Jira family (1 template) ----------------------------------------------
+
+  - template_id: TPL-JIRA-TICKET-DRAFT
+    template_name: Jira Ticket Draft Template
+    template_file: templates/jira/jira-ticket-draft-template.md
+    template_family: jira
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Local Jira-ready draft formatting for a SAS handoff comment and optional attachment list. Formatting this file does not prove a Jira write happened.
+    intended_output: "{{output_root}}/jira-ticket-draft.md"
+    consumers:
+      prompts: [PR-RS-11]
+      skills: [SK-HANDOFF-PACK-BUILD]
+      pras: [PRA-08-HANDOFF-QA-SCORER]
+      adapters: [aisraf-handoff-qa-scorer]
+      blueprints: []
+      catalogs: []
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+      - "{{output_root}}/15-handoff-pack.md"
+      - "{{output_root}}/16-validation-notes.md"
+      - "{{output_root}}/17-accuracy-score.md"
+    placeholders: ["{{run_id}}", "{{output_root}}", "{{output_destination_mode}}", "{{postback_execution_status}}", "{{mode}}"]
+    required_sections: [Header (descriptive references to runs/{{run_id}}/run-profile.yaml#sample_id, source_ticket_url, destination_ticket_url, jira_connector_status, rovo_mcp_available, mcp_execution_status), Jira Comment Body (review summary, design review closeout, targeted questions, findings, recommendations, separate validation notes, attachments proposed), Jira Post-Back Claim Block (deferred / formatted_only / executed_by_operator), No-Execution Disclaimer, Safety-Check Table]
+    prohibited_content: [external_postback_claim_without_executed_by_operator_evidence, content_outside_resolved_output_root, secrets_or_PII_or_credentials, finding_prose_invention, recommendation_prose_invention]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/jira-ticket-output-template.md (rebuilt for v0.1.2 schema)
+    version_notes: Rebuilt for v0.1.2.
+
+  # --- Confluence family (1 template) ----------------------------------------
+
+  - template_id: TPL-CONFLUENCE-PAGE-DRAFT
+    template_name: Confluence Page Draft Template
+    template_file: templates/confluence/confluence-page-draft-template.md
+    template_family: confluence
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Local Confluence-ready draft formatting for a SAS reader page. Formatting this file does not prove a Confluence publish happened.
+    intended_output: "{{output_root}}/confluence-page-draft.md"
+    consumers:
+      prompts: [PR-RS-11]
+      skills: [SK-HANDOFF-PACK-BUILD]
+      pras: [PRA-08-HANDOFF-QA-SCORER]
+      adapters: [aisraf-handoff-qa-scorer]
+      blueprints: []
+      catalogs: []
+    inputs_expected:
+      - runs/{{run_id}}/run-profile.yaml
+      - "{{output_root}}/06-boundaries.md"
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+      - "{{output_root}}/12-targeted-questions.md"
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+      - "{{output_root}}/15-handoff-pack.md"
+      - "{{output_root}}/16-validation-notes.md"
+      - "{{output_root}}/17-accuracy-score.md"
+    placeholders: ["{{run_id}}", "{{output_root}}", "{{output_destination_mode}}", "{{postback_execution_status}}", "{{mode}}"]
+    required_sections: [Page Metadata (descriptive references to runs/{{run_id}}/run-profile.yaml#sample_id, source_ticket_url, destination_confluence_url, confluence_connector_status, rovo_mcp_available, mcp_execution_status), Review Summary, Verdict, Scope and Inputs, Flow and Boundary Summary, Findings and Recommendations, Targeted Questions, Separate Validation Ticket Notes, Local Artifact References, Confluence Publication Claim Block (deferred / formatted_only / executed_by_operator), No-Execution Disclaimer, Safety-Check Table]
+    prohibited_content: [external_postback_claim_without_executed_by_operator_evidence, content_outside_resolved_output_root, secrets_or_PII_or_credentials, finding_prose_invention, recommendation_prose_invention]
+    output_boundary: under_resolved_output_root_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/confluence-page-output-template.md (rebuilt for v0.1.2 schema)
+    version_notes: Rebuilt for v0.1.2.
+
+  # --- Run family (2 templates) ----------------------------------------------
+
+  - template_id: TPL-RUN-LOG-ENTRY-ROW
+    template_name: Run Log Entry Row Template
+    template_file: templates/run/run-log-entry-row-template.md
+    template_family: run
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Per-step append row appended into {{output_root}}/00-run-log.md by every PRA after each prompt/skill execution.
+    intended_output: append_row_into_{{output_root}}/00-run-log.md
+    consumers:
+      prompts: [PR-RS-01, PR-RS-02, PR-RS-03, PR-RS-04, PR-RS-05, PR-RS-06, PR-RS-07, PR-RS-08, PR-RS-09, PR-RS-10, PR-RS-11, PR-RS-12, PR-RS-13, PR-DFD-02, PR-DFD-03, PR-DFD-04, PR-DFD-05, PR-DFD-06, PR-DFD-07, PR-DFD-08, PR-DFD-09, PR-DFD-10]
+      skills: [SK-INPUT-PACKAGE-READ, SK-DFD-VISUAL-READ, SK-LEGEND-NORMALIZE, SK-COMPONENT-EXTRACT, SK-FLOW-EXTRACT, SK-BOUNDARY-CROSSING-DETECT, SK-SECURITY-STACK-ASSESS, SK-DATA-FLOW-TABLE-BUILD, SK-MISSING-FACT-IDENTIFY, SK-AI-ACTION-LEVEL-CLASSIFY, SK-REVIEW-BLUEPRINT-MATCH, SK-TARGETED-QUESTION-GENERATE, SK-FINDING-CLASSIFY, SK-RECOMMENDATION-WRITE, SK-HANDOFF-PACK-BUILD, SK-VALIDATION-NOTE-WRITE, SK-ACCURACY-SCORE, SK-DFD-01-INTAKE-QUALITY-CHECK, SK-DFD-02-BOUNDARY-EXTRACT, SK-DFD-03-COMPONENT-EXTRACT, SK-DFD-04-FLOW-EXTRACT, SK-DFD-05-ANNOTATION-RESOLVE, SK-DFD-06-BOUNDARY-CROSSING-DETECT, SK-DFD-07-CONTROL-SIGNAL-DETECT, SK-DFD-08-CONFIDENCE-SCORE, SK-DFD-09-EXTRACTION-SUMMARIZE]
+      pras: [PRA-01-SAS-REVIEW-ORCHESTRATOR, PRA-02-INPUT-READER, PRA-03-DFD-EXTRACTOR, PRA-04-LEGEND-NORMALIZER, PRA-05-REVIEW-TABLE-BUILDER, PRA-06-BLUEPRINT-QUESTIONER, PRA-07-FINDING-RECOMMENDER, PRA-08-HANDOFF-QA-SCORER]
+      adapters: [aisraf-orchestrator, aisraf-input-reader, aisraf-dfd-extractor, aisraf-review-table-builder, aisraf-blueprint-questioner, aisraf-finding-recommender, aisraf-handoff-qa-scorer]
+      blueprints: []
+      catalogs: []
+    inputs_expected: []
+    placeholders: ["{{run_id}}", "{{output_root}}", "{{mode}}", "{{output_destination_mode}}", "{{postback_execution_status}}"]
+    required_sections: [Row Fields (timestamp, run_id, [copy from runs/{{run_id}}/run-profile.yaml#sample_id], step_id, agent_or_prompt, skill_or_blueprint, input_artifacts_read, output_artifacts_written, validation_result, critical_miss_status, unknowns_recorded, targeted_questions_created, recommendation_ids_created, validation_notes_created, human_gate_required, callback_route, notes), Usage Notes]
+    prohibited_content: [external_postback_claim_without_executed_by_operator_evidence, finding_prose, recommendation_prose, secrets_or_PII_or_credentials]
+    output_boundary: append_only_under_resolved_output_root_run_log_only
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/run-log-entry-template.md (row pattern reused; file shape moved to TPL-OUT-00-RUN-LOG)
+    version_notes: Rebuilt for v0.1.2 with Q1 split.
+
+  - template_id: TPL-RUN-POSTBACK-LOG-ENTRY-ROW
+    template_name: Post-Back Log Entry Row Template
+    template_file: templates/run/postback-log-entry-row-template.md
+    template_family: run
+    owning_build_package: Build Package 09
+    status: active
+    purpose: Append-only row that proves a human operator posted SAS output to Jira, published to Confluence, or both. Allowed only when postback_execution_status=executed_by_operator AND destination URL evidence exists.
+    intended_output: append_row_into_{{output_root}}/00-run-log.md_post_back_section
+    consumers:
+      prompts: []
+      skills: []
+      pras: [PRA-08-HANDOFF-QA-SCORER]
+      adapters: [aisraf-handoff-qa-scorer]
+      blueprints: []
+      catalogs: []
+    inputs_expected: []
+    placeholders: ["{{run_id}}", "{{output_root}}", "{{output_destination_mode}}", "{{postback_execution_status}}"]
+    required_sections: [Row Fields (timestamp, run_id, [copy from runs/{{run_id}}/run-profile.yaml#sample_id], operator_name, reviewer_name, output_destination_mode, postback_execution_status, [copy from runs/{{run_id}}/run-profile.yaml#jira_connector_status, confluence_connector_status, rovo_mcp_available, mcp_execution_status, destination_ticket_url, destination_confluence_url], local_postback_artifact, external_destination_reference, action_performed, executed_by_operator_confirmation, human_gate_disposition, evidence_location, sensitive_data_check), Required Evidence Rule, Use-Once Constraint]
+    prohibited_content: [external_postback_claim_without_executed_by_operator_evidence, append_when_postback_execution_status_is_deferred_or_formatted_only_or_not_attempted, secrets_or_PII_or_credentials, finding_prose, recommendation_prose]
+    output_boundary: append_only_under_resolved_output_root_run_log_only_when_executed_by_operator
+    source_reference: aisraf-sas-prototype-skill-chain-pack-v0.01/templates/postback-log-entry-template.md (rebuilt for v0.1.2 schema)
+    version_notes: Rebuilt for v0.1.2.
+
+# ============================================================================
+# Consumer maps — registry-internal cross-reference. Build Package 09 records
+# these here only; upstream registries are sealed.
+# ============================================================================
+
+consumer_maps:
+
+  template_to_prompt:
+    notes: Every output-family template (except TPL-OUT-00-RUN-LOG) maps 1:1 or many:1 to a prompt by its declared output_artifact in prompts/prompt-registry.yaml.
+    pairs:
+      - {template_id: TPL-OUT-01-INPUT-INVENTORY, prompts: [PR-RS-01]}
+      - {template_id: TPL-OUT-02-VISIBLE-DFD-OBJECTS, prompts: [PR-RS-02]}
+      - {template_id: TPL-OUT-03-LEGEND-NORMALIZATION, prompts: [PR-RS-03]}
+      - {template_id: TPL-OUT-04-COMPONENTS, prompts: [PR-RS-04]}
+      - {template_id: TPL-OUT-05-FLOWS, prompts: [PR-RS-04]}
+      - {template_id: TPL-OUT-06-BOUNDARIES, prompts: [PR-RS-05]}
+      - {template_id: TPL-OUT-07-SECURITY-STACK-ASSESSMENT, prompts: [PR-RS-05]}
+      - {template_id: TPL-OUT-08-INTERNAL-REVIEW-TABLE, prompts: [PR-RS-06]}
+      - {template_id: TPL-OUT-09-MISSING-FACTS, prompts: [PR-RS-07]}
+      - {template_id: TPL-OUT-10-AI-ACTION-LEVEL, prompts: [PR-RS-08]}
+      - {template_id: TPL-OUT-11-BLUEPRINT-MATCH, prompts: [PR-RS-09]}
+      - {template_id: TPL-OUT-12-TARGETED-QUESTIONS, prompts: [PR-RS-07]}
+      - {template_id: TPL-OUT-13-FINDINGS, prompts: [PR-RS-10]}
+      - {template_id: TPL-OUT-14-RECOMMENDATIONS, prompts: [PR-RS-10]}
+      - {template_id: TPL-OUT-15-HANDOFF-PACK, prompts: [PR-RS-11]}
+      - {template_id: TPL-OUT-16-VALIDATION-NOTES, prompts: [PR-RS-12]}
+      - {template_id: TPL-OUT-17-ACCURACY-SCORE, prompts: [PR-RS-13]}
+      - {template_id: TPL-OUT-DFD-01-INTAKE-QUALITY-CHECK, prompts: [PR-DFD-02]}
+      - {template_id: TPL-OUT-DFD-02-BOUNDARY-CATALOG, prompts: [PR-DFD-03]}
+      - {template_id: TPL-OUT-DFD-03-COMPONENT-CATALOG, prompts: [PR-DFD-04]}
+      - {template_id: TPL-OUT-DFD-04-FLOW-INVENTORY, prompts: [PR-DFD-05]}
+      - {template_id: TPL-OUT-DFD-05-ANNOTATION-RESOLUTION, prompts: [PR-DFD-06]}
+      - {template_id: TPL-OUT-DFD-06-BOUNDARY-CROSSINGS, prompts: [PR-DFD-07]}
+      - {template_id: TPL-OUT-DFD-07-CONTROL-SIGNALS, prompts: [PR-DFD-08]}
+      - {template_id: TPL-OUT-DFD-08-CONFIDENCE-SCORE, prompts: [PR-DFD-09]}
+      - {template_id: TPL-OUT-DFD-09-EXTRACTION-SUMMARY, prompts: [PR-DFD-10]}
+      - {template_id: TPL-JIRA-TICKET-DRAFT, prompts: [PR-RS-11]}
+      - {template_id: TPL-CONFLUENCE-PAGE-DRAFT, prompts: [PR-RS-11]}
+
+  template_to_pra:
+    pairs:
+      - {template_id: TPL-OUT-00-RUN-LOG, pras: [PRA-01-SAS-REVIEW-ORCHESTRATOR]}
+      - {template_id: TPL-OUT-01-INPUT-INVENTORY, pras: [PRA-02-INPUT-READER]}
+      - {template_id: TPL-OUT-02-VISIBLE-DFD-OBJECTS, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-03-LEGEND-NORMALIZATION, pras: [PRA-04-LEGEND-NORMALIZER]}
+      - {template_id: TPL-OUT-04-COMPONENTS, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-05-FLOWS, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-06-BOUNDARIES, pras: [PRA-05-REVIEW-TABLE-BUILDER]}
+      - {template_id: TPL-OUT-07-SECURITY-STACK-ASSESSMENT, pras: [PRA-05-REVIEW-TABLE-BUILDER]}
+      - {template_id: TPL-OUT-08-INTERNAL-REVIEW-TABLE, pras: [PRA-05-REVIEW-TABLE-BUILDER]}
+      - {template_id: TPL-OUT-09-MISSING-FACTS, pras: [PRA-06-BLUEPRINT-QUESTIONER]}
+      - {template_id: TPL-OUT-10-AI-ACTION-LEVEL, pras: [PRA-06-BLUEPRINT-QUESTIONER]}
+      - {template_id: TPL-OUT-11-BLUEPRINT-MATCH, pras: [PRA-06-BLUEPRINT-QUESTIONER]}
+      - {template_id: TPL-OUT-12-TARGETED-QUESTIONS, pras: [PRA-06-BLUEPRINT-QUESTIONER]}
+      - {template_id: TPL-OUT-13-FINDINGS, pras: [PRA-07-FINDING-RECOMMENDER]}
+      - {template_id: TPL-OUT-14-RECOMMENDATIONS, pras: [PRA-07-FINDING-RECOMMENDER]}
+      - {template_id: TPL-OUT-15-HANDOFF-PACK, pras: [PRA-08-HANDOFF-QA-SCORER]}
+      - {template_id: TPL-OUT-16-VALIDATION-NOTES, pras: [PRA-08-HANDOFF-QA-SCORER]}
+      - {template_id: TPL-OUT-17-ACCURACY-SCORE, pras: [PRA-08-HANDOFF-QA-SCORER]}
+      - {template_id: TPL-OUT-DFD-01-INTAKE-QUALITY-CHECK, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-DFD-02-BOUNDARY-CATALOG, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-DFD-03-COMPONENT-CATALOG, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-DFD-04-FLOW-INVENTORY, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-DFD-05-ANNOTATION-RESOLUTION, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-DFD-06-BOUNDARY-CROSSINGS, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-DFD-07-CONTROL-SIGNALS, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-DFD-08-CONFIDENCE-SCORE, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-OUT-DFD-09-EXTRACTION-SUMMARY, pras: [PRA-03-DFD-EXTRACTOR]}
+      - {template_id: TPL-JIRA-TICKET-DRAFT, pras: [PRA-08-HANDOFF-QA-SCORER]}
+      - {template_id: TPL-CONFLUENCE-PAGE-DRAFT, pras: [PRA-08-HANDOFF-QA-SCORER]}
+      - {template_id: TPL-RUN-LOG-ENTRY-ROW, pras: [PRA-01-SAS-REVIEW-ORCHESTRATOR, PRA-02-INPUT-READER, PRA-03-DFD-EXTRACTOR, PRA-04-LEGEND-NORMALIZER, PRA-05-REVIEW-TABLE-BUILDER, PRA-06-BLUEPRINT-QUESTIONER, PRA-07-FINDING-RECOMMENDER, PRA-08-HANDOFF-QA-SCORER]}
+      - {template_id: TPL-RUN-POSTBACK-LOG-ENTRY-ROW, pras: [PRA-08-HANDOFF-QA-SCORER]}
+
+  template_to_adapter:
+    notes: Adapter mapping mirrors PRA mapping. PRA-04 has no dedicated adapter (founder Q1 of Build Package 06); legend-normalization templates route through aisraf-dfd-extractor.
+    pairs_by_family:
+      output_rs:
+        - aisraf-input-reader
+        - aisraf-dfd-extractor
+        - aisraf-review-table-builder
+        - aisraf-blueprint-questioner
+        - aisraf-finding-recommender
+        - aisraf-handoff-qa-scorer
+        - aisraf-orchestrator
+      output_dfd: [aisraf-dfd-extractor]
+      jira: [aisraf-handoff-qa-scorer]
+      confluence: [aisraf-handoff-qa-scorer]
+      run: [aisraf-orchestrator, aisraf-input-reader, aisraf-dfd-extractor, aisraf-review-table-builder, aisraf-blueprint-questioner, aisraf-finding-recommender, aisraf-handoff-qa-scorer]
+
+  template_to_blueprint:
+    notes: Templates may reference blueprint identifiers from blueprints/blueprint-registry.yaml as cross-references only. No template introduces a new BP-* identifier.
+    pairs:
+      - {template_id: TPL-OUT-09-MISSING-FACTS, blueprints: [BP-NON-AI-DATAFLOW-BASELINE, BP-RAG-RETRIEVAL, BP-MODEL-ENDPOINT-CALL, BP-TOOL-USING-AGENT, BP-API-WRITEBACK, BP-HITL-APPROVAL, BP-AGENT-TO-AGENT, BP-AI-WORKFLOW, BP-AI-SAAS-INTEGRATION]}
+      - {template_id: TPL-OUT-11-BLUEPRINT-MATCH, blueprints: [BP-NON-AI-DATAFLOW-BASELINE, BP-RAG-RETRIEVAL, BP-MODEL-ENDPOINT-CALL, BP-TOOL-USING-AGENT, BP-API-WRITEBACK, BP-HITL-APPROVAL, BP-AGENT-TO-AGENT, BP-AI-WORKFLOW, BP-AI-SAAS-INTEGRATION]}
+      - {template_id: TPL-OUT-12-TARGETED-QUESTIONS, blueprints: [BP-NON-AI-DATAFLOW-BASELINE, BP-RAG-RETRIEVAL, BP-MODEL-ENDPOINT-CALL, BP-TOOL-USING-AGENT, BP-API-WRITEBACK, BP-HITL-APPROVAL, BP-AGENT-TO-AGENT, BP-AI-WORKFLOW, BP-AI-SAAS-INTEGRATION]}
+
+  template_to_catalog:
+    notes: Templates reference catalog file paths in inputs_expected and in cell-value placeholders, but never enumerate catalog entries inside the template body and never introduce new controlled values.
+    catalogs_referenced:
+      - catalogs/components/component-type-catalog.yaml
+      - catalogs/components/component-role-catalog.yaml
+      - catalogs/components/component-evidence-rule-catalog.yaml
+      - catalogs/interactions/interaction-type-catalog.yaml
+      - catalogs/interactions/flow-direction-catalog.yaml
+      - catalogs/interactions/flow-evidence-rule-catalog.yaml
+      - catalogs/boundaries/boundary-type-catalog.yaml
+      - catalogs/boundaries/boundary-crossing-rule-catalog.yaml
+      - catalogs/boundaries/trust-zone-catalog.yaml
+      - catalogs/identity-access/authentication-catalog.yaml
+      - catalogs/identity-access/authorization-catalog.yaml
+      - catalogs/identity-access/identity-evidence-rule-catalog.yaml
+      - catalogs/data-protection/data-class-catalog.yaml
+      - catalogs/data-protection/transport-protection-catalog.yaml
+      - catalogs/data-protection/at-rest-protection-catalog.yaml
+      - catalogs/data-protection/confidence-level-catalog.yaml
+      - catalogs/security-stacks/security-stack-marker-catalog.yaml
+      - catalogs/security-stacks/control-signal-catalog.yaml
+      - catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+      - catalogs/review/finding-category-catalog.yaml
+      - catalogs/review/severity-catalog.yaml
+      - catalogs/review/recommendation-type-catalog.yaml
+      - catalogs/review/ai-action-level-catalog.yaml
+      - catalogs/review/review-status-catalog.yaml
+
+# ============================================================================
+# Compatibility notes.
+# ============================================================================
+compatibility_notes:
+  v0_01_template_inventory_collapse:
+    decision: applied
+    detail: >
+      The v0.01 reference workspace had 33 template files including stub
+      placeholders (handoff-pack, internal-data-flow-review-table,
+      validation-ticket-note, accuracy-score, input-inventory,
+      missing-material-fact, security-stack-assessment) and several row-only
+      templates (boundary-crossing, component-table, flow-table,
+      dfd-visible-object, visible-dfd-object, legend-normalization,
+      process-step, skill-process-row, targeted-question, unknown-field).
+      Build Package 09 collapses these into 31 governed templates covering
+      27 file-shape outputs, 1 Jira draft, 1 Confluence draft, and 2 run-log
+      row patterns. The v0.01 diagram-spec-template, evidence-record-template,
+      and recommendation-rule-template are rejected because Build Package 13
+      owns diagrams, the v0.1.2 evidence model is collapsed into 00-run-log.md,
+      and catalogs/review/recommendation-type-catalog.yaml owns the
+      recommendation taxonomy.
+  run_profile_template_yaml_location:
+    decision: out_of_scope_for_package_09
+    detail: >
+      The v0.01 templates/run-profile-template.yaml lives at
+      config/run-profile.template.yaml in v0.1.2 under Build Package 02
+      ownership. Build Package 09 does not relocate or duplicate it.
+  connector_field_placeholders_in_jira_confluence_drafts:
+    decision: descriptive_reference_only
+    detail: >
+      The seven approved placeholder variables are the only {{...}} tokens
+      allowed inside any template. Other run-profile schema fields
+      (jira_connector_status, confluence_connector_status,
+      rovo_mcp_available, mcp_execution_status, sample_id,
+      source_ticket_url, destination_ticket_url,
+      destination_confluence_url, operator_name, reviewer_name) are
+      referenced descriptively as
+      [copy from runs/{{run_id}}/run-profile.yaml#field_name].
+      All connector-related fields used by the Jira/Confluence drafts
+      and the post-back row exist in the current Package 02 schema; no
+      schema invention is required.
+  founder_q1_run_log_split:
+    decision: applied
+    detail: >
+      File-level shape lives in templates/output/output-00-run-log-template.md;
+      per-step row pattern lives in templates/run/run-log-entry-row-template.md;
+      operator post-back row pattern lives in
+      templates/run/postback-log-entry-row-template.md.
+  founder_q3_no_catalog_value_enumeration:
+    decision: applied
+    detail: >
+      Templates use placeholder-by-catalog-path style. Catalog file paths
+      are referenced; catalog entries are not enumerated; controlled values
+      are not introduced.
+  founder_q4_naming_convention:
+    decision: applied
+    detail: >
+      Output templates use the output-NN-name-template.md pattern so that
+      the template file is unambiguously distinct from the future
+      runs/<run_id>/<output_root>/NN-name.md generated artifact.
+
+# Future-only (deferred).
+planned_future_templates: []

@@ -1,0 +1,226 @@
+catalog_id: component-type-catalog
+catalog_name: Component Type Catalog
+schema_version: aisraf_component_type_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of component types used to classify visible boxes,
+  actors, services, stores, gateways, model endpoints, identity providers,
+  secrets stores, and grouping containers in a reviewed-system DFD without
+  inventing implementation, deployment, runtime, or control facts.
+
+consumers:
+  prompts:
+    - prompts/dfd/04-component-extract.prompt.md
+    - prompts/rs/04-design-fact-extract.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+  skills:
+    - skills/rs/SK-COMPONENT-EXTRACT.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/dfd/SK-DFD-03-COMPONENT-EXTRACT.md
+  pras:
+    - prototype-agents/PRA-03-DFD-EXTRACTOR.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-CT-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule. Component visibility is a signal, not implementation proof.
+  - rule_id: ER-CT-02
+    rule: A component type is supported when (a) a label or icon is visible, (b) a source note explicitly names the component type, or (c) a previously catalog-supported derivation applies. Otherwise the type is unknown.
+  - rule_id: ER-CT-03
+    rule: Cloud service names (Vertex AI, Cloud SQL, Spanner, GCS, S3, Apigee, KMS, Secret Manager, Pub/Sub) classify a component type as a candidate. They do not prove deployed runtime, service accounts, IAM, encryption, or production connectivity.
+  - rule_id: ER-CT-04
+    rule: A component-level marker (auth, encryption, secret, stack diamond) is a component signal only. It does not propagate to every connected flow; flow-level coverage requires per-flow support.
+
+prohibited_claims:
+  - deployed_runtime_from_component_label_alone
+  - service_account_existence_from_provider_label_alone
+  - iam_or_authorization_scope_from_identity_provider_label_alone
+  - encryption_scope_from_store_marker_alone
+  - key_management_proof_from_secret_or_key_marker_alone
+  - approved_security_stack_from_component_diamond_alone
+  - production_connectivity_from_cloud_label_alone
+  - runtime_or_cloud_resource_from_diagram_label_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Component-level marker is a component signal only and does not propagate to every connected flow.
+  - Grouped boundary box does not justify inventing hidden child components.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/component-type-catalog.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/components/component-catalog.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/components/component-type-map.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: CT-EXTERNAL-ACTOR
+    label: external_actor
+    description: Customer, browser, consumer, partner, or third-party actor that originates or receives flows from outside the reviewed system trust boundary.
+    when_to_use: A box, icon, or note clearly identifies an external party (customer, partner, third-party SaaS) that is not owned by the reviewed system.
+    when_not_to_use: The box is owned by the reviewed system or is an internal employee/operator (use customer_client or internal_human_actor instead).
+    evidence_required: visible label naming the external party, or source note clearly identifying it
+    confidence_guidance: High when label and zone clearly indicate external context; low when zone is ambiguous; unknown when label is unreadable.
+    notes: Internet-facing flows from this component require boundary-crossing review.
+
+  - id: CT-CUSTOMER-CLIENT
+    label: customer_client
+    description: Browser, mobile app, desktop client, or other customer-side endpoint of the reviewed system.
+    when_to_use: The component is a client endpoint used by the customer/consumer to interact with the reviewed system.
+    when_not_to_use: The component is the application server or backend service the client talks to.
+    evidence_required: visible client label (e.g., "Customer Browser", "Mobile Client") or source note identifying the client
+    confidence_guidance: High when explicitly labeled; medium when inferred from zone; unknown when not visible.
+    notes: Client presence is not proof of customer authentication.
+
+  - id: CT-INTERNAL-HUMAN-ACTOR
+    label: internal_human_actor
+    description: Support analyst, operator, reviewer, employee, contractor, or approver that interacts with the reviewed system from within the trust boundary.
+    when_to_use: A human actor inside the organization is shown interacting with the system (often through HITL approval or operational support).
+    when_not_to_use: The actor is external (use external_actor) or automated (use a service component type).
+    evidence_required: visible actor label or source note identifying the role
+    confidence_guidance: High when explicitly labeled; medium when zone implies internal context; unknown when role is ambiguous.
+    notes: An IA# marker on a human actor records authentication, never approval authority.
+
+  - id: CT-APPLICATION-SERVICE
+    label: application_service
+    description: Web app, application service, backend service, UI service, orchestrator, or business-logic component owned by the reviewed system.
+    when_to_use: The component is a first-party service in the reviewed application's logical layer.
+    when_not_to_use: The component is a gateway, model endpoint, store, queue, identity provider, or other specialized type below.
+    evidence_required: visible service label or source note identifying the service
+    confidence_guidance: High when label is clear; medium when component is inferred from a grouping box; unknown when label is missing.
+    notes: A service label is not proof of deployed runtime.
+
+  - id: CT-GATEWAY-SERVICE
+    label: gateway_service
+    description: API gateway, edge gateway, ingress controller, policy gateway, WAF, proxy, or load balancer that sits in front of an application service.
+    when_to_use: A box explicitly labels itself as a gateway, ingress, edge, WAF, or policy checkpoint.
+    when_not_to_use: The box is a regular application service; or it is an internal forwarding mechanism without checkpoint semantics.
+    evidence_required: visible gateway label or source note identifying the gateway role
+    confidence_guidance: High when labeled; medium when shape suggests gateway but label is missing; unknown when ambiguous.
+    notes: Gateway presence is a checkpoint signal, never enforcement proof.
+
+  - id: CT-MODEL-ENDPOINT
+    label: model_endpoint
+    description: AI service, model endpoint, LLM, reasoning service, vector or retrieval-grounded model, or model adapter.
+    when_to_use: The component is named or labeled as an AI/model endpoint or supports model_call interactions.
+    when_not_to_use: The component is a vector store (use vector_or_retrieval_store) or a tool/API surface (use tool_or_api_surface).
+    evidence_required: visible model-endpoint label, AI service label, or source note identifying the model role
+    confidence_guidance: High when explicitly labeled; medium when inferred from interaction context; unknown when ambiguous.
+    notes: A model-endpoint label is not proof of deployed model runtime.
+
+  - id: CT-TOOL-OR-API-SURFACE
+    label: tool_or_api_surface
+    description: Tool, plugin, connector, action API, integration API, write-back API, or external-system API surface invoked by the reviewed system.
+    when_to_use: A box represents an outbound tool/API call surface (Jira connector, ServiceNow connector, write-back API, third-party API).
+    when_not_to_use: The box is a gateway, application service, or model endpoint.
+    evidence_required: visible tool/API label or source note identifying the integration
+    confidence_guidance: High when labeled; medium when inferred; unknown when ambiguous.
+    notes: A tool surface is not proof of authorized use; authorization is unknown unless explicit.
+
+  - id: CT-DATA-STORE
+    label: data_store
+    description: Database, table store, managed relational store, support database, or persistent state store used by the reviewed system.
+    when_to_use: A cylinder, box, or label identifies a database or persistent store.
+    when_not_to_use: The store is object/blob storage (use object_storage), a vector store (use vector_or_retrieval_store), or an observability store (use observability_store).
+    evidence_required: visible store label, database product name, or source note
+    confidence_guidance: High when labeled; medium when inferred from shape; unknown when ambiguous.
+    notes: At-rest protection, key management, and retention are unknown unless separately supported.
+
+  - id: CT-OBJECT-STORAGE
+    label: object_storage
+    description: Bucket, object store, artifact storage, GCS, S3, Blob, or file repository.
+    when_to_use: A bucket/object label or storage label describes the component.
+    when_not_to_use: The component is a relational database (use data_store).
+    evidence_required: visible bucket/object-store label or source note
+    confidence_guidance: High when labeled; medium when shape only; unknown when ambiguous.
+    notes: Bucket policy and encryption scope are unknown unless separately supported.
+
+  - id: CT-VECTOR-OR-RETRIEVAL-STORE
+    label: vector_or_retrieval_store
+    description: Vector store, retrieval index, memory bank, embedding store, or search index used to ground or retrieve content.
+    when_to_use: The component is named as a vector/retrieval/embedding/search store.
+    when_not_to_use: The component is a relational database or object store.
+    evidence_required: visible vector/retrieval label or source note identifying the role
+    confidence_guidance: High when labeled; medium when inferred from interaction context; unknown when ambiguous.
+    notes: Indexed data class and access scope are unknown unless separately supported.
+
+  - id: CT-OBSERVABILITY-STORE
+    label: observability_store
+    description: Logging store, monitoring sink, telemetry system, trace store, or telemetry-platform component.
+    when_to_use: The component is a logging/monitoring/telemetry sink.
+    when_not_to_use: The component is a general database, an alerting service, or a runbook system.
+    evidence_required: visible logging/monitoring label or source note
+    confidence_guidance: High when labeled; medium when shape implies log sink; unknown when ambiguous.
+    notes: Logging visibility is not monitoring effectiveness.
+
+  - id: CT-QUEUE-OR-TOPIC
+    label: queue_or_topic
+    description: Queue, topic, pub/sub, event bus, stream, or async buffer.
+    when_to_use: A queue/topic/pub-sub icon or label is visible.
+    when_not_to_use: The component is a synchronous data store or a synchronous service.
+    evidence_required: visible queue/topic label or source note
+    confidence_guidance: High when labeled; medium when shape implies queue; unknown when ambiguous.
+    notes: Message data class and retention are unknown unless separately supported.
+
+  - id: CT-IDENTITY-PROVIDER-OR-IAM
+    label: identity_provider_or_iam
+    description: IdP, IAM, SSO authority, OAuth/SAML provider, service account authority, or workforce identity service.
+    when_to_use: The component is named as an identity provider or IAM authority.
+    when_not_to_use: The component is a downstream service consumer; the identity provider is the authority issuing tokens or assertions.
+    evidence_required: visible IdP/IAM label or source note identifying the identity authority
+    confidence_guidance: High when labeled; medium when inferred from auth markers; unknown when ambiguous.
+    notes: IdP presence is not proof of authorization, enforcement, or least privilege.
+
+  - id: CT-SECRETS-OR-KEY-MANAGEMENT
+    label: secrets_or_key_management
+    description: Secret manager, KMS, key vault, credential store, or key-management service.
+    when_to_use: The component is a secret/key store.
+    when_not_to_use: The component is a regular data store with arbitrary content.
+    evidence_required: visible secret/key-store label or source note
+    confidence_guidance: High when labeled; medium when shape implies key/secret store; unknown when ambiguous.
+    notes: Marker presence is not proof of key rotation, scope, or owner.
+
+  - id: CT-GROUPED-BOUNDARY-BOX
+    label: grouped_boundary_box
+    description: A visible box that groups child components without fully decomposing them (e.g., project box, VPC box, application cluster).
+    when_to_use: A grouping container is visible but its child components are not fully shown.
+    when_not_to_use: The container is fully decomposed and each child is independently classified.
+    evidence_required: visible grouping label and zone context
+    confidence_guidance: High for the boundary itself; child components remain unknown unless separately visible.
+    notes: Do not invent hidden child components inside a grouping box.
+
+  - id: CT-UNKNOWN
+    label: unknown
+    description: A visible object exists but its component type is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other component-type entry has supported applicability.
+    when_not_to_use: When at least one entry above is supported by visible label, zone, or source note.
+    evidence_required: none required; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition; materiality of the unknown drives whether a question is generated.
+    notes: Do not silently force an unclear object into a precise type.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01 component-type
+  references; closed list of 16 component types plus unknown. Every entry has
+  required evidence and explicit anti-inference rules.

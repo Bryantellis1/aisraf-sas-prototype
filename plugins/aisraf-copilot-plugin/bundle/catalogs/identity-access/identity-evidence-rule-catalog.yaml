@@ -1,0 +1,157 @@
+catalog_id: identity-evidence-rule-catalog
+catalog_name: Identity Evidence Rule Catalog
+schema_version: aisraf_identity_evidence_rule_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Define the closed list of evidence rules covering identity and access
+  fields beyond marker visibility: token validation, least privilege, role
+  scope, approval authority, and implementation proof. The catalog tells
+  reviewers when an identity-related claim is supported, when it must
+  remain unknown, and when a missing-fact question or validation-note
+  ticket is the right route.
+
+consumers:
+  prompts:
+    - prompts/rs/07-missing-fact-question-generate.prompt.md
+    - prompts/rs/12-validation-note-write.prompt.md
+    - prompts/rs/13-accuracy-score.prompt.md
+  skills:
+    - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+    - skills/rs/SK-VALIDATION-NOTE-WRITE.md
+    - skills/rs/SK-ACCURACY-SCORE.md
+  pras:
+    - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+    - prototype-agents/PRA-08-HANDOFF-QA-SCORER.md
+  adapters:
+    - .agents/aisraf-blueprint-questioner.agent.md
+    - .agents/aisraf-finding-recommender.agent.md
+    - .agents/aisraf-handoff-qa-scorer.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-IER-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-IER-02
+    rule: Token validation, least privilege, role scope, and approval authority are unknown unless explicit source supports them.
+  - rule_id: ER-IER-03
+    rule: Implementation evidence for an identity-related claim requires a configuration, audit, or test artifact.
+  - rule_id: ER-IER-04
+    rule: A missing-fact question is generated when an identity-related unknown materially changes a finding, recommendation, route, validation note, AI Action Level, or score.
+  - rule_id: ER-IER-05
+    rule: A validation-note ticket route applies when proof requires post-design evidence (configuration extract, audit log, control test).
+
+prohibited_claims:
+  - token_validation_proof_from_auth_marker_alone
+  - least_privilege_proof_from_role_label_alone
+  - role_scope_proof_from_authentication_marker_alone
+  - approval_authority_proof_from_internal_auth_marker_alone
+  - implementation_proof_from_visible_label_alone
+  - identity_audit_completeness_from_log_label_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Approval authority is never derived from internal-auth markers alone.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/identity-access/approval-policy-gate-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/identity-access/non-human-identity-rules.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: IER-TOKEN-VALIDATION
+    label: token_validation_evidence
+    description: Whether the design or notes show that tokens are validated (signature, expiry, audience, issuer, scope).
+    when_to_use: An auth marker is visible and a review field requires token-validation support.
+    when_not_to_use: No auth marker exists or token validation is not material.
+    evidence_required: explicit token-validation statement, configuration extract, or audit reference
+    confidence_guidance: High when explicit; medium when partially documented; unknown when only marker is visible.
+    notes: Token validation is unknown unless separately supported.
+
+  - id: IER-LEAST-PRIVILEGE
+    label: least_privilege_evidence
+    description: Whether the design or notes show that the identity has the minimum privileges required for the flow under review.
+    when_to_use: A role/identity is on the flow and a least-privilege claim is required.
+    when_not_to_use: Least privilege is not material to the review.
+    evidence_required: explicit role-scope statement, IAM policy reference, or audit reference
+    confidence_guidance: High when explicit; medium when scope is partial; unknown when only marker is visible.
+    notes: A role label alone does not establish least privilege.
+
+  - id: IER-ROLE-SCOPE
+    label: role_scope_evidence
+    description: Whether the role granted to the authenticated identity is explicitly scoped on the flow under review.
+    when_to_use: An authenticated identity is on the flow and a scope claim is required.
+    when_not_to_use: Scope is not material.
+    evidence_required: explicit role-scope statement or IAM/RBAC reference
+    confidence_guidance: High when explicit; medium when partial; unknown when only marker is visible.
+    notes: Authentication marker visibility is not role-scope evidence.
+
+  - id: IER-APPROVAL-AUTHORITY
+    label: approval_authority_evidence
+    description: Whether an internal actor has explicit approval authority for a HITL gate or an authorization decision.
+    when_to_use: A HITL gate or approval-related flow is in scope.
+    when_not_to_use: No approval gate is on the flow.
+    evidence_required: explicit approval-authority record, role mapping, or governance documentation
+    confidence_guidance: High when explicit; medium when partial; unknown when only IA# marker is visible.
+    notes: IA# is not approval-authority evidence.
+
+  - id: IER-IMPLEMENTATION-PROOF
+    label: implementation_proof
+    description: Whether the identity-related claim is supported by post-design evidence (configuration extract, audit log, control test result).
+    when_to_use: A claim requires implementation proof beyond design review.
+    when_not_to_use: A signal is sufficient for the review's purpose.
+    evidence_required: configuration extract, audit log entry, or control-test artifact
+    confidence_guidance: High when artifact is provided; unknown when only design evidence is available.
+    notes: Validation-note ticket route applies when proof must be supplied later.
+
+  - id: IER-MISSING-FACT-IF-MATERIAL
+    label: missing_fact_if_material
+    description: A missing-fact question is generated when an identity unknown materially changes finding, recommendation, route, validation note, AI Action Level, or score.
+    when_to_use: An identity field is unknown and the unknown is material.
+    when_not_to_use: The unknown is immaterial.
+    evidence_required: documented downstream impact
+    confidence_guidance: Materiality determination is a review judgment recorded in evidence_summary.
+    notes: Question generation is owned by skills/rs/SK-TARGETED-QUESTION-GENERATE.md.
+
+  - id: IER-VALIDATION-ROUTE-IF-PROOF-NEEDED
+    label: validation_route_if_proof_needed
+    description: A validation-note ticket route applies when an identity claim requires post-design proof and only design evidence is available.
+    when_to_use: A proof claim is required and evidence must be supplied later.
+    when_not_to_use: A signal is sufficient for the review's purpose.
+    evidence_required: validation-note pointer or ticket reference
+    confidence_guidance: Proof remains unknown until the ticket returns.
+    notes: Routing is owned by skills/rs/SK-VALIDATION-NOTE-WRITE.md.
+
+  - id: IER-UNKNOWN
+    label: unknown
+    description: An identity-evidence claim is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other rule above has supported applicability.
+    when_not_to_use: When at least one rule above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown drives the materiality check.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured the old v0.01
+  approval-policy-gate-rules and non-human-identity-rules prose into a
+  closed list of evidence rules with explicit when-to-use and
+  when-not-to-use guidance.

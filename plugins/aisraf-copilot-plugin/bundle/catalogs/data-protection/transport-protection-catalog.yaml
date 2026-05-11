@@ -1,0 +1,129 @@
+catalog_id: transport-protection-catalog
+catalog_name: Transport Protection Catalog
+schema_version: aisraf_transport_protection_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of transport-protection values driven by standalone
+  T# tokens, HTTPS/TLS labels, mutual TLS labels, plain-text labels, and
+  unknown. This catalog is strictly transit-only; at-rest protection is in
+  at-rest-protection-catalog.yaml.
+
+consumers:
+  prompts:
+    - prompts/rs/03-legend-normalization.prompt.md
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/rs/10-finding-recommendation-write.prompt.md
+  skills:
+    - skills/rs/SK-LEGEND-NORMALIZE.md
+    - skills/rs/SK-SECURITY-STACK-ASSESS.md
+    - skills/rs/SK-FINDING-CLASSIFY.md
+    - skills/rs/SK-RECOMMENDATION-WRITE.md
+  pras:
+    - prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-finding-recommender.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-TP-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-TP-02
+    rule: A standalone T# token means transit encryption is shown on the flow. It does not mean tokenization.
+  - rule_id: ER-TP-03
+    rule: An HTTPS/TLS protocol label on the flow indicates transit encryption is named in the design.
+  - rule_id: ER-TP-04
+    rule: Transit visibility does not prove cipher, TLS version, certificate management, mutual TLS posture, or scope coverage.
+  - rule_id: ER-TP-05
+    rule: At-rest protection is not transit protection; do not infer one from the other.
+
+prohibited_claims:
+  - tokenization_from_standalone_t_token_alone
+  - tls_version_proof_from_https_label_alone
+  - certificate_management_from_transit_marker_alone
+  - mutual_tls_proof_from_transit_marker_alone
+  - at_rest_protection_from_transit_marker_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Standalone T# is transit, never tokenization.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/annotation-semantics-registry.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/transit-protection-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/encryption-catalog.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: TP-T-MARKER
+    label: t_marker_present
+    raw_pattern: '^T[0-9]+$'
+    description: A standalone T# token is on the flow indicating transit encryption is named.
+    when_to_use: A standalone T# token is plainly visible on the flow.
+    when_not_to_use: T# is inside a C-token (C#T#P) — that is tokenization, see data-class-catalog.yaml.
+    evidence_required: visible standalone T# token on the flow
+    confidence_guidance: High when token is plainly visible; medium when inferred from legend; unknown when token is unreadable.
+    notes: T# is transit, never tokenization. Cipher, TLS version, and certificate management remain unknown.
+
+  - id: TP-HTTPS-LABEL
+    label: https_label_present
+    description: An HTTPS, TLS, or equivalent protocol label appears on the flow.
+    when_to_use: A protocol label clearly indicates HTTPS/TLS on the flow.
+    when_not_to_use: No protocol label is visible.
+    evidence_required: visible HTTPS/TLS label or source note
+    confidence_guidance: High when explicit; medium when partial; unknown when ambiguous.
+    notes: Protocol label is not proof of TLS version or cipher suite.
+
+  - id: TP-MUTUAL-TLS-LABEL
+    label: mutual_tls_label_present
+    description: A mutual TLS or mTLS label appears on the flow.
+    when_to_use: A mutual-TLS or client-cert label is plainly visible.
+    when_not_to_use: Only generic HTTPS/TLS is visible.
+    evidence_required: visible mTLS label or source note
+    confidence_guidance: High when explicit; medium when partial; unknown when ambiguous.
+    notes: Mutual TLS visibility does not prove client-certificate management or coverage.
+
+  - id: TP-PLAIN-TEXT
+    label: plain_text_indicated
+    description: A plain-text/clear-text indicator (e.g., Clr label scoped to a flow) appears on the flow.
+    when_to_use: An explicit plain-text/clear-text indicator is on the flow.
+    when_not_to_use: The Clr indicator is scoped to storage state (use at-rest-protection-catalog.yaml) or not present.
+    evidence_required: visible plain-text indicator on the flow scope
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: Plain-text on a sensitive flow drives finding generation under review/finding-category-catalog.yaml.
+
+  - id: TP-UNKNOWN
+    label: unknown
+    description: Transit protection is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one transit indicator is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Materiality drives whether a question is generated.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01 transit
+  protection prose. Standalone T# stays separate from tokenization (which
+  is in data-class-catalog.yaml as C#T#P).

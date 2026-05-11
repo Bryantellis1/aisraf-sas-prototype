@@ -1,0 +1,123 @@
+catalog_id: control-signal-catalog
+catalog_name: Control Signal Catalog
+schema_version: aisraf_control_signal_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of derived control-signal values used by the
+  review-table-build, finding-classify, and recommendation-write skills:
+  visible, partial, missing, planned, and unknown. A control signal is a
+  rolled-up read of underlying markers; it never asserts effectiveness,
+  approval, or implementation.
+
+consumers:
+  prompts:
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/rs/10-finding-recommendation-write.prompt.md
+    - prompts/dfd/08-control-signal-detect.prompt.md
+  skills:
+    - skills/rs/SK-SECURITY-STACK-ASSESS.md
+    - skills/rs/SK-FINDING-CLASSIFY.md
+    - skills/dfd/SK-DFD-07-CONTROL-SIGNAL-DETECT.md
+  pras:
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  adapters:
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-finding-recommender.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-CS-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-CS-02
+    rule: A control signal is a rolled-up read of supporting markers; the underlying markers must come from security-stack-marker-catalog.yaml or the relevant identity-access/data-protection catalog.
+  - rule_id: ER-CS-03
+    rule: A control signal does not assert control effectiveness, approval, deployment, or coverage.
+  - rule_id: ER-CS-04
+    rule: Planned control signals describe intent, not implementation.
+
+prohibited_claims:
+  - control_effectiveness_from_signal_visible_alone
+  - approved_stack_confirmation_from_signal_visible_alone
+  - coverage_proof_from_one_visible_marker
+  - implementation_proof_from_partial_signal
+  - planned_signal_treated_as_implemented
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - A control signal value records what the design names; effectiveness lives outside this catalog.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/security-stack-marker-catalog.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/control-derivation-rules.yaml
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: CS-VISIBLE
+    label: visible
+    description: A supporting marker is plainly visible and the control signal is recorded as visible.
+    when_to_use: At least one supported marker (per security-stack-marker-catalog.yaml or relevant data-protection / identity-access catalog) is plainly visible for the control under review.
+    when_not_to_use: Markers are partial, missing, planned, or unknown.
+    evidence_required: at least one supporting marker
+    confidence_guidance: Visible signal can be high confidence on the signal itself; effectiveness remains unknown.
+    notes: Visible is a signal value, not a coverage value.
+
+  - id: CS-PARTIAL
+    label: partial
+    description: Some supporting markers are visible but coverage or scope is incomplete for the control under review.
+    when_to_use: Some marker support exists but the scope is incomplete (e.g., one of three flows has the marker; the gateway is shown but only on ingress).
+    when_not_to_use: All required markers are visible (use visible) or none are (use missing/unknown).
+    evidence_required: at least one supporting marker plus a documented gap
+    confidence_guidance: Medium typically; the unscoped portion is recorded as a missing fact for materiality review.
+    notes: Partial requires a real partial-evidence record, not a soft fallback.
+
+  - id: CS-MISSING
+    label: missing
+    description: Markers required for the control are absent in scopes where the design or blueprint expectation calls for them.
+    when_to_use: A required marker is absent and the absence is itself the supported finding.
+    when_not_to_use: The signal is unknown (use unknown) rather than affirmatively absent.
+    evidence_required: design or supporting note that establishes the expectation
+    confidence_guidance: Medium-to-high typically; the missing signal drives a finding under review/finding-category-catalog.yaml.
+    notes: Missing is supported only when an expectation exists; otherwise use unknown.
+
+  - id: CS-PLANNED
+    label: planned
+    description: A marker or supporting note explicitly says the control is planned but not currently implemented.
+    when_to_use: Future-state diagram or note explicitly marks the control as planned/roadmap.
+    when_not_to_use: Source is silent or describes current state.
+    evidence_required: explicit planned/future/roadmap label or note
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: Planned is not implemented; do not treat planned as visible for current review.
+
+  - id: CS-UNKNOWN
+    label: unknown
+    description: The control signal is unsupported, unclear, contradictory, or unreadable.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Materiality drives whether a question is generated.
+
+version_notes: >
+  Initial Build Package 07 release. New v0.1.2 design that separates the
+  raw marker forms (security-stack-marker-catalog.yaml) from the derived
+  control signal values used in the review table.

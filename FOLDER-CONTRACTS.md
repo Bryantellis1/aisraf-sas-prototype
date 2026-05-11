@@ -8,11 +8,15 @@ This file defines Root Area ownership and filesystem boundaries. Root Area numbe
 
 - The package root contains only the allowed root files and allowed root folders listed in [PACKAGE-MANIFEST.yaml](PACKAGE-MANIFEST.yaml).
 - Build Package numbers must not be used as Root Area numbers.
-- Root Area 01 is Root & Top-Level Files; the workspace has 17 root folders plus this top-level-file area.
+- Root Area 01 is Root & Top-Level Files; Root Areas 02-19 map to 18 active package root folders plus this top-level-file area.
 - Package source folders are not run-output folders.
+- Projection folders are not source-of-truth folders. Canonical source remains in prompts, skills, PRAs, templates, catalogs, blueprints, samples, config, tools, and validation.
 - Future run outputs must write only under the resolved `output_root` inside `runs/<run_id>/`.
 - Future inputs must be read from the resolved `input_root`.
 - Future scored baselines must be read from the resolved `expected_root`.
+- `runs/RUN-SMOKE-LOCAL-*` folders are local smoke evidence only and are not release fixtures unless separately approved.
+- `plugins/` is a future gated projection packaging surface and is blocked until validator allow-list updates pass.
+- `diagrams/` and `release/` are blocked/readme-only at WP-12C-K1B-A.
 - No folder may claim runtime, cloud, MCP, ADK, database, Terraform, autonomous post-back, implementation proof, release readiness, or ZIP readiness unless the correct Build Package authorizes it and evidence exists.
 
 ## Root Area 01 — Root & Top-Level Files
@@ -41,19 +45,19 @@ Path: `.github/`
 
 Owning Build Package: Build Package 01 for workspace instructions.
 
-Purpose: workspace-level Copilot guidance for package contributors.
+Purpose: workspace-level Copilot guidance and provider projection surface for package contributors and local operators.
 
-Who uses it: GitHub Copilot and package authors working in VS Code.
+Who uses it: GitHub Copilot, package authors, local operators, provider-projection validators, and hook testers working in VS Code.
 
-Allowed file types: `copilot-instructions.md` in Build Package 01.
+Allowed file types: `copilot-instructions.md`; projected `.agent.md` files under `.github/agents/`; Agent Skill package `SKILL.md` files under `.github/skills/<skill-id>/`; provider hook JSON under `.github/hooks/`.
 
-Belongs here: concise always-on workspace instructions.
+Belongs here: concise always-on workspace instructions, Copilot agent projections, Copilot Agent Skill packages, and Copilot hook configuration that points back to canonical or reusable package surfaces.
 
-Does not belong here: prompt wrappers, `.agent.md` adapters, skills, run outputs, release artifacts, or executable hooks.
+Does not belong here: canonical prompt bodies, canonical skill contracts, canonical PRA specs, run outputs, release artifacts, secrets, executable hook implementations, runtime/cloud/ADK/MCP/Jira/Confluence/Rovo code, or plugin package files.
 
-Populated by: Build Package 01 for instructions; later changes only by authorized Build Packages.
+Populated by: Build Package 01 for instructions; WP-12C provider-projection gates for `.github/agents/`, `.github/skills/`, and `.github/hooks/`; later changes only by authorized Build Packages.
 
-Build Package 01 status: active for `copilot-instructions.md` only.
+Current status: active provider projection surface. `.github/agents/`, `.github/skills/`, and `.github/hooks/` are projections, not canonical source.
 
 ## Root Area 03 — `.agents/`
 
@@ -61,7 +65,7 @@ Path: `.agents/`
 
 Owning Build Package: Build Package 06.
 
-Purpose: local VS Code/GitHub Copilot adapter surface. Each `.agent.md` file is a thin wrapper that points to canonical PRA, prompt, and skill artefacts and appears in the local Copilot Chat agent dropdown when this workspace is open.
+Purpose: canonical local VS Code/GitHub Copilot adapter surface. Each `.agent.md` file is a thin wrapper that points to canonical PRA, prompt, and skill artefacts and appears in the local Copilot Chat agent dropdown when this workspace is open.
 
 Who uses it: PRA/adapter authors and local operators.
 
@@ -101,19 +105,19 @@ Path: `tools/`
 
 Owning Build Package: Build Package 03.
 
-Purpose: future local helper scripts for setup, validation, testing, or export steps.
+Purpose: local helper scripts for setup, validation, testing, hook guardrails, or export steps when authorized.
 
 Who uses it: package maintainers and operators.
 
 Allowed file types: Markdown README in Build Package 01; scripts only when Build Package 03 authorizes them.
 
-Belongs here: governed local utilities that prepare folders or validate artifacts.
+Belongs here: governed local utilities that prepare folders or validate artifacts; reusable hook scripts under `tools/hooks/` including block-only prewrite guard, focused validator postwrite, session-stop summary, precommit validator, hook allow-list YAML, and hook README.
 
-Does not belong here: skills, prompt cards, PRAs, cloud deployment code, MCP connectors, secrets, or runtime services.
+Does not belong here: skills, prompt cards, PRAs, cloud deployment code, MCP connectors, secrets, runtime services, provider hook config JSON (that lives under `.github/hooks/`), or plugin package files.
 
-Populated by: Build Package 03.
+Populated by: Build Package 03 for core tools; WP-12C provider-projection gates for `tools/hooks/`.
 
-Build Package 01 status: reserved with README only.
+Current status: active for local validators and reusable hook implementation. Hook scripts validate or block; they do not author review content.
 
 ## Root Area 06 — `prompts/`
 
@@ -267,7 +271,7 @@ Who uses it: operators, validators, scorers, and reviewers.
 
 Allowed file types: Markdown READMEs, Markdown chain outputs, Markdown run-log, YAML run-profile, byte-copy inputs (PNG, Mermaid `.mmd`, Markdown). Layout: `runs/README.md`, plus governed `runs/<run_id>/` folders. The first canonical governed fixture is `runs/RUN-001/` for `sample-001-dfd-crop`; it contains `README.md`, `run-profile.yaml`, `00-run-log.md`, `inputs/` (6 byte-copies of `samples/sample-001-dfd-crop/inputs/`), and an empty governed `dfd/` folder. The 17 RS outputs (`01-input-inventory.md` … `17-accuracy-score.md`) and 9 DFD outputs (`dfd/dfd-01-intake-quality-check.md` … `dfd/dfd-09-extraction-summary.md`) are reserved future paths produced when the operator executes the Build Package 04–09 chain — Build Package 11 does NOT create them.
 
-Belongs here: governed run folders following the canonical shape pinned in `validation/run-folder-shape-checklist.md`. Run logs follow `validation/run-log-checklist.md` (file shape from `templates/output/output-00-run-log-template.md`; row patterns from `templates/run/`). Comparison/scoring procedure is recorded in `validation/run-comparison-checklist.md`. Other `runs/RUN-*` folders are smoke runs from `tools/New-AisrafRun.ps1` and must be removed before human git stage (per `validation/no-drift-rules.md`).
+Belongs here: governed run folders following the canonical shape pinned in `validation/run-folder-shape-checklist.md`. Run logs follow `validation/run-log-checklist.md` (file shape from `templates/output/output-00-run-log-template.md`; row patterns from `templates/run/`). Comparison/scoring procedure is recorded in `validation/run-comparison-checklist.md`. Other `runs/RUN-*` folders are smoke runs from `tools/New-AisrafRun.ps1`. `runs/RUN-SMOKE-LOCAL-*` folders are local smoke evidence, locally excluded from normal staging, and are not release fixtures unless separately approved.
 
 Does not belong here: source artifacts, expected baselines (those live under `samples/<sample_id>/expected/` and are read-only at run time), hidden reports, secrets, credentials, real PII / PAN / SSN / PHI / production endpoints, diagrams, release exports, package source files, JSON expected baselines (founder decision Q1 of Build Package 10: Markdown-only), executable scripts, schemas outside `config/`, modifications to files under `samples/<sample_id>/` from a run, or any `executed_by_operator` claim without `postback_execution_status: executed_by_operator` plus a matching `templates/run/postback-log-entry-row-template.md` row in `00-run-log.md`. Top-level `runs/` accepts only `README.md`. Any `runs/<run_id>/` accepts only `README.md`, `run-profile.yaml`, `00-run-log.md`, `inputs/`, `dfd/`, the 17 RS chain-output Markdown files, and the optional Jira/Confluence post-back drafts.
 
@@ -285,15 +289,15 @@ Purpose: future diagram source, render, and accessibility lanes.
 
 Who uses it: diagram authors, documentation authors, validators, and release authors.
 
-Allowed file types: Markdown README in Build Package 01; later source/render/alt-text artifacts when Build Package 13 authorizes them.
+Allowed file types: Markdown README only at WP-12C-K1B-A; later source/render/alt-text artifacts only when WP-13 authorizes them after plugin install reality.
 
-Belongs here: governed diagram material only after the diagram Build Package begins.
+Belongs here: governed diagram material only after the diagram Build Package begins and the WP-12C-L install validation gate has passed.
 
-Does not belong here: Build Package 01 diagram source, PNG, SVG, PDF, alt-text, diagram index, release exports, or runtime proof.
+Does not belong here: diagram source, PNG, SVG, PDF, alt-text, diagram index, release exports, or runtime proof at WP-12C-K1B-A.
 
 Populated by: Build Package 13.
 
-Build Package 01 status: reserved with README only.
+Current status: blocked/readme-only. WP-13 remains blocked.
 
 ## Root Area 15 — `docs/`
 
@@ -327,7 +331,7 @@ Who uses it: validators, package maintainers, future build agents, and release o
 
 Allowed file types: Markdown validation documents only. The single index file `validation/README.md` is the taxonomy index with a top-of-file BLOCKERS section; `validation/no-drift-rules.md` carries the cross-package no-drift contract (Build Package 01 baseline plus Build Package 12 amendments). All other files are governed checklists for one specific gate (per package, per registry, per chain stage, per sample, per run, per cross-cutting concern, per forward-looking pre-render gate, or per final-QA closure).
 
-Allowed file list (Build Package 01–12, fixed at 39 files until a future package amends):
+Allowed file list: governed by `tools/Test-AisrafPackage.ps1` Check 11 and amended only by authorized package gates. The list began with Build Package 01-12 validation files and has been extended by later governed 10A/11A/WP-12C evidence and roadmap files.
 - `README.md` (validation taxonomy index; rebuilt by Build Package 12)
 - `no-drift-rules.md` (Build Package 01 baseline; Build Package 12 amendments appended)
 - `release-readiness-checklist.md` (Build Package 15 placeholder; not in scope for Build Package 12 framework deliverable)
@@ -344,11 +348,11 @@ Belongs here: Build Package 01 foundation checklist, Build Package 01 no-drift r
 
 Does not belong here: generated run outputs, hidden reports, release binaries, runtime validators, lowered standards, runbook prose, operator-walkthrough narratives, scripted remediation language, sample DFD redraws, or any executable validator code (validators live under `tools/`, not `validation/`).
 
-Populated by: Build Package 01 for foundation checks; Build Package 02–11 for per-package and per-registry checklists; Build Package 12 for the full validation framework (10 new files plus the rebuilt taxonomy index and amended no-drift rules) and the carried-forward `BP12-SAMPLE-DFD-BLOCKER` blocker.
+Populated by: Build Package 01 for foundation checks; Build Package 02-11 for per-package and per-registry checklists; Build Package 12 for the full validation framework; 10A/11A for corrective evidence; WP-12C for operator-experience, projection, hook, sample-preview, controlled-output, and plugin-roadmap governance files when validator allow-lists authorize them.
 
 Carried-forward blockers note: The `validation/` folder is the canonical home of carried-forward blockers across the prototype build sequence. `BP12-SAMPLE-DFD-BLOCKER` (severity HARD, owner founder) is recorded in 6 validation files (`sample-input-readiness-checklist.md`, `expected-output-lint-checklist.md`, `diagram-readiness-pre-render-checklist.md`, `no-drift-rules.md`, `package-12-validation-checklist.md`, `final-qa-checklist.md`) plus `PACKAGE-MANIFEST.yaml`. The blocker pins Build Package 13 entry until a founder-approved Package 10A / 11A correction lands or sample-002 with a clean DFD is authorized.
 
-Build Package 12 status: active for Build Package 01–12 validation files plus the carried-forward `BP12-SAMPLE-DFD-BLOCKER`.
+Current status: active validation authority. K1B-A may update existing WP-12C roadmap/proposed-tree authority notes only; K1B-B is required for validator allow-list changes.
 
 ## Root Area 17 — `release/`
 
@@ -360,15 +364,15 @@ Purpose: future generated reader artifacts and release metadata.
 
 Who uses it: release authors, final QA, package maintainers, and approvers.
 
-Allowed file types: Markdown README in Build Package 01; later release notes/manifests and generated artifacts when Build Package 15 authorizes them.
+Allowed file types: Markdown README only at WP-12C-K1B-A; later release notes/manifests and generated artifacts only when the governed release or solution-package gate authorizes them.
 
-Belongs here: release packaging outputs only after the release Build Package begins.
+Belongs here: release packaging outputs only after the release or solution-package Build Package begins and required upstream evidence exists.
 
-Does not belong here: DOCX/PDF/PPTX/ZIP in Build Package 01, run outputs, prompts, skills, diagrams, runtime code, or cloud resources.
+Does not belong here: DOCX/PDF/PPTX/ZIP at WP-12C-K1B-A, run outputs, prompts, skills, diagrams, runtime code, cloud resources, plugin install bundles, or Git publication evidence.
 
 Populated by: Build Package 15, finalized by Build Package 16.
 
-Build Package 01 status: reserved with README only.
+Current status: blocked/readme-only. Release output remains unauthorized.
 
 ## Root Area 18 — `authoring-agents/`
 
@@ -389,3 +393,41 @@ Does not belong here: runtime agents, PRA specs, `.agent.md` adapters, prompt ca
 Populated by: Build Package 01.
 
 Build Package 01 status: active.
+
+## Root Area 19 — `.copilot-skills/`
+
+Path: `.copilot-skills/`
+
+Owning Build Package: WP-12C-H / WP-12C-I projection governance.
+
+Purpose: Copilot wrapper and operator-card projection surface for the seven AISRAF operator roles.
+
+Who uses it: local operators, provider-projection validators, package maintainers, and Copilot users comparing wrapper behavior to canonical `.agents/`, PRAs, prompts, and skills.
+
+Allowed file types: Markdown README, seven `aisraf-*.skill.md` wrapper cards, and seven `aisraf-*.operator-card.md` operator cards.
+
+Belongs here: thin local/operator wrappers and operator cards that reference canonical `.agents/`, `prototype-agents/`, `prompts/`, and `skills/` paths without copying canonical bodies.
+
+Does not belong here: canonical skill contracts, canonical prompts, PRA specs, runtime code, external post-back proof, generated outputs, plugin bundle files, or release artifacts.
+
+Populated by: WP-12C provider-projection gates.
+
+Current status: active projection surface. It is not the provider Agent Skill package format; Copilot-discoverable Agent Skill packages live under `.github/skills/`.
+
+## Future Gated Surface — `plugins/`
+
+Path: `plugins/`
+
+Owning Build Package: future WP-12C-K2/K3 after WP-12C-K1B-B validator allow-list patch passes.
+
+Purpose: future projection packaging surface for provider-scoped install bundles, starting with `plugins/aisraf-copilot-plugin/`.
+
+Who uses it: future plugin packagers, plugin install testers, validators, and release approvers after the gate opens.
+
+Allowed file types: none at WP-12C-K1B-A because the folder must not exist yet. Future allowed files must be defined by validator allow-list updates before scaffold creation.
+
+Belongs here: future plugin README, manifest, test card, evidence checklist, packaging plan, and bundled-by-reference projection folders only after K1B-B/K2 authorization.
+
+Does not belong here: canonical source bodies, hand-copied prompt/skill/PRA/template/catalog/blueprint content, runtime/cloud/MCP/Jira/Confluence/Rovo proof, diagrams, release artifacts, or install evidence before WP-12C-L.
+
+Current status: blocked. `plugins/` remains a future gated surface, not current scaffold.

@@ -1,0 +1,250 @@
+blueprint_id: BP-NON-AI-DATAFLOW-BASELINE
+blueprint_name: Non-AI Dataflow Baseline
+owning_build_package: Build Package 08
+status: active
+
+purpose: >
+  Recognize traditional service-to-service or service-to-store data flows
+  with no AI model invocation in the chain. The blueprint helps a reviewer
+  rule out AI involvement before pursuing AI-specific patterns and confirms
+  the AI Action Level is L0 when no model_call interaction is present
+  anywhere in the reviewed chain.
+
+applicability:
+  category: platform-independent
+  ai_action_levels:
+    - AAL-L0
+    - AAL-UNKNOWN
+  primary_interaction_types:
+    - IT-DATA-FLOW
+    - IT-OBSERVABILITY
+    - IT-CONTROL-PLANE-ACTION
+  primary_concerns:
+    - Are any model_call, tool_call, write_back, agent_to_agent, or hitl_approval interactions present in the chain?
+    - Does any flow cross the internet boundary?
+    - Is any sensitive data class transmitted without transport protection?
+  not_applicable_when: |
+    Any IT-MODEL-CALL, IT-TOOL-CALL, IT-AGENT-TO-AGENT, or IT-HITL-APPROVAL
+    interaction is supported in the chain. Escalate the primary match to
+    BP-RAG-RETRIEVAL, BP-MODEL-ENDPOINT-CALL, BP-TOOL-USING-AGENT, BP-API-WRITEBACK,
+    BP-HITL-APPROVAL, BP-AGENT-TO-AGENT, BP-AI-WORKFLOW, or BP-AI-SAAS-INTEGRATION
+    as appropriate.
+
+catalog_dependencies:
+  - catalog_id: interaction-type-catalog
+    family_id: interactions
+    path: catalogs/interactions/interaction-type-catalog.yaml
+    use: confirm absence of AI interaction types and presence of data_flow / observability / control-plane only
+  - catalog_id: flow-direction-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-direction-catalog.yaml
+    use: classify flow direction for each row in the baseline chain
+  - catalog_id: flow-evidence-rule-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-evidence-rule-catalog.yaml
+    use: enforce per-flow evidence rules and the artifact-class non-propagation rule
+  - catalog_id: boundary-type-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-type-catalog.yaml
+    use: identify entry/internal/store boundaries
+  - catalog_id: boundary-crossing-rule-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-crossing-rule-catalog.yaml
+    use: identify internet exposure for entry flows
+  - catalog_id: trust-zone-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/trust-zone-catalog.yaml
+    use: classify source and destination trust zones
+  - catalog_id: authentication-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authentication-catalog.yaml
+    use: identify customer and service authentication markers at boundaries
+  - catalog_id: data-class-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/data-class-catalog.yaml
+    use: identify Class 5 / PCI labels on flows
+  - catalog_id: transport-protection-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/transport-protection-catalog.yaml
+    use: identify transport protection on internet-crossing entry flows
+  - catalog_id: confidence-level-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/confidence-level-catalog.yaml
+    use: cross-cutting confidence levels for blueprint match disposition
+  - catalog_id: ai-action-level-catalog
+    family_id: review
+    path: catalogs/review/ai-action-level-catalog.yaml
+    use: confirm AAL-L0 when no model_call is present
+  - catalog_id: finding-category-catalog
+    family_id: review
+    path: catalogs/review/finding-category-catalog.yaml
+    use: scope of supported finding categories for this blueprint
+  - catalog_id: recommendation-type-catalog
+    family_id: review
+    path: catalogs/review/recommendation-type-catalog.yaml
+    use: scope of supported recommendation types for this blueprint
+  - catalog_id: proof-vs-signal-rule-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    use: global signal-vs-proof rule referenced by every blueprint claim
+
+required_inputs:
+  - input_id: review_table_chain
+    description: chain of flow rows produced by SK-DATA-FLOW-TABLE-BUILD with interaction types resolved
+    source: skills/rs/SK-DATA-FLOW-TABLE-BUILD.md output
+  - input_id: ai_action_level_classification
+    description: AI Action Level result from SK-AI-ACTION-LEVEL-CLASSIFY for the highest-action-level step
+    source: skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md output
+  - input_id: confidence_levels
+    description: per-row confidence values from confidence-level-catalog
+    source: catalogs/data-protection/confidence-level-catalog.yaml
+
+match_conditions:
+  - condition_id: BP-NON-AI-DATAFLOW-BASELINE-MATCH-01
+    description: No AI interaction types are supported anywhere in the chain; the chain consists of data_flow, observability, and/or control-plane action only.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        required_values: [IT-DATA-FLOW]
+      - catalog_id: interaction-type-catalog
+        absent_values: [IT-MODEL-CALL, IT-TOOL-CALL, IT-AGENT-TO-AGENT, IT-HITL-APPROVAL]
+      - catalog_id: ai-action-level-catalog
+        required_values: [AAL-L0]
+
+candidate_conditions:
+  - condition_id: BP-NON-AI-DATAFLOW-BASELINE-CANDIDATE-01
+    description: Most flows are data_flow, but at least one flow has unknown interaction type and the unknown does not yet conflict with the baseline.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        partial_support_values: [IT-DATA-FLOW, IT-UNKNOWN]
+      - catalog_id: confidence-level-catalog
+        partial_support_values: [medium, low]
+
+no_match_conditions:
+  - condition_id: BP-NON-AI-DATAFLOW-BASELINE-NO-MATCH-01
+    description: At least one IT-MODEL-CALL, IT-TOOL-CALL, IT-AGENT-TO-AGENT, or IT-HITL-APPROVAL is supported in the chain.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        absent_or_conflicting_values: [IT-MODEL-CALL, IT-TOOL-CALL, IT-AGENT-TO-AGENT, IT-HITL-APPROVAL]
+      - catalog_id: ai-action-level-catalog
+        conflicting_values: [AAL-L1, AAL-L2, AAL-L3, AAL-L4]
+
+unknown_conditions:
+  - condition_id: BP-NON-AI-DATAFLOW-BASELINE-UNKNOWN-01
+    description: Interaction types are unresolved across multiple chain rows and the chain extent is not established.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        unknown_when_value: IT-UNKNOWN
+      - catalog_id: confidence-level-catalog
+        unknown_when_value: unknown
+
+material_missing_facts:
+  - fact_id: BP-NON-AI-DATAFLOW-BASELINE-MMF-01
+    description: Whether any flow in the chain is a model_call, tool_call, agent_to_agent, or HITL approval that has not been visibly labeled.
+    catalog_reference: interaction-type-catalog
+    affects:
+      - blueprint_match
+      - ai_action_level
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-NON-AI-DATAFLOW-BASELINE-MMF-02
+    description: Whether the entry boundary is internet-exposed and whether transport protection labels apply.
+    catalog_reference: boundary-crossing-rule-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-NON-AI-DATAFLOW-BASELINE-MMF-03
+    description: Whether sensitive data classes (Class 5 / PCI) are present on any flow but unlabeled.
+    catalog_reference: data-class-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+
+supported_finding_categories:
+  - finding_category_id: FC-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-DEFICIENCY
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-EVIDENCE-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-OBSERVATION
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-UNKNOWN
+    catalog: catalogs/review/finding-category-catalog.yaml
+
+supported_recommendation_types:
+  - recommendation_type_id: RT-ADD-CONTROL
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-EXPAND-CONTROL-SCOPE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-REQUEST-OWNER-OR-EVIDENCE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-ROUTE-TO-VALIDATION-TICKET
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+
+human_review_gate:
+  required: true
+  notes: >
+    A baseline match confirms that no AI interaction is in scope. Severity,
+    remediation prose, and final disposition are owned by the consuming
+    skills and human review. The blueprint records the shape, not the
+    decision.
+
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - implementation_proof_from_blueprint_match
+  - severity_computed_inside_blueprint
+  - ai_action_level_computed_inside_blueprint
+  - score_computed_inside_blueprint
+  - finding_prose_inside_blueprint
+  - recommendation_prose_inside_blueprint
+  - handoff_prose_inside_blueprint
+  - validation_ticket_prose_inside_blueprint
+  - owner_routing_inside_blueprint
+  - new_catalog_value_introduced_inside_blueprint
+  - approved_security_stack_from_blueprint_match
+
+source_reference:
+  v0_01_artifact: blueprints/BP-NON-AI-DATAFLOW-BASELINE.md
+  v0_01_path: aisraf-sas-prototype-skill-chain-pack-v0.01/blueprints/BP-NON-AI-DATAFLOW-BASELINE.md
+  derivation_mode: restructured_and_improved
+  notes: >
+    Translated the v0.01 25-section Markdown form into structured YAML.
+    AI Action Level mapped to v0.1.2 ai-action-level-catalog values
+    (L1 in v0.01 corresponds to AAL-L0 in v0.1.2 since AAL-L0 explicitly
+    means no AI involvement). Removed prose recommendation tables and
+    owner routing; finding categories and recommendation types reference
+    Package 07 catalog IDs only.
+
+version_notes: >
+  Initial Build Package 08 release. Four-state matching (matched, candidate,
+  no_match, unknown) per founder decision Q1.
+
+match_evidence_policy:
+  match_requires_supported_catalog_values: true
+  candidate_allows_partial_support: true
+  no_match_requires_clear_absence_or_conflict: true
+  unknown_when_required_inputs_missing: true
+  human_review_required: true
+
+catalog_value_policy:
+  may_reference_catalog_values_only: true
+  may_not_introduce_new_catalog_values: true
+  missing_catalog_value_action: "record material_missing_fact; do not invent"
+
+output_boundary:
+  does_not_write_outputs: true
+  does_not_create_templates: true
+  does_not_generate_handoff_text: true
+  supports_future_outputs_only_through_templates: true
+
+runtime_and_external_execution:
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false

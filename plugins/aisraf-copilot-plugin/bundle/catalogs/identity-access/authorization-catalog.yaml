@@ -1,0 +1,123 @@
+catalog_id: authorization-catalog
+catalog_name: Authorization Catalog
+schema_version: aisraf_authorization_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of authorization values used in flow rows,
+  findings, and recommendations: present, partial, planned, and unknown.
+  Authorization is recorded only when explicit visible or note-supported
+  evidence exists. It is never derived from authentication marker
+  visibility, gateway presence, IdP/IAM presence, or component label alone.
+
+consumers:
+  prompts:
+    - prompts/rs/05-boundary-stack-detect.prompt.md
+    - prompts/rs/07-missing-fact-question-generate.prompt.md
+    - prompts/rs/10-finding-recommendation-write.prompt.md
+  skills:
+    - skills/rs/SK-MISSING-FACT-IDENTIFY.md
+    - skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+    - skills/rs/SK-FINDING-CLASSIFY.md
+    - skills/rs/SK-RECOMMENDATION-WRITE.md
+  pras:
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  adapters:
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-blueprint-questioner.agent.md
+    - .agents/aisraf-finding-recommender.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-AZ-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-AZ-02
+    rule: Authorization is supported when (a) policy enforcement, role scope, entitlement, or approval authority is explicitly visible or (b) a source note explicitly describes authorization. Otherwise authorization is unknown.
+  - rule_id: ER-AZ-03
+    rule: Authentication marker visibility is not authorization evidence.
+  - rule_id: ER-AZ-04
+    rule: Gateway, IdP/IAM, or policy-checkpoint label visibility is not authorization evidence.
+  - rule_id: ER-AZ-05
+    rule: Planned authorization is recorded as planned, not as present.
+
+prohibited_claims:
+  - authorization_present_from_authentication_marker_alone
+  - authorization_present_from_gateway_label_alone
+  - authorization_present_from_identity_provider_label_alone
+  - authorization_present_from_role_label_alone
+  - authorization_present_from_policy_checkpoint_label_alone
+  - planned_authorization_treated_as_implemented
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Planned authorization is not implemented authorization.
+  - Gateway or IdP visibility is not authorization enforcement.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/authn-authz-marker-catalog.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/identity-access/authorization-catalog.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/identity-access/approval-policy-gate-rules.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: AZ-PRESENT
+    label: present
+    description: Authorization, policy enforcement, role scope, entitlement, or approval authority is explicitly visible or note-supported on the flow/component under review.
+    when_to_use: An explicit authorization statement, role scope, policy rule, or entitlement is supported by visible label or source note.
+    when_not_to_use: Only authentication marker is visible; or only a gateway/IdP/policy-checkpoint label is visible; or authorization is planned but not implemented.
+    evidence_required: explicit authorization, role/entitlement, or approval-authority statement supported by source
+    confidence_guidance: High when explicit; medium when scope is partial; unknown when source is contested.
+    notes: Use partial when scope is incomplete (see AZ-PARTIAL).
+
+  - id: AZ-PARTIAL
+    label: partial
+    description: Some checkpoint, policy rule, or scope is visible, but coverage or scope is incomplete.
+    when_to_use: A policy rule or checkpoint is visible but does not cover the full scope of the flow under review.
+    when_not_to_use: No source supports authorization; or full coverage is supported.
+    evidence_required: visible scope-limited authorization plus note describing the gap
+    confidence_guidance: Medium typically; record the unscoped portion as a missing fact for materiality review.
+    notes: Use partial only when there is real partial evidence, not as a soft fallback.
+
+  - id: AZ-PLANNED
+    label: planned
+    description: Source explicitly says authorization is planned but not currently implemented.
+    when_to_use: A diagram or note explicitly marks the authorization as planned, future, or roadmap.
+    when_not_to_use: Source is silent or describes current state.
+    evidence_required: explicit planned/future/roadmap label
+    confidence_guidance: High when explicitly labeled; medium when inferred from future-state diagram; unknown when ambiguous.
+    notes: Planned authorization is not present authorization.
+
+  - id: AZ-UNKNOWN
+    label: unknown
+    description: Authorization is not visible, unclear, contradictory, or unsupported.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one entry above is supported.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown drives missing-fact and validation-note routing when materiality applies.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01
+  authorization-catalog and approval-policy-gate-rules into a closed list of
+  four controlled values. Authentication-vs-authorization separation is the
+  primary purpose of this catalog.

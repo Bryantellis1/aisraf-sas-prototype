@@ -1,0 +1,304 @@
+blueprint_id: BP-AI-SAAS-INTEGRATION
+blueprint_name: AI SaaS Integration
+owning_build_package: Build Package 08
+status: active
+
+purpose: >
+  Recognize patterns in which the application sends data to an external
+  AI SaaS provider (e.g., OpenAI, Google Gemini, Anthropic, Azure
+  OpenAI) across an internet or third-party boundary and receives model
+  output in return. The cloud-pattern blueprint scopes the catalog
+  evidence required to recognize the SaaS boundary crossing, surfaces
+  missing facts about provider identity, data class on outbound flows,
+  third-party data-sharing controls, and write-back from SaaS output,
+  and lists the finding and recommendation categories the consuming
+  skills may select from.
+
+applicability:
+  category: cloud-patterns
+  ai_action_levels:
+    - AAL-L1
+    - AAL-L2
+    - AAL-L3
+    - AAL-L4
+    - AAL-UNKNOWN
+  primary_interaction_types:
+    - IT-MODEL-CALL
+    - IT-DATA-FLOW
+  primary_concerns:
+    - Which AI SaaS provider is used and what data residency or DPA applies?
+    - What data class is transmitted to the provider?
+    - Is an egress gateway or policy checkpoint visible before the SaaS boundary?
+    - Is SaaS output written back to an internal store or system of record?
+    - Is a HITL gate present at AAL-L3+ for any SaaS-driven downstream action?
+  not_applicable_when: |
+    No internet-crossing or third-party-provider boundary is supported on
+    any IT-MODEL-CALL flow (use BP-MODEL-ENDPOINT-CALL or BP-RAG-RETRIEVAL).
+    SaaS use is part of a larger composed workflow with multiple AI sub-patterns
+    (BP-AI-WORKFLOW may be primary; this blueprint becomes a secondary candidate).
+
+catalog_dependencies:
+  - catalog_id: interaction-type-catalog
+    family_id: interactions
+    path: catalogs/interactions/interaction-type-catalog.yaml
+    use: confirm IT-MODEL-CALL with internet-crossing data flow
+  - catalog_id: flow-direction-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-direction-catalog.yaml
+    use: classify outbound and inbound flow directions
+  - catalog_id: flow-evidence-rule-catalog
+    family_id: interactions
+    path: catalogs/interactions/flow-evidence-rule-catalog.yaml
+    use: enforce per-flow evidence rules
+  - catalog_id: boundary-type-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-type-catalog.yaml
+    use: identify saas-provider and internet boundaries
+  - catalog_id: boundary-crossing-rule-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/boundary-crossing-rule-catalog.yaml
+    use: detect internet boundary crossing to external SaaS provider
+  - catalog_id: trust-zone-catalog
+    family_id: boundaries
+    path: catalogs/boundaries/trust-zone-catalog.yaml
+    use: classify internal trust zone and external provider zone
+  - catalog_id: authentication-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authentication-catalog.yaml
+    use: identify auth markers at egress and at the provider endpoint
+  - catalog_id: authorization-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/authorization-catalog.yaml
+    use: identify authorization values for SaaS calls and SaaS-driven write-back
+  - catalog_id: identity-evidence-rule-catalog
+    family_id: identity-access
+    path: catalogs/identity-access/identity-evidence-rule-catalog.yaml
+    use: enforce identity evidence rules including least privilege at egress
+  - catalog_id: data-class-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/data-class-catalog.yaml
+    use: identify data class on outbound flows to the SaaS provider
+  - catalog_id: transport-protection-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/transport-protection-catalog.yaml
+    use: identify transit encryption on the egress path
+  - catalog_id: at-rest-protection-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/at-rest-protection-catalog.yaml
+    use: identify at-rest protection on stores receiving SaaS output (when write-back)
+  - catalog_id: confidence-level-catalog
+    family_id: data-protection
+    path: catalogs/data-protection/confidence-level-catalog.yaml
+    use: cross-cutting confidence levels for blueprint match disposition
+  - catalog_id: security-stack-marker-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/security-stack-marker-catalog.yaml
+    use: identify gateway / identity-checkpoint markers at the egress boundary
+  - catalog_id: control-signal-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/control-signal-catalog.yaml
+    use: classify control signal values for SaaS egress controls
+  - catalog_id: ai-action-level-catalog
+    family_id: review
+    path: catalogs/review/ai-action-level-catalog.yaml
+    use: scope of AI Action Levels supported by this pattern
+  - catalog_id: finding-category-catalog
+    family_id: review
+    path: catalogs/review/finding-category-catalog.yaml
+    use: scope of supported finding categories
+  - catalog_id: recommendation-type-catalog
+    family_id: review
+    path: catalogs/review/recommendation-type-catalog.yaml
+    use: scope of supported recommendation types
+  - catalog_id: proof-vs-signal-rule-catalog
+    family_id: security-stacks
+    path: catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml
+    use: global signal-vs-proof rule referenced by every blueprint claim
+
+required_inputs:
+  - input_id: review_table_chain
+    description: chain of flow rows with interaction types resolved
+    source: skills/rs/SK-DATA-FLOW-TABLE-BUILD.md output
+  - input_id: ai_action_level_classification
+    description: AI Action Level result for the highest-action-level step
+    source: skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md output
+  - input_id: boundary_crossing_records
+    description: boundary-crossing detection results identifying SaaS boundary
+    source: skills/rs/SK-BOUNDARY-CROSSING-DETECT.md output
+  - input_id: confidence_levels
+    description: per-row confidence values
+    source: catalogs/data-protection/confidence-level-catalog.yaml
+
+match_conditions:
+  - condition_id: BP-AI-SAAS-INTEGRATION-MATCH-01
+    description: An IT-MODEL-CALL is supported and the model endpoint sits on the far side of an internet boundary crossing to an external AI SaaS provider.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        required_values: [IT-MODEL-CALL, IT-DATA-FLOW]
+      - catalog_id: boundary-crossing-rule-catalog
+        required_values: [internet_boundary_crossing_to_external_saas]
+
+candidate_conditions:
+  - condition_id: BP-AI-SAAS-INTEGRATION-CANDIDATE-01
+    description: An IT-MODEL-CALL is supported and an internet-crossing flow is visible, but the destination's identity as an AI SaaS provider is unclear.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        partial_support_values: [IT-MODEL-CALL, IT-DATA-FLOW, IT-UNKNOWN]
+      - catalog_id: confidence-level-catalog
+        partial_support_values: [medium, low]
+
+no_match_conditions:
+  - condition_id: BP-AI-SAAS-INTEGRATION-NO-MATCH-01
+    description: No IT-MODEL-CALL is supported in the chain, or the model endpoint is plainly internal/managed-cloud (no internet crossing to a third-party AI SaaS).
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        absent_or_conflicting_values: [IT-MODEL-CALL]
+      - catalog_id: boundary-crossing-rule-catalog
+        absent_values: [internet_boundary_crossing_to_external_saas]
+
+unknown_conditions:
+  - condition_id: BP-AI-SAAS-INTEGRATION-UNKNOWN-01
+    description: Boundary classification for the model endpoint is undetermined; the provider identity cannot be resolved.
+    catalog_evidence:
+      - catalog_id: interaction-type-catalog
+        unknown_when_value: IT-UNKNOWN
+      - catalog_id: confidence-level-catalog
+        unknown_when_value: unknown
+
+material_missing_facts:
+  - fact_id: BP-AI-SAAS-INTEGRATION-MMF-01
+    description: Which AI SaaS provider is used, and what data processing agreement / data residency applies?
+    catalog_reference: identity-evidence-rule-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-AI-SAAS-INTEGRATION-MMF-02
+    description: Does the application send Class 5 or PCI data to the SaaS provider?
+    catalog_reference: data-class-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-AI-SAAS-INTEGRATION-MMF-03
+    description: Is there an approved egress gateway or policy checkpoint before the SaaS boundary?
+    catalog_reference: security-stack-marker-catalog
+    affects:
+      - finding_category
+      - recommendation_type
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-AI-SAAS-INTEGRATION-MMF-04
+    description: Is the SaaS response stored in an internal data store or system of record (write-back)?
+    catalog_reference: interaction-type-catalog
+    affects:
+      - blueprint_match
+      - ai_action_level
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+  - fact_id: BP-AI-SAAS-INTEGRATION-MMF-05
+    description: Is a HITL gate present at AAL-L3+ for any SaaS-driven downstream action?
+    catalog_reference: interaction-type-catalog
+    affects:
+      - ai_action_level
+      - finding_category
+    targeted_question_owner: skills/rs/SK-TARGETED-QUESTION-GENERATE.md
+
+supported_finding_categories:
+  - finding_category_id: FC-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-DEFICIENCY
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-EVIDENCE-GAP
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-OBSERVATION
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-RISK
+    catalog: catalogs/review/finding-category-catalog.yaml
+  - finding_category_id: FC-REQUIREMENT
+    catalog: catalogs/review/finding-category-catalog.yaml
+
+supported_recommendation_types:
+  - recommendation_type_id: RT-ADD-CONTROL
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-EXPAND-CONTROL-SCOPE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-DEFINE-SCOPE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-FORMALIZE-GATE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-REQUEST-OWNER-OR-EVIDENCE
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-ROUTE-TO-VALIDATION-TICKET
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+  - recommendation_type_id: RT-ROUTE-TO-PROCESS
+    catalog: catalogs/review/recommendation-type-catalog.yaml
+
+human_review_gate:
+  required: true
+  notes: >
+    Third-party DPA confirmation, data residency, PCI handling, and any
+    severity claim about the SaaS boundary are owned by the consuming
+    skills (SK-FINDING-CLASSIFY, SK-VALIDATION-NOTE-WRITE,
+    SK-RECOMMENDATION-WRITE) and human review. The blueprint never claims
+    that absence of a DPA finding means a DPA exists; the blueprint
+    surfaces the missing-fact question and lets human review and
+    validation tickets drive the answer.
+
+prohibited_claims:
+  - runtime_or_cloud_execution
+  - mcp_jira_confluence_rovo_execution
+  - adk_or_vertex_or_gcp_execution
+  - database_or_terraform_execution
+  - implementation_proof_from_blueprint_match
+  - severity_computed_inside_blueprint
+  - ai_action_level_computed_inside_blueprint
+  - score_computed_inside_blueprint
+  - finding_prose_inside_blueprint
+  - recommendation_prose_inside_blueprint
+  - handoff_prose_inside_blueprint
+  - validation_ticket_prose_inside_blueprint
+  - owner_routing_inside_blueprint
+  - new_catalog_value_introduced_inside_blueprint
+  - approved_security_stack_from_blueprint_match
+
+source_reference:
+  v0_01_artifact: blueprints/BP-AI-SAAS-INTEGRATION.md
+  v0_01_path: aisraf-sas-prototype-skill-chain-pack-v0.01/blueprints/BP-AI-SAAS-INTEGRATION.md
+  derivation_mode: restructured_and_improved
+  notes: >
+    Translated the v0.01 25-section Markdown form into structured YAML
+    aligned to Package 07 vocabulary. v0.01 used L1-L5; mapped to
+    AAL-L1 through AAL-L4 plus AAL-UNKNOWN. v0.01 used the typed
+    interactions saas_integration and internet_crossing; v0.1.2
+    represents these as IT-MODEL-CALL plus IT-DATA-FLOW with the SaaS
+    boundary classified through boundary-crossing-rule-catalog.
+
+version_notes: >
+  Initial Build Package 08 release. Four-state matching per founder
+  decision Q1. Sole controlled blueprint under blueprints/cloud-patterns/
+  per founder decision Q3.
+
+match_evidence_policy:
+  match_requires_supported_catalog_values: true
+  candidate_allows_partial_support: true
+  no_match_requires_clear_absence_or_conflict: true
+  unknown_when_required_inputs_missing: true
+  human_review_required: true
+
+catalog_value_policy:
+  may_reference_catalog_values_only: true
+  may_not_introduce_new_catalog_values: true
+  missing_catalog_value_action: "record material_missing_fact; do not invent"
+
+output_boundary:
+  does_not_write_outputs: true
+  does_not_create_templates: true
+  does_not_generate_handoff_text: true
+  supports_future_outputs_only_through_templates: true
+
+runtime_and_external_execution:
+  runtime_deployed: false
+  adk_deployed: false
+  cloud_resources_created: false
+  database_jobs_created: false
+  mcp_execution_available: false
+  jira_confluence_execution_available: false

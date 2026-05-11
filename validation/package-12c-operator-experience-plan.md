@@ -11,6 +11,21 @@ Status: **PLANNING_ONLY**. No skill wrappers, hooks, or settings files are creat
 - Owning Build Package: 12C.
 - Founder approval required: explicit, on this document and the four sub-checklists, before any wrapper, hook, or settings file is created.
 
+## Work Package Naming Convention
+
+Build Package IDs remain the internal execution, validation, package-order, and traceability identifiers. Work Package names are the human-facing names used for status, validation closeout, commit planning, and practical-guide references. Future references must carry both together, for example `BP12C-D / WP-12C-D -- Adapter & Provider Discovery Alignment`.
+
+## Work Package Register
+
+| Work Package ID | Friendly Name | Technical BP ID | Purpose | Current Status | Primary User/Audience | Canonical Assets | Projection Assets | Test Evidence | Next Gate |
+|---|---|---|---|---|---|---|---|---|---|
+| WP-12B | Post-Execution Governance Closure | BP12B | Close the executed RUN-001 chain and approved baseline/evidence posture. | closed evidence floor | founder, reviewer, package maintainer | run profiles, validation, tools/Test-*.ps1, RUN-001 evidence | none beyond governed run evidence | BP12B validator pass and sealed RUN-001 evidence | WP-12C implementation and adapter checks |
+| WP-12C | Operator Experience Foundation | BP12C | Make AISRAF usable by people through agent/skill/hook/operator-card surfaces. | implementation surface present; validation in progress | local operator, founder, reviewer | registries, PRAs, prompts, skills, templates, catalogs, validation, tools/Test-*.ps1 | .agents/, .github/agents/, .copilot-skills/, tools/hooks/ | package and BP12A validators plus hook smoke | WP-12C-D/E closeout |
+| WP-12C-D | Adapter & Provider Discovery Alignment | BP12C-D | Confirm Local, GitHub Copilot, Claude, and future provider projection behavior. | validation pass pending founder commit | operator, adapter maintainer | registries, prompt-skill-agent mapping, validation, tools/Test-*.ps1 | .agents/, .github/agents/, .copilot-skills/, tools/hooks/, Claude local projection if needed | BP12A adapter projection checks and git hygiene | WP-12C-E harness closeout |
+| WP-12C-E | Interactive Operator Test Harness | BP12C-E | Prove chat-preview, role-smoke, hook, validator, and controlled-output test paths. | static harness pass; manual interactive run pending | operator, founder, reviewer | validation checklists, run profiles, templates, tools/Test-*.ps1 | wrappers, operator cards, hooks | role smoke, chat preview, hook smoke, validator ladder; controlled output only on approved scratch run | WP-12C-F strategy confirmation |
+| WP-12C-F | Cross-Provider Runtime Adapter Strategy | BP12C-F | Define future adapter targets for Microsoft Agent Framework, Azure AI Foundry, Google ADK, and Claude without implementing runtime execution yet. | strategy only; no runtime execution claimed | architect, future runtime implementer | registries, PRAs, prompts, skills, templates, catalogs, validators | future Microsoft Agent Framework adapter, future Azure AI Foundry deployment adapter, Google ADK future adapter, Claude local projection | design review and no-fake-proof validation | WP-13 after D/E/F closeout and founder approval |
+| WP-13 | Diagram & Release View Pack | BP13 | Generate final framework/package diagrams only after WP-12C-D/E are closed. | next allowed by manifest when gates are satisfied; not started here | founder, reviewer, release reader | diagrams contract, validation, templates, package manifest | future diagram and release-view projections | diagram readiness gate and package validators | BP13 diagram authoring approval |
+
 ## Purpose
 
 Complete the practical operator layer so AISRAF is a usable, testable, repeatable Copilot/Claude-style workflow — not just canonical Markdown contracts. Specifically:
@@ -20,9 +35,17 @@ Complete the practical operator layer so AISRAF is a usable, testable, repeatabl
 3. Author **operator-experience instructions** for each wrapper so a non-author practitioner can run, interpret, and stop a review.
 4. Define a layered **test harness** that proves discovery, role smoke, chat preview, controlled output, scoring regression, operator-card usability, and (deferred) bring-your-own-DFD intake.
 
+## Adapter Strategy Principle
+
+**Define once, project many.** Canonical truth stays in `skill-registry.yaml`, `prompt-registry.yaml`, `prototype-agent-registry.yaml`, `validation/prompt-skill-agent-mapping-checklist.md`, `prototype-agents/`, `prompts/`, `skills/`, `templates/`, `catalogs/`, run profiles, `validation/`, and `tools/Test-*.ps1`. Provider-specific surfaces are projections only: `.agents/`, `.github/agents/`, `.github/skills/`, `.github/hooks/`, `.copilot-skills/`, `tools/hooks/`, Claude local projection if needed, future Microsoft Agent Framework adapter, future Azure AI Foundry deployment adapter, and future Google ADK adapter.
+
+GitHub Copilot / VS Code remains the current operator-experience priority. Microsoft Agent Framework is the primary future runtime adapter target. Azure AI Foundry is the primary future hosted implementation/deployment target. Google ADK remains in scope as a future optional adapter, not removed. Claude remains a useful local/provider projection, but it is not the blocking priority for BP12C commit readiness.
+
+No projection file becomes the source of truth. No adapter duplicates canonical logic. No hook silently generates review content. No runtime, cloud, Jira, Confluence, MCP, ADK, Microsoft Agent Framework, Azure AI Foundry, Google ADK, Claude, database, Terraform, release, or external post-back execution is claimed without evidence and explicit package authorization.
+
 ## Observed Gap (Trigger)
 
-The Agent Customizations UI shows AISRAF custom agents (`.github/agents/aisraf-*.agent.md`) but only built-in skills and no AISRAF lifecycle hooks. This is a deferred operator-experience gap, not a BP12B validator blocker. BP12B closed all three validators green; the canonical chain executed RUN-001 successfully; the operator surface is incomplete.
+The Agent Customizations UI showed AISRAF custom agents (`.github/agents/aisraf-*.agent.md`) but only built-in skills and no AISRAF lifecycle hooks. The root cause is that the earlier `.copilot-skills/*.skill.md` files were flat local/operator wrappers, not Agent Skills packages. WP-12C-H repairs this by adding `.github/skills/<skill-id>/SKILL.md` packages and `.github/hooks/*.json` provider hook config while retaining `.copilot-skills/` and `tools/hooks/` as reusable projections.
 
 ## Out-of-Scope (Hard Pins)
 
@@ -34,7 +57,7 @@ BP12C does **not**:
 - Modify any blueprint match logic, scoring rubric, or AI Action Level mapping.
 - Author diagrams, runbooks, release artifacts, or sample-002.
 - Generate content silently from hooks. Hooks block, validate, or summarize.
-- Make external calls (Jira, Confluence, MCP, ADK, runtime, cloud, database, Terraform).
+- Make external calls (Jira, Confluence, MCP, ADK, Microsoft Agent Framework, Azure AI Foundry, runtime, cloud, database, Terraform).
 - Author skill wrappers or hooks during the **planning phase**. Implementation is a separate, explicitly-approved step.
 
 ## Phase Split
@@ -53,8 +76,8 @@ Each wrapper is a thin Copilot-native projection of an existing canonical adapte
 | 1 | `aisraf-orchestration` | `.agents/aisraf-orchestrator.agent.md` | `prototype-agents/PRA-01-SAS-REVIEW-ORCHESTRATOR.md` | none (orchestration owns no skill) | `prompts/rs/00-run-full-chain.prompt.md` |
 | 2 | `aisraf-input-read` | `.agents/aisraf-input-reader.agent.md` | `prototype-agents/PRA-02-INPUT-READER.md` | `skills/rs/SK-INPUT-PACKAGE-READ.md` | `prompts/rs/01-input-package-read.prompt.md` |
 | 3 | `aisraf-dfd-extraction` | `.agents/aisraf-dfd-extractor.agent.md` | `prototype-agents/PRA-03-DFD-EXTRACTOR.md`, `prototype-agents/PRA-04-LEGEND-NORMALIZER.md` | `skills/rs/SK-DFD-VISUAL-READ.md`, `skills/rs/SK-LEGEND-NORMALIZE.md`, `skills/rs/SK-COMPONENT-EXTRACT.md`, `skills/rs/SK-FLOW-EXTRACT.md`, `skills/rs/SK-BOUNDARY-CROSSING-DETECT.md`, `skills/dfd/SK-DFD-0[1-9]-*.md` | `prompts/rs/02-dfd-visual-read.prompt.md`, `prompts/rs/03-legend-normalization.prompt.md`, `prompts/rs/04-design-fact-extract.prompt.md`, `prompts/rs/05-boundary-stack-detect.prompt.md`, `prompts/dfd/02-dfd-intake-quality-check.prompt.md` through `prompts/dfd/10-dfd-extraction-summarize.prompt.md` |
-| 4 | `aisraf-review-table-build` | `.agents/aisraf-review-table-builder.agent.md` | `prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md` | `skills/rs/SK-SECURITY-STACK-ASSESS.md`, `skills/rs/SK-DATA-FLOW-TABLE-BUILD.md`, `skills/rs/SK-MISSING-FACT-IDENTIFY.md` | `prompts/rs/06-review-table-build.prompt.md`, `prompts/rs/07-missing-fact-question-generate.prompt.md` |
-| 5 | `aisraf-blueprint-questioning` | `.agents/aisraf-blueprint-questioner.agent.md` | `prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md` | `skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md`, `skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md`, `skills/rs/SK-TARGETED-QUESTION-GENERATE.md` | `prompts/rs/08-ai-action-level-classify.prompt.md`, `prompts/rs/09-blueprint-match.prompt.md` |
+| 4 | `aisraf-review-table-build` | `.agents/aisraf-review-table-builder.agent.md` | `prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md` | `skills/rs/SK-BOUNDARY-CROSSING-DETECT.md`, `skills/rs/SK-SECURITY-STACK-ASSESS.md`, `skills/rs/SK-DATA-FLOW-TABLE-BUILD.md` | `prompts/rs/05-boundary-stack-detect.prompt.md`, `prompts/rs/06-review-table-build.prompt.md` |
+| 5 | `aisraf-blueprint-questioning` | `.agents/aisraf-blueprint-questioner.agent.md` | `prototype-agents/PRA-06-BLUEPRINT-QUESTIONER.md` | `skills/rs/SK-MISSING-FACT-IDENTIFY.md`, `skills/rs/SK-AI-ACTION-LEVEL-CLASSIFY.md`, `skills/rs/SK-REVIEW-BLUEPRINT-MATCH.md`, `skills/rs/SK-TARGETED-QUESTION-GENERATE.md` | `prompts/rs/07-missing-fact-question-generate.prompt.md`, `prompts/rs/08-ai-action-level-classify.prompt.md`, `prompts/rs/09-blueprint-match.prompt.md` |
 | 6 | `aisraf-finding-recommendation` | `.agents/aisraf-finding-recommender.agent.md` | `prototype-agents/PRA-07-FINDING-RECOMMENDER.md` | `skills/rs/SK-FINDING-CLASSIFY.md`, `skills/rs/SK-RECOMMENDATION-WRITE.md` | `prompts/rs/10-finding-recommendation-write.prompt.md` |
 | 7 | `aisraf-handoff-qa-score` | `.agents/aisraf-handoff-qa-scorer.agent.md` | `prototype-agents/PRA-08-HANDOFF-QA-SCORER.md` | `skills/rs/SK-HANDOFF-PACK-BUILD.md`, `skills/rs/SK-VALIDATION-NOTE-WRITE.md`, `skills/rs/SK-ACCURACY-SCORE.md` | `prompts/rs/11-handoff-pack-build.prompt.md`, `prompts/rs/12-validation-note-write.prompt.md`, `prompts/rs/13-accuracy-score.prompt.md` |
 
@@ -123,8 +146,8 @@ No other write is authorized by this planning step.
 
 ## Open Founder Questions (require answer before BP12C-Implementation)
 
-- **Q1 — Skill wrapper canonical location.** Two candidates: (A) `.copilot-skills/aisraf-*.skill.md` paralleling the `.agents/` canonical layout; (B) `.github/copilot/skills/aisraf-*.skill.md` collocated with the existing `.github/copilot-instructions.md`. Recommendation: A, with optional byte-identical projection to B mirroring the existing adapter pattern.
-- **Q2 — Hook host.** Two candidates: (A) Claude Code project hooks under `.claude/hooks/` — but `.claude/` is git-excluded, so hooks would not be repo-portable; (B) tracked hooks under `tools/hooks/` invoked from `.claude/settings.json` and from a shared precommit shim. Recommendation: B for portability and validator coverage.
+- **Q1 — Skill wrapper canonical location.** Resolved by WP-12C-H: provider-discoverable skills live under `.github/skills/<skill-id>/SKILL.md`; `.copilot-skills/*.skill.md` is retained as the local/operator wrapper projection.
+- **Q2 — Hook host.** Resolved by WP-12C-H: provider hook config lives under `.github/hooks/*.json`; reusable PowerShell implementation remains under `tools/hooks/`.
 - **Q3 — Wrapper file shape.** Markdown with YAML front matter (matching the `.agent.md` pattern) vs. pure YAML. Recommendation: Markdown with YAML front matter for editability and discoverability.
 - **Q4 — Operator card location.** Co-located with each wrapper (`.copilot-skills/aisraf-<id>.operator-card.md`) vs. unified under `docs/operator-cards/`. Recommendation: co-located; `docs/` is sealed pre-BP14.
 - **Q5 — Test layer 4 (controlled output) tolerance.** Strict byte-identity vs. founder-reviewed diff. Recommendation: strict byte-identity for the 26 outputs (BP12B is the floor); diffs require explicit founder approval.
@@ -153,3 +176,28 @@ In order, after the 6 plan files and the surgical Check 11 allow-list extension 
 ## BP13 Coordination
 
 BP12C planning does **not** unblock or block BP13. BP13 (Diagrams) is gated on BP12-SAMPLE-DFD-BLOCKER resolution (resolved by BP10A + BP11A) and is currently `next_allowed`. BP12C-Planning runs in parallel to BP13 readiness; BP12C-Implementation should land *before or alongside* BP13 so operators can drive BP13 work with the projected wrappers, but BP13 may proceed first if the founder elects.
+
+## WP-12C-L Lifecycle Status (Operator-Experience Surface)
+
+| Gate | Status | Note |
+|---|---|---|
+| WP-12C-L0 | BLACK / CLOSED | Install readiness preflight passed. |
+| WP-12C-L1 | BLACK / CLOSED | Local plugin install test completed. |
+| WP-12C-L1A | BLACK / CLOSED | Provider install surface patch (`plugin.json`) completed; no MCP / external execution / post-back enabled. |
+| WP-12C-L2A | BLACK / CLOSED with UX caveat | Installed preview-only role smoke ran from the isolated smoke workspace `D:/E-Way 2/AISRAF-PLUGIN-SMOKE-WORKSPACE`; all 7 AISRAF roles responded preview-only; Finding Recommender output interleaved (UX caveat only — not functionally wrong). Final status `WP-12C-L2A_PREVIEW_ROLE_SMOKE_PASS_READY_FOR_UX_FIX`. |
+| WP-12C-L2A-UX | NEXT | Operator usability, evidence capture, and manual runbook patch — documentation-only. Workspace guidance, UI / provider explanation, terminal posture, role-smoke runbook, L2B readiness rules, future-integration boundary, and Git hygiene. Detailed in `validation/package-12c-plugin-install-and-publication-checklist.md` §20. |
+| WP-12C-L2B | BLOCKED | Controlled-output smoke. Blocked until L2A-UX accepted, run path chosen, scratch folder approved, prewrite guard and focused validator commands specified. No `RUN-001` or `samples` writes permitted. |
+| WP-12C-L3 | BLOCKED | Install evidence + Git staging decision. First gate that may decide staging or publication. The known `runs/RUN-SMOKE-LOCAL-001/` package validator WARN must be cleared at this gate. |
+| WP-13 | BLOCKED | Diagram & release view pack. Blocked until L3 closes. |
+
+### L2A-UX Documentation Surface Map
+
+| Topic | Authoritative Doc |
+|---|---|
+| Workspace guidance | `validation/package-12c-plugin-install-and-publication-checklist.md` §20.1; `validation/package-12c-manual-operator-test-guide.md` §15; `validation/package-12c-quick-manual-test-card.md` "Workspace Guidance". |
+| UI / provider explanation | install-checklist §20.2; manual-operator-test-guide §17. |
+| Terminal / evidence capture | install-checklist §20.3; manual-operator-test-guide §16; quick-manual-test-card "Terminal And Evidence Capture". |
+| L2A role-smoke runbook | `validation/role-smoke-test-checklist.md` "L2A Role-Smoke Runbook"; install-checklist §20.4. |
+| L2B controlled-output readiness | install-checklist §20.5. |
+| Future integration boundary | install-checklist §20.6. |
+| Git / version-control hygiene | install-checklist §20.7. |

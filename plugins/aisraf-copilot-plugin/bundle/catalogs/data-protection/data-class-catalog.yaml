@@ -1,0 +1,203 @@
+catalog_id: data-class-catalog
+catalog_name: Data Class Catalog
+schema_version: aisraf_data_class_catalog.v0_1_2
+owning_build_package: Build Package 07
+status: active
+
+purpose: >
+  Provide the closed list of data class values (C1, C2, C3, C4, C5) plus the
+  PCI/PAN suffix (P) and the protection sub-markers (E#, T#, U#, H#) that
+  appear inside C-tokens (e.g., C5P, C5E1P, C5T1P, C5U1P, C5H1P). Data class
+  drives downstream review of regulated handling, transit and at-rest
+  protection requirements, and finding/recommendation routing.
+
+consumers:
+  prompts:
+    - prompts/rs/03-legend-normalization.prompt.md
+    - prompts/rs/06-review-table-build.prompt.md
+    - prompts/dfd/06-annotation-resolve.prompt.md
+  skills:
+    - skills/rs/SK-LEGEND-NORMALIZE.md
+    - skills/rs/SK-DATA-FLOW-TABLE-BUILD.md
+    - skills/rs/SK-FINDING-CLASSIFY.md
+    - skills/dfd/SK-DFD-05-ANNOTATION-RESOLVE.md
+  pras:
+    - prototype-agents/PRA-04-LEGEND-NORMALIZER.md
+    - prototype-agents/PRA-05-REVIEW-TABLE-BUILDER.md
+    - prototype-agents/PRA-07-FINDING-RECOMMENDER.md
+  adapters:
+    - .agents/aisraf-dfd-extractor.agent.md
+    - .agents/aisraf-review-table-builder.agent.md
+    - .agents/aisraf-finding-recommender.agent.md
+
+unknown_value: unknown
+
+evidence_rules:
+  - rule_id: ER-DC-01
+    rule: References catalogs/security-stacks/proof-vs-signal-rule-catalog.yaml as the global signal-vs-proof rule.
+  - rule_id: ER-DC-02
+    rule: One material flow gets exactly one data_class. Conflicting indicators must be resolved or marked unknown.
+  - rule_id: ER-DC-03
+    rule: Artifact-level (DFD-cover) class headers do not classify any flow. Each flow is classified independently.
+  - rule_id: ER-DC-04
+    rule: P attached to a C-token means PCI/PAN.
+  - rule_id: ER-DC-05
+    rule: E#, T#, U#, H# inside C-tokens mean app-layer protection, tokenization, truncation, and hashing respectively. They do not set transit_encryption.
+  - rule_id: ER-DC-06
+    rule: A standalone T# means transit encryption (see transport-protection-catalog.yaml). It does not mean tokenization.
+  - rule_id: ER-DC-07
+    rule: Visible class indicators are signals. They do not prove implementation, configuration, or downstream coverage.
+
+prohibited_claims:
+  - artifact_class_propagated_to_flows
+  - tokenization_proof_from_c_token_alone
+  - encryption_implementation_proof_from_c_token_alone
+  - storage_protection_proof_from_c_token_alone
+  - all_flows_C5_default
+  - pci_no_handling_from_truncation_marker_alone
+
+controlled_value_policy:
+  closed_list: true
+  unknown_allowed: true
+  extension_requires: future governed catalog update
+  free_text_allowed_only_in:
+    - notes
+    - evidence_summary
+
+anti_inference_rules:
+  - Visible label is a review signal, not implementation proof.
+  - Cloud service icon or label does not prove deployment, configuration, access policy, encryption, or runtime state.
+  - Authentication evidence does not prove authorization scope.
+  - Transport protection does not prove at-rest protection.
+  - Marker presence does not prove control effectiveness.
+  - Unknown stays unknown until supported by evidence.
+  - Artifact class header does not classify any flow.
+  - Each material flow is classified independently from flow-level evidence.
+
+source_reference:
+  old_v0_01_reference: true
+  old_reference_paths:
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/dfd/annotation-semantics-registry.yaml
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/data-class-catalog.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/pci-suffix-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/encryption-catalog.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/tokenization-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/truncation-rules.md
+    - aisraf-sas-prototype-skill-chain-pack-v0.01/catalogs/data-protection/hashing-rules.md
+  derivation_mode: restructured_and_improved
+  copied_verbatim: false
+
+entries:
+  - id: DC-C1
+    label: C1
+    raw_pattern: '^C1$'
+    description: Class 1 data (public or non-sensitive per the reviewing organization's classification scheme).
+    when_to_use: A C1 token is on a flow or component and the scope is supported.
+    when_not_to_use: Higher classes (C2-C5) are visible.
+    evidence_required: visible C1 token or source note
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: C1 is the lowest controlled class.
+
+  - id: DC-C2
+    label: C2
+    raw_pattern: '^C2$'
+    description: Class 2 data (internal/general-business per the classification scheme).
+    when_to_use: A C2 token is on a flow or component.
+    when_not_to_use: Higher classes are visible.
+    evidence_required: visible C2 token or source note
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: Internal data may still cross boundaries; review boundary crossings independently.
+
+  - id: DC-C3
+    label: C3
+    raw_pattern: '^C3$'
+    description: Class 3 data (controlled internal per the classification scheme).
+    when_to_use: A C3 token is on a flow or component.
+    when_not_to_use: Higher classes are visible.
+    evidence_required: visible C3 token or source note
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: C3 begins regulated review for many programs.
+
+  - id: DC-C4
+    label: C4
+    raw_pattern: '^C4$'
+    description: Class 4 data (restricted per the classification scheme; often used for design and architecture artifacts).
+    when_to_use: A C4 token is on a flow or component.
+    when_not_to_use: Sensitive data (C5) is visible.
+    evidence_required: visible C4 token or source note
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: C4 may apply to architecture artifacts; do not propagate artifact class to flows.
+
+  - id: DC-C5
+    label: C5
+    raw_pattern: '^C5$'
+    description: Class 5 sensitive data per the classification scheme.
+    when_to_use: A C5 token is on a flow or component and is the supported class for that scope.
+    when_not_to_use: A higher-precedence class indicator (e.g., C5P) is visible on the same flow.
+    evidence_required: visible C5 token or source note
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: Do not default all flows to C5.
+
+  - id: DC-C5P
+    label: C5P
+    raw_pattern: '^C[1-5]P$'
+    description: Class 5 plus PCI/PAN suffix; cardholder data.
+    when_to_use: A C5P token (or C#P with same suffix semantics) is on a flow or component.
+    when_not_to_use: PCI/PAN scope is not visible on this flow.
+    evidence_required: visible C#P token with P suffix
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: PCI/PAN handling routes to documented PCI process; protection scope remains unknown unless separately supported.
+
+  - id: DC-C5E1P
+    label: C5E1P
+    raw_pattern: '^C[1-5]E[0-9]+P$'
+    description: PCI/PAN data with app-layer encryption/protection sub-marker.
+    when_to_use: A C#E#P token is on a flow or component.
+    when_not_to_use: The token is C#T#P, C#U#P, or C#H#P (use the matching entry).
+    evidence_required: visible C#E#P token
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: E# sub-marker is app-layer protection; it does not set transit_encryption or at-rest protection.
+
+  - id: DC-C5T1P
+    label: C5T1P
+    raw_pattern: '^C[1-5]T[0-9]+P$'
+    description: PCI/PAN data with tokenization sub-marker.
+    when_to_use: A C#T#P token is on a flow or component.
+    when_not_to_use: The token is C#E#P, C#U#P, or C#H#P.
+    evidence_required: visible C#T#P token
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: Tokenization scope and detokenization controls are unknown unless separately supported.
+
+  - id: DC-C5U1P
+    label: C5U1P
+    raw_pattern: '^C[1-5]U[0-9]+P$'
+    description: PCI/PAN data with truncation sub-marker.
+    when_to_use: A C#U#P token is on a flow or component.
+    when_not_to_use: The token is C#E#P, C#T#P, or C#H#P.
+    evidence_required: visible C#U#P token
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: Truncation scope and original-data disposal are unknown unless separately supported.
+
+  - id: DC-C5H1P
+    label: C5H1P
+    raw_pattern: '^C[1-5]H[0-9]+P$'
+    description: PCI/PAN data with hashing sub-marker.
+    when_to_use: A C#H#P token is on a flow or component.
+    when_not_to_use: The token is C#E#P, C#T#P, or C#U#P.
+    evidence_required: visible C#H#P token
+    confidence_guidance: High when explicit; medium when inferred; unknown when ambiguous.
+    notes: Hashing scope and salt management are unknown unless separately supported.
+
+  - id: DC-UNKNOWN
+    label: unknown
+    description: The data class is unsupported, unclear, contradictory, or unreadable for the flow or component under review.
+    when_to_use: When no other entry above has supported applicability.
+    when_not_to_use: When at least one supported class indicator is visible.
+    evidence_required: none; absence of support is the support
+    confidence_guidance: Confidence is unknown by definition.
+    notes: Unknown drives missing-fact and validation-note routing when materiality applies.
+
+version_notes: >
+  Initial Build Package 07 release. Restructured from old v0.01 annotation
+  semantics and the data-protection MD prose files. Closed list of 11
+  controlled values (C1-C5 plus four protected C5P variants and unknown).
