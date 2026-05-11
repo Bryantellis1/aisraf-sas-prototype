@@ -14,16 +14,16 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "12C-ED1"
-  build_package_name: Repository Editor Readability And Public-Safety Pass
-  build_package_status: active_editor_readability_pass
+  build_package_number: "12C-REL0-C"
+  build_package_name: Public Entrypoint, Manifest State, And REL0-QA Allow-List Micro-Patch
+  build_package_status: active_rel0_c_micropatch_for_rb_rel0_001_through_005
 next_build_package:
-  build_package_number: "12C-L3"
-  build_package_name: Install Evidence And Git Staging / Publication Decision
-  build_package_status: blocked_pending_qa1_blocker_register_closure_rb_001_through_rb_005
+  build_package_number: "12C-REL0-CLOSE"
+  build_package_name: Founder-Authorized Public Release Gate Closure
+  build_package_status: blocked_pending_rel0_c_micropatch_completion
 wp12c_current_state:
-  active_work_package: WP-12C-ED1
-  accepted_status_through: WP-12C-QA1_PARTIAL_WITH_GAPS
+  active_work_package: WP-12C-REL0-C
+  accepted_status_through: WP-12C-REL0_QA_PARTIAL_WITH_GAPS
   wp12c_h_status: BLACK_CLOSED
   wp12c_i_status: BLACK_CLOSED
   wp12c_j1_status: BLACK_CLOSED
@@ -47,18 +47,24 @@ wp12c_current_state:
   wp12c_l2b_plan_status: BLACK_CLOSED
   wp12c_l2b_exec_status: BLACK_CLOSED
   wp12c_qa1_status: BLACK_CLOSED_PARTIAL_WITH_GAPS
-  wp12c_ed1_status: ACTIVE
-  wp12c_l3_status: BLOCKED_PENDING_RB_001_THROUGH_RB_005_CLOSURE
-  wp12c_rel0_status: BLOCKED_PENDING_L3
-  wp13_status: BLOCKED_PENDING_POST_L3
+  wp12c_ed1_status: BLACK_CLOSED
+  wp12c_l3_status: BLACK_CLOSED
+  wp12c_rel0_b_status: BLACK_CLOSED_STAGE_COMMIT_PASS
+  wp12c_rel0_qa_status: BLACK_CLOSED_PARTIAL_WITH_GAPS
+  wp12c_rel0_c_status: ACTIVE
+  wp12c_rel0_status: BLOCKED_PENDING_REL0_C_CLOSURE
+  wp13_status: BLOCKED_PENDING_REL0_CLOSURE_AND_BP12_SAMPLE_DFD_BLOCKER_RESOLUTION
   wp_orch_status: FUTURE_NOT_IN_V0_1_2_SCOPE
-  current_gate: editor_readability_public_safety_pass_and_rb_003_rb_004_corrections
-  next_gate: l3_install_evidence_and_staging_decision_after_rb_001_through_rb_005_closure
+  adapter0_status: FUTURE_NOT_IN_V0_1_2_SCOPE_AL4_NOT_CURRENT_RELEASE
+  current_gate: rel0_c_micropatch_for_rb_rel0_001_through_005
+  next_gate: rel0_closure_then_wp_13_release_visuals_subject_to_bp12_sample_dfd_blocker
   current_autonomy_level: AL2_controlled_output_local_workbench
   future_autonomy_level: AL3_orchestrated_multi_agent_runtime_deferred_to_wp_orch
+  al4_status: future_external_adapter_post_back_execution_not_current_release
+  al5_status: out_of_scope_for_v0_1_x
   plugin_scaffold_status: complete_and_validated_check_16_16a_16b_16c_pass
   plugin_packaging_status: byte_identical_bundle_with_checksum_manifest_validated_under_runs_run_smoke_plugin_l2b_001_evidence
-  diagrams_status: blocked_until_post_l3_release_gate_authorizes_wp_13
+  diagrams_status: blocked_until_rel0_closes_and_bp12_sample_dfd_blocker_resolved
 authority_chain:
   law: Capability -> Value Outcome -> ProcessFlowSpecification -> TaskFlowSpecification -> Agent -> Skill -> Tool / Hook / Policy -> Memory / State -> Evaluation -> Evidence -> Platform Projection -> Plugin / Release
   current_posture: local_first_governed_workbench

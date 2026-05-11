@@ -483,8 +483,16 @@ $wp12cK3cExactFutureDrift = @(
 $wp12cK3cExactFutureDriftPrefixes = @(
     'plugins/aisraf-copilot-plugin/bundle/'
 )
+# WP-12C-REL0-C: public-entrypoint remediation — exact root files updated to close
+# RB-REL0-001, RB-REL0-002, and RB-REL0-004 (public entrypoint and multi-agent /
+# orchestrator-first release story). Authorized only for the WP-12C-REL0-C gate.
+# Exact-path; no wildcards; no broadening of docs/ or validation/ surfaces.
+$wp12cRel0CPublicEntrypointDrift = @(
+    'README.md',
+    'START-HERE.md'
+)
 
-$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift
+$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift
 $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     $trackedPath = $_
     $isExactAllowed = $allowedTrackedDriftExact -contains $trackedPath
@@ -492,7 +500,7 @@ $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     (-not $isExactAllowed) -and (-not $isExactFutureBundlePath)
 })
 if ($trackedDiffResult.ExitCode -eq 0 -and $unexpectedTrackedDiff.Count -eq 0) {
-    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, and exact K3C future bundle paths only; no broad plugins/** allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
+    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, exact K3C future bundle paths, and WP-12C-REL0-C public-entrypoint files (README.md, START-HERE.md) only; no broad plugins/** allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
 }
 else {
     Add-Result -Area '01-git-workspace' -Status FAIL -Check 'tracked-drift' -Detail ('Unexpected tracked drift: ' + ($unexpectedTrackedDiff -join ', '))

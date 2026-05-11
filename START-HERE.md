@@ -2,11 +2,23 @@
 
 Package: AISRAF SAS Prototype v0.1.2
 
-This workspace has Build Packages 01–12 active. Build Package 12 (validation framework) is the most recent.
+AISRAF v0.1.2 is an **AL2 controlled-output local security architecture review workbench**. It does not orchestrate multi-agent runtimes (AL3, future WP-ORCH0) and does not execute external adapters or post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems (AL4, future). AL5 closed-loop autonomy is out of scope.
 
-> **Carried-forward blocker.** `BP12-SAMPLE-DFD-BLOCKER` (severity HARD, owner founder) records a defect in the canonical sample DFD (`samples/sample-001-dfd-crop/inputs/dfd-crop.png`/`.mmd` and the byte-copies under `runs/RUN-001/inputs/`). Build Package 13 (Diagrams) is BLOCKED until founder-approved Package 10A / 11A correction lands OR sample-002 with a clean DFD is authorized. See [validation/sample-input-readiness-checklist.md](validation/sample-input-readiness-checklist.md) for the full defect statement and gate verdicts.
+## v0.1.2 Release — Read First
 
-## Operator Steps
+Pick the entrypoint that matches your role.
+
+- **New evaluator** — start with [docs/AISRAF-PRIMER.md](docs/AISRAF-PRIMER.md).
+- **Operator** — start with [docs/OPERATOR-QUICKSTART.md](docs/OPERATOR-QUICKSTART.md).
+- **Security architect** — start with [docs/SECURITY-REVIEW-WORKFLOW.md](docs/SECURITY-REVIEW-WORKFLOW.md).
+- **Maintainer** — read [docs/ARCHITECTURE-OVERVIEW.md](docs/ARCHITECTURE-OVERVIEW.md) and [RELEASE-MANIFEST.yaml](RELEASE-MANIFEST.yaml).
+- **Roadmap reader** — read [docs/ROADMAP.md](docs/ROADMAP.md).
+
+Release state: Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-REL0-QA is closed with documented warning-class gaps. **WP-12C-REL0-C** (focused doc-only / manifest / validator-allow-list micro-patch) is the active gate. WP-12C-REL0 closure is the next public release gate; WP-13 release visuals follow; WP-ORCH0 and AL4 adapter work remain blocked / future.
+
+> **Carried-forward blocker.** `BP12-SAMPLE-DFD-BLOCKER` (severity HARD, owner founder) records a defect in the canonical sample DFD (`samples/sample-001-dfd-crop/inputs/dfd-crop.png`/`.mmd` and the byte-copies under `runs/RUN-001/inputs/`). Build Package 13 (Diagrams) is also separately gated by founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD. See [validation/sample-input-readiness-checklist.md](validation/sample-input-readiness-checklist.md) for the full defect statement and gate verdicts.
+
+## Contributor / Package Authoring — Operator Steps
 
 1. Open this folder as the VS Code workspace root: `D:/E-Way 2/AISRAF- SAS Prototype v0.1.2`.
 2. Read [README.md](README.md).
@@ -42,4 +54,6 @@ This workspace has Build Packages 01–12 active. Build Package 12 (validation f
 
 ## Next Build Package
 
-The next allowed Build Package is **Build Package 13 — Diagrams**, but Build Package 13 is **BLOCKED** until `BP12-SAMPLE-DFD-BLOCKER` is resolved via founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD is authorized. See [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md) for the hard precondition.
+The immediate governed gate is **WP-12C-REL0-C** — the focused doc-only / manifest / validator-allow-list micro-patch closing the five REL0-QA warning-class gaps (RB-REL0-001..005). After REL0-C closes, **WP-12C-REL0 closure** is the next public release gate. **Build Package 13 — Diagrams (release visuals)** opens only after REL0 closure and remains separately gated by `BP12-SAMPLE-DFD-BLOCKER` resolution (founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD) per [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md).
+
+**WP-ORCH0** (orchestrated multi-agent runtime; future AL3) and **AL4 adapter work** (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution) are future and not part of the v0.1.2 release.

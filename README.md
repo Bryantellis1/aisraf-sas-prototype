@@ -2,6 +2,29 @@
 
 AISRAF SAS means AISRAF Security Advisory Services. This package is a local-first security advisory review prototype for testing how VS Code, GitHub Copilot, prompt cards, skill contracts, PRA specifications, local adapter wrappers, catalogs, blueprints, templates, samples, run profiles, validation checks, diagrams, and practitioner documentation work together.
 
+## v0.1.2 Release — Read First
+
+AISRAF v0.1.2 is an **AL2 controlled-output local security architecture review workbench**. It runs entirely under VS Code + GitHub Copilot against governed prompt cards, skill contracts, prototype-agent specifications, catalogs, blueprints, templates, samples, and run profiles. It does not orchestrate multi-agent runtimes, does not execute external adapters, and does not post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems.
+
+Public reader entrypoints (read these first):
+
+- [docs/AISRAF-PRIMER.md](docs/AISRAF-PRIMER.md) — evaluator primer; what AISRAF is, what it is not, autonomy posture (AL2 current; AL3, AL4 future; AL5 out of scope).
+- [docs/OPERATOR-QUICKSTART.md](docs/OPERATOR-QUICKSTART.md) — operator quickstart for local controlled-output review.
+- [docs/SECURITY-REVIEW-WORKFLOW.md](docs/SECURITY-REVIEW-WORKFLOW.md) — security architect's end-to-end review workflow.
+- [docs/ARCHITECTURE-OVERVIEW.md](docs/ARCHITECTURE-OVERVIEW.md) — maintainer architecture overview.
+- [docs/ROADMAP.md](docs/ROADMAP.md) — release roadmap (v0.1.2 today; WP-13 release visuals; WP-ORCH future AL3; AL4 adapters future).
+- [RELEASE-MANIFEST.yaml](RELEASE-MANIFEST.yaml) — machine-readable release manifest.
+- [CHANGELOG.md](CHANGELOG.md) — release changelog.
+
+Current autonomy posture:
+
+- **AL2 — controlled-output local workbench (current release behavior).** Practitioner-driven prompt/skill execution in VS Code; outputs are governed Markdown under `runs/{run_id}/`.
+- **AL3 — orchestrated multi-agent runtime.** Future work package WP-ORCH0. Not current release behavior.
+- **AL4 — external adapter / post-back execution (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry).** Future adapter work. Not current release behavior.
+- **AL5 — closed-loop autonomy.** Out of scope for v0.1.2 and the v0.1.x line.
+
+The next governed Build Package, **Build Package 13 — Diagrams (release visuals)**, is **BLOCKED** until WP-12C-REL0 closes (founder-authorized public release gate) and the carried-forward `BP12-SAMPLE-DFD-BLOCKER` is resolved per [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md).
+
 ## Purpose
 
 The prototype lets a practitioner test security-review methods locally before any runtime, cloud, MCP, or release layer is claimed. A user stages a DFD and supporting notes in a local run folder, uses governed instructions to read from `input_root`, writes structured outputs only under `output_root`, and compares against `expected_root` when baselines exist.
@@ -10,9 +33,13 @@ The prototype lets a practitioner test security-review methods locally before an
 
 The package is designed to test prompts, skills, adapters, DFD extraction, structured review outputs, validation, and handoff patterns locally. Later packages will add the artifacts needed to produce input inventories, visible objects, components, flows, boundaries, review tables, missing facts, AI Action Level, blueprint matches, questions, findings, recommendations, handoff packs, validation notes, and accuracy scores.
 
+## Contributor / Governance Reading
+
+The sections below describe the internal governed build sequence (Build Packages 01–12 plus the BP12C operator-experience and packaging increments). They are kept for contributors and governance reviewers; public readers should start from the docs/ entrypoints above.
+
 ## Current State
 
-Build Packages 01–12 are active (Build Package 12 is the most recent, pending human review before commit):
+Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed; WP-12C-REL0-QA is closed with documented warning-class gaps; WP-12C-REL0-C (the focused doc-only / manifest / validator-allow-list micro-patch) is the active gate. WP-13, WP-ORCH0, and AL4 adapter work remain blocked / future.
 
 - **Build Package 01** — Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent instruction standard.
 - **Build Package 02** — Config and run-profile variable model (`config/`).
@@ -37,6 +64,16 @@ The old package at `D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01` is r
 
 ## Where To Start
 
+### Public readers
+
+1. Read [docs/AISRAF-PRIMER.md](docs/AISRAF-PRIMER.md) for what AISRAF is and what it is not.
+2. Operators: read [docs/OPERATOR-QUICKSTART.md](docs/OPERATOR-QUICKSTART.md).
+3. Security architects: read [docs/SECURITY-REVIEW-WORKFLOW.md](docs/SECURITY-REVIEW-WORKFLOW.md).
+4. Maintainers: read [docs/ARCHITECTURE-OVERVIEW.md](docs/ARCHITECTURE-OVERVIEW.md) and [RELEASE-MANIFEST.yaml](RELEASE-MANIFEST.yaml).
+5. Roadmap reviewers: read [docs/ROADMAP.md](docs/ROADMAP.md).
+
+### Contributors and governance reviewers
+
 1. Read [START-HERE.md](START-HERE.md).
 2. Read [PROTOTYPE-CHARTER.md](PROTOTYPE-CHARTER.md).
 3. Read [BUILD-ORDER.md](BUILD-ORDER.md).
@@ -45,12 +82,22 @@ The old package at `D:/E-Way 2/aisraf-sas-prototype-skill-chain-pack-v0.01` is r
 
 ## Build Order
 
-The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md). The next allowed Build Package after Build Package 12 is **Build Package 13 — Diagrams**, but Build Package 13 is **BLOCKED** until `BP12-SAMPLE-DFD-BLOCKER` is resolved via founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD is authorized. See [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md) for the hard precondition.
+The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md).
+
+## Next Build Package
+
+The immediate governed gate is **WP-12C-REL0-C** (focused doc-only / manifest / validator-allow-list micro-patch for the five REL0-QA warning-class gaps), followed by **WP-12C-REL0 closure** (founder-authorized public release gate). Only after REL0 closes does **Build Package 13 — Diagrams (release visuals)** open — and Build Package 13 remains separately gated by `BP12-SAMPLE-DFD-BLOCKER` resolution per [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md) (founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD).
+
+Out-of-scope-for-this-release governed work, retained here so a contributor cannot mistake it for current release behavior:
+
+- **WP-ORCH0** — orchestrated multi-agent runtime. Future AL3. Not current release behavior.
+- **AL4 adapter work** — Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution. Future. Not current release behavior.
 
 ## Not Yet Created
 
-- No release artifacts yet.
-- No diagrams yet.
+- No release visuals yet (WP-13).
+- No multi-agent runtime yet (WP-ORCH0; future AL3).
+- No external adapters yet (future AL4; not current release).
 - No chain execution against `runs/RUN-001/` yet (the run fixture is governed; the 26 reserved chain outputs activate only when the operator executes the Package 04–09 chain).
 - No numeric accuracy score against `runs/RUN-001/` yet.
-- No runtime, cloud, MCP, Jira/Confluence post-back, or ADK proof yet.
+- No runtime, cloud, MCP, Jira / Confluence / Lucidchart / Rovo post-back, Foundry, ADK, MAF, database, Terraform, event-bus, or telemetry proof yet.

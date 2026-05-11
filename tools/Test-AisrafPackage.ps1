@@ -1431,7 +1431,11 @@ $validationAllowed += @(
     'package-12c-l2b-closeout-plugin-discovery-report.md',
     'package-12c-release-qa-report.md',
     'package-12c-release-blocker-register.md',
-    'package-12c-editor-readability-report.md'
+    'package-12c-editor-readability-report.md',
+    'package-12c-rel0-final-release-qa-report.md',
+    'package-12c-rel0-final-release-blocker-register.md',
+    'package-12c-rel0-c-micropatch-report.md',
+    'package-12c-rel0-c-fix-a-report.md'
 )
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
