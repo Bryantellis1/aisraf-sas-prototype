@@ -1443,6 +1443,7 @@ $validationAllowed += @(
     'package-12c-rel0-release-decision-remediation-report.md',
     'package-12c-rel0-release-decision-rerun-report.md',
     'package-12c-rel0-release-decision-stage-commit-fix-a-report.md',
+    'package-12c-rel0-release-decision-stage-commit-retry-report.md',
     'package-12c-rel0-final-release-qa-report.md',
     'package-12c-rel0-final-release-blocker-register.md',
     'package-12c-rel0-c-micropatch-report.md',
