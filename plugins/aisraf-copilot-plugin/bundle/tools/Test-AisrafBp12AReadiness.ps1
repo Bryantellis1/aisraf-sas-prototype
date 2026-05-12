@@ -492,7 +492,26 @@ $wp12cRel0CPublicEntrypointDrift = @(
     'START-HERE.md'
 )
 
-$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift
+# WP-12C-AM3-PLAN: roadmap re-positioning — single exact docs/ file updated to mark
+# AM3 (AL3 local orchestrated multi-agent runtime) as an in-release lane preceding
+# final v0.1.2 publish, with AM4 / AL4 still deferred. Authorized only for the
+# WP-12C-AM3-PLAN gate. Exact-path; no wildcards; no broadening of docs/ surface.
+$wp12cAm3PlanRoadmapDrift = @(
+    'docs/ROADMAP.md'
+)
+
+# WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT: exact public release language
+# surfaces updated after AM3-QA accepted only the bounded local runtime
+# evidence claim. Exact-path; no wildcards; no broadening of docs/.
+$wp12cAm3ReleaseClaimAlignmentDrift = @(
+    'RELEASE-MANIFEST.yaml',
+    'docs/AISRAF-PRIMER.md',
+    'docs/ARCHITECTURE-OVERVIEW.md',
+    'docs/OPERATOR-QUICKSTART.md',
+    'docs/SECURITY-REVIEW-WORKFLOW.md'
+)
+
+$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift + $wp12cAm3PlanRoadmapDrift + $wp12cAm3ReleaseClaimAlignmentDrift
 $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     $trackedPath = $_
     $isExactAllowed = $allowedTrackedDriftExact -contains $trackedPath
@@ -500,7 +519,7 @@ $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     (-not $isExactAllowed) -and (-not $isExactFutureBundlePath)
 })
 if ($trackedDiffResult.ExitCode -eq 0 -and $unexpectedTrackedDiff.Count -eq 0) {
-    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, exact K3C future bundle paths, and WP-12C-REL0-C public-entrypoint files (README.md, START-HERE.md) only; no broad plugins/** allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
+    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, exact K3C future bundle paths, WP-12C-REL0-C public-entrypoint files (README.md, START-HERE.md), WP-12C-AM3-PLAN roadmap re-positioning (docs/ROADMAP.md), and WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT public release language surfaces only; no broad plugins/** allowance; no broad docs/ allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
 }
 else {
     Add-Result -Area '01-git-workspace' -Status FAIL -Check 'tracked-drift' -Detail ('Unexpected tracked drift: ' + ($unexpectedTrackedDiff -join ', '))

@@ -1,0 +1,203 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: am3.run_state.v0_1_2
+title: AISRAF AM3 Run-State Schema
+description: >
+  JSON Schema for the AM3 run-state file authored and maintained by the
+  AISRAF Orchestrator (PRA-01-SAS-REVIEW-ORCHESTRATOR) under
+  {{output_root}}/runtime/run-state.yaml. The orchestrator is the sole
+  writer. Specialists may not mutate run-state directly; they return a
+  structured response (am3.handoff_response.v0_1_2) and the orchestrator
+  advances, pauses, or stops. The run-state file is local-only; no
+  network destination, no external store.
+schema_version: am3.run_state.v0_1_2
+package_version: v0.1.2
+authored_by_work_package: WP-12C-AM3-CONTRACTS
+governed_by_orchestrator_contract: am3.orchestrator-contract.v0_1_2
+
+target_path: "{{output_root}}/runtime/run-state.yaml"
+target_path_is_local_only: true
+single_writer: PRA-01-SAS-REVIEW-ORCHESTRATOR
+
+type: object
+additionalProperties: false
+
+required:
+  - schema_version
+  - package_version
+  - run_id
+  - current_step
+  - last_completed_step
+  - pending_human_gate
+  - last_checkpoint_id
+  - status
+  - created_at
+  - updated_at
+  - output_root
+  - event_log_path
+
+properties:
+
+  schema_version:
+    type: string
+    const: am3.run_state.v0_1_2
+    description: Pins the run-state schema. Orchestrator must not edit.
+
+  package_version:
+    type: string
+    const: v0.1.2
+    description: Pins the package version. Orchestrator must not edit.
+
+  run_id:
+    type: string
+    minLength: 1
+    description: AISRAF run identifier. Matches the owning run-profile run_id (for example, RUN-001 or RUN-SMOKE-AM3-001).
+
+  current_step:
+    type: string
+    enum:
+      - AM3-INIT
+      - AM3-01
+      - AM3-02
+      - AM3-03
+      - AM3-04
+      - AM3-05
+      - AM3-06
+      - AM3-FINAL-GATE
+      - AM3-COMPLETE
+      - AM3-STOPPED
+    description: The step the orchestrator currently owns. Strict enum; new steps may not be invented.
+
+  last_completed_step:
+    description: The most recently completed step, or null before AM3-01 closes.
+    oneOf:
+      - type: "null"
+      - type: string
+        enum:
+          - AM3-INIT
+          - AM3-01
+          - AM3-02
+          - AM3-03
+          - AM3-04
+          - AM3-05
+          - AM3-06
+          - AM3-FINAL-GATE
+
+  pending_human_gate:
+    description: Identifier of the pending human gate the run is waiting on, or null when no gate is pending.
+    oneOf:
+      - type: "null"
+      - type: string
+        enum:
+          - pre_run_approval
+          - pre_output_generation_approval
+          - final_review_approval
+          - release_or_claim_approval
+          - final_pass_partial_fail_not_applicable_decision
+
+  last_checkpoint_id:
+    description: The event_id of the most recently recorded orchestrator decision, handoff, response, validator outcome, gate request, gate decision, or stop event. Null at run inception.
+    oneOf:
+      - type: "null"
+      - type: string
+        minLength: 1
+
+  status:
+    type: string
+    enum:
+      - initialized
+      - running
+      - waiting_for_human
+      - stopped
+      - complete
+      - failed
+    description: Run status enum. Strict; no extra values.
+
+  created_at:
+    type: string
+    format: date-time
+    description: ISO 8601 timestamp of run-state inception.
+
+  updated_at:
+    type: string
+    format: date-time
+    description: ISO 8601 timestamp of the most recent orchestrator write to run-state.
+
+  output_root:
+    type: string
+    minLength: 1
+    description: Resolved output_root for this run. Matches the owning run-profile output_root. Used to anchor every {{output_root}} relative path in the AM3 contracts.
+
+  event_log_path:
+    type: string
+    minLength: 1
+    description: Relative path (under output_root) of the NDJSON event log. Canonical value is "runtime/events.ndjson" so the absolute path is "{{output_root}}/runtime/events.ndjson".
+    pattern: ^runtime/events\.ndjson$
+
+allowed_transitions:
+  AM3-INIT:
+    - AM3-01
+    - AM3-STOPPED
+  AM3-01:
+    - AM3-02
+    - AM3-STOPPED
+  AM3-02:
+    - AM3-03
+    - AM3-STOPPED
+  AM3-03:
+    - AM3-04
+    - AM3-STOPPED
+  AM3-04:
+    - AM3-05
+    - AM3-STOPPED
+  AM3-05:
+    - AM3-06
+    - AM3-STOPPED
+  AM3-06:
+    - AM3-FINAL-GATE
+    - AM3-STOPPED
+  AM3-FINAL-GATE:
+    - AM3-COMPLETE
+    - AM3-STOPPED
+  AM3-COMPLETE: []
+  AM3-STOPPED: []
+
+invariants:
+  orchestrator_is_sole_writer: true
+  specialists_may_not_mutate_run_state_directly: true
+  additionalProperties_is_false: true
+  strict_field_rule_applies: true
+  current_step_must_be_in_enum: true
+  status_must_be_in_enum: true
+  pending_human_gate_must_be_in_enum_or_null: true
+  last_completed_step_must_be_in_enum_or_null: true
+  event_log_path_must_equal_runtime_events_ndjson: true
+  no_external_destination_url_field_permitted: true
+  no_credential_field_permitted: true
+  no_email_address_field_permitted: true
+  no_customer_identifying_string_field_permitted: true
+  no_field_outside_required_set_permitted: true
+
+forbidden_fields:
+  - destination_url
+  - jira_ticket_id
+  - confluence_page_id
+  - lucidchart_document_id
+  - mcp_server_url
+  - mcp_client_token
+  - cloud_resource_id
+  - database_connection_string
+  - terraform_workspace
+  - event_bus_topic
+  - telemetry_backend_endpoint
+  - any_credential
+  - any_api_key
+  - any_email_address
+  - any_customer_identifying_string
+
+contract_lifecycle:
+  authored_in_work_package: WP-12C-AM3-CONTRACTS
+  consumed_by_work_package: WP-12C-AM3-RUNTIME
+  validated_by_work_package: WP-12C-AM3-RUNTIME
+  evidenced_by_work_package: WP-12C-AM3-EVIDENCE
+  qa_closed_by_work_package: WP-12C-AM3-QA
+  versioning_policy: bump_minor_version_for_any_breaking_change_to_field_set_or_enum

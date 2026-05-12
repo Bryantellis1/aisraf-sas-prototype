@@ -4,23 +4,25 @@ AISRAF SAS means AISRAF Security Advisory Services. This package is a local-firs
 
 ## v0.1.2 Release — Read First
 
-AISRAF v0.1.2 is an **AL2 controlled-output local security architecture review workbench**. It runs entirely under VS Code + GitHub Copilot against governed prompt cards, skill contracts, prototype-agent specifications, catalogs, blueprints, templates, samples, and run profiles. It does not orchestrate multi-agent runtimes, does not execute external adapters, and does not post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems.
+AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
+
+The day-to-day security architect and application architect experience remains a local controlled-output workbench under VS Code + GitHub Copilot. AISRAF runs against governed prompt cards, skill contracts, prototype-agent specifications, catalogs, blueprints, templates, samples, and run profiles. It does not execute external adapters and does not post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems.
 
 Public reader entrypoints (read these first):
 
-- [docs/AISRAF-PRIMER.md](docs/AISRAF-PRIMER.md) — evaluator primer; what AISRAF is, what it is not, autonomy posture (AL2 current; AL3, AL4 future; AL5 out of scope).
+- [docs/AISRAF-PRIMER.md](docs/AISRAF-PRIMER.md) — evaluator primer; what AISRAF is, what it is not, autonomy posture (AL2 workbench experience; AM3 / AL3 local runtime evidence proven; AM4 deferred; AL5 out of scope).
 - [docs/OPERATOR-QUICKSTART.md](docs/OPERATOR-QUICKSTART.md) — operator quickstart for local controlled-output review.
 - [docs/SECURITY-REVIEW-WORKFLOW.md](docs/SECURITY-REVIEW-WORKFLOW.md) — security architect's end-to-end review workflow.
 - [docs/ARCHITECTURE-OVERVIEW.md](docs/ARCHITECTURE-OVERVIEW.md) — maintainer architecture overview.
-- [docs/ROADMAP.md](docs/ROADMAP.md) — release roadmap (v0.1.2 today; WP-13 release visuals; WP-ORCH future AL3; AL4 adapters future).
+- [docs/ROADMAP.md](docs/ROADMAP.md) — release roadmap (v0.1.2 AM3 evidence claim; WP-13 release visuals blocked; AM4 adapters future).
 - [RELEASE-MANIFEST.yaml](RELEASE-MANIFEST.yaml) — machine-readable release manifest.
 - [CHANGELOG.md](CHANGELOG.md) — release changelog.
 
 Current autonomy posture:
 
-- **AL2 — controlled-output local workbench (current release behavior).** Practitioner-driven prompt/skill execution in VS Code; outputs are governed Markdown under `runs/{run_id}/`.
-- **AL3 — orchestrated multi-agent runtime.** Future work package WP-ORCH0. Not current release behavior.
-- **AL4 — external adapter / post-back execution (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry).** Future adapter work. Not current release behavior.
+- **AL2 — controlled-output local workbench (current user experience).** Practitioner-driven prompt/skill execution in VS Code; outputs are governed Markdown under `runs/{run_id}/`.
+- **AM3 / AL3 — local orchestrated multi-agent runtime evidence (proven evidence path).** AISRAF Orchestrator owns run-state and event log. Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. Human gates remain required. The accepted smoke evidence is under local-only `runs/RUN-SMOKE-AM3-001/runtime/` and must not be staged or published in this gate.
+- **AM4 / AL4 — external adapter / post-back execution (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry).** Future adapter work. Not current release behavior.
 - **AL5 — closed-loop autonomy.** Out of scope for v0.1.2 and the v0.1.x line.
 
 The next governed Build Package, **Build Package 13 — Diagrams (release visuals)**, is **BLOCKED** until WP-12C-REL0 closes (founder-authorized public release gate) and the carried-forward `BP12-SAMPLE-DFD-BLOCKER` is resolved per [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md).
@@ -39,7 +41,7 @@ The sections below describe the internal governed build sequence (Build Packages
 
 ## Current State
 
-Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed; WP-12C-REL0-QA is closed with documented warning-class gaps; WP-12C-REL0-C (the focused doc-only / manifest / validator-allow-list micro-patch) is the active gate. WP-13, WP-ORCH0, and AL4 adapter work remain blocked / future.
+Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim. WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT is the active gate. WP-13, WP-13 follow-on release visuals, WP-13-dependent publication preparation, and AM4 adapter work remain blocked / future.
 
 - **Build Package 01** — Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent instruction standard.
 - **Build Package 02** — Config and run-profile variable model (`config/`).
@@ -86,18 +88,18 @@ The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md).
 
 ## Next Build Package
 
-The immediate governed gate is **WP-12C-REL0-C** (focused doc-only / manifest / validator-allow-list micro-patch for the five REL0-QA warning-class gaps), followed by **WP-12C-REL0 closure** (founder-authorized public release gate). Only after REL0 closes does **Build Package 13 — Diagrams (release visuals)** open — and Build Package 13 remains separately gated by `BP12-SAMPLE-DFD-BLOCKER` resolution per [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md) (founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD).
+The immediate governed gate is **WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT**, followed by **WP-12C-AM3-STAGE-COMMIT** only if this alignment passes and a later human gate authorizes staging. REL0 final QA, WP-13 release visuals, WP-13-dependent publication preparation, push, and publish remain blocked.
 
 Out-of-scope-for-this-release governed work, retained here so a contributor cannot mistake it for current release behavior:
 
-- **WP-ORCH0** — orchestrated multi-agent runtime. Future AL3. Not current release behavior.
-- **AL4 adapter work** — Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution. Future. Not current release behavior.
+- **Full specialist-generated review output execution** — not proven by the AM3 evidence path.
+- **AM4 adapter work** — Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution. Future. Not current release behavior.
 
 ## Not Yet Created
 
 - No release visuals yet (WP-13).
-- No multi-agent runtime yet (WP-ORCH0; future AL3).
-- No external adapters yet (future AL4; not current release).
+- AM3 / AL3 local orchestrated multi-agent runtime evidence is proven only as a local evidence path under `runs/RUN-SMOKE-AM3-001/runtime/`; it is not staged or published in this gate.
+- No external adapters yet (future AM4 / AL4; not current release).
 - No chain execution against `runs/RUN-001/` yet (the run fixture is governed; the 26 reserved chain outputs activate only when the operator executes the Package 04–09 chain).
 - No numeric accuracy score against `runs/RUN-001/` yet.
-- No runtime, cloud, MCP, Jira / Confluence / Lucidchart / Rovo post-back, Foundry, ADK, MAF, database, Terraform, event-bus, or telemetry proof yet.
+- No AM4 adapter execution, cloud runtime, MCP, Jira / Confluence / Lucidchart / Rovo post-back, Foundry, ADK, MAF, database, Terraform, event-bus, telemetry, push, publish, or production-operation proof.

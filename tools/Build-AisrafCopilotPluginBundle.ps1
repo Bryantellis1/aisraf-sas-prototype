@@ -70,7 +70,9 @@ $approvedSourceFolders = @(
 $approvedSourceFiles = @(
     'tools/Test-AisrafPackage.ps1',
     'tools/Test-AisrafBp12AReadiness.ps1',
-    'tools/Test-AisrafRunProfile.ps1'
+    'tools/Test-AisrafRunProfile.ps1',
+    'tools/Invoke-AisrafAm3LocalRun.ps1',
+    'tools/Test-AisrafAm3Runtime.ps1'
 )
 
 # Excluded surfaces. Listed here for falsifiability; the build never copies

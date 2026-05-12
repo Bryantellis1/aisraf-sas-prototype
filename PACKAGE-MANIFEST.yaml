@@ -14,16 +14,16 @@ terminology:
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
 current_build_package:
-  build_package_number: "12C-REL0-C"
-  build_package_name: Public Entrypoint, Manifest State, And REL0-QA Allow-List Micro-Patch
-  build_package_status: active_rel0_c_micropatch_for_rb_rel0_001_through_005
+  build_package_number: "12C-AM3-RELEASE-CLAIM-ALIGNMENT"
+  build_package_name: AM3 Release Claim, Public Language, And No-Overclaim Alignment
+  build_package_status: active_release_claim_alignment_bounded_am3_al3_local_runtime_evidence
 next_build_package:
-  build_package_number: "12C-REL0-CLOSE"
-  build_package_name: Founder-Authorized Public Release Gate Closure
-  build_package_status: blocked_pending_rel0_c_micropatch_completion
+  build_package_number: "12C-AM3-STAGE-COMMIT"
+  build_package_name: AM3 Release Claim Stage Commit Gate
+  build_package_status: blocked_pending_wp_12c_am3_release_claim_alignment_pass
 wp12c_current_state:
-  active_work_package: WP-12C-REL0-C
-  accepted_status_through: WP-12C-REL0_QA_PARTIAL_WITH_GAPS
+  active_work_package: WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT
+  accepted_status_through: WP-12C-AM3_QA_PASS_READY_FOR_AM3_RELEASE_CLAIM_ALIGNMENT
   wp12c_h_status: BLACK_CLOSED
   wp12c_i_status: BLACK_CLOSED
   wp12c_j1_status: BLACK_CLOSED
@@ -51,15 +51,30 @@ wp12c_current_state:
   wp12c_l3_status: BLACK_CLOSED
   wp12c_rel0_b_status: BLACK_CLOSED_STAGE_COMMIT_PASS
   wp12c_rel0_qa_status: BLACK_CLOSED_PARTIAL_WITH_GAPS
-  wp12c_rel0_c_status: ACTIVE
-  wp12c_rel0_status: BLOCKED_PENDING_REL0_C_CLOSURE
-  wp13_status: BLOCKED_PENDING_REL0_CLOSURE_AND_BP12_SAMPLE_DFD_BLOCKER_RESOLUTION
-  wp_orch_status: FUTURE_NOT_IN_V0_1_2_SCOPE
+  wp12c_rel0_c_status: BLACK_CLOSED_STAGE_COMMIT_PASS
+  wp12c_rel0_c_fix_a_status: BLACK_CLOSED_STAGE_COMMIT_PASS
+  wp12c_am3_plan_status: BLACK_CLOSED
+  wp12c_am3_contracts_status: BLACK_CLOSED
+  wp12c_am3_runtime_status: BLACK_CLOSED
+  wp12c_am3_evidence_status: BLACK_CLOSED
+  wp12c_am3_qa_status: BLACK_CLOSED_READY_FOR_RELEASE_CLAIM_ALIGNMENT
+  wp12c_am3_release_claim_alignment_status: ACTIVE
+  wp12c_am3_stage_commit_status: BLOCKED_PENDING_RELEASE_CLAIM_ALIGNMENT_PASS
+  wp12c_rel0_status: BLOCKED_PENDING_WP_12C_AM3_STAGE_COMMIT_AND_REL0_FINAL_QA
+  wp13_status: BLOCKED_PENDING_REL0_FINAL_QA_AND_RELEASE_CLOSURE
+  wp_orch_status: SUPERSEDED_BY_WP_12C_AM3_LANE_FOR_V0_1_2
   adapter0_status: FUTURE_NOT_IN_V0_1_2_SCOPE_AL4_NOT_CURRENT_RELEASE
-  current_gate: rel0_c_micropatch_for_rb_rel0_001_through_005
-  next_gate: rel0_closure_then_wp_13_release_visuals_subject_to_bp12_sample_dfd_blocker
-  current_autonomy_level: AL2_controlled_output_local_workbench
-  future_autonomy_level: AL3_orchestrated_multi_agent_runtime_deferred_to_wp_orch
+  current_gate: wp_12c_am3_release_claim_alignment
+  next_gate: wp_12c_am3_stage_commit_then_rel0_final_qa
+  current_autonomy_level: AM3_AL3_local_orchestrated_multi_agent_runtime_evidence_path
+  current_release_claim: AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence.
+  claim_limiter: This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
+  target_autonomy_level_for_v0_1_2: AM3_AL3_local_orchestrated_multi_agent_runtime_evidence_path
+  future_autonomy_level: AM4_external_adapter_post_back_execution
+  am3_evidence_status: local_only_human_gated_validator_backed_evidence_bound
+  am3_orchestrator_ownership_status: AISRAF_Orchestrator_owns_run_state_and_event_log
+  am3_handoff_status: AM3_01_through_AM3_06_request_response_pairs_represent_specialist_handoffs
+  am3_human_gate_status: human_gates_remain_required
   al4_status: future_external_adapter_post_back_execution_not_current_release
   al5_status: out_of_scope_for_v0_1_x
   plugin_scaffold_status: complete_and_validated_check_16_16a_16b_16c_pass
@@ -245,8 +260,12 @@ local_excluded_root_folders:
     package_surface: false
 smoke_run_exclusion:
   path_pattern: runs/RUN-SMOKE-LOCAL-*/
+  additional_path_patterns:
+    - runs/RUN-SMOKE-PLUGIN-L2B-001/
+    - runs/RUN-SMOKE-AM3-001/
   status: local_smoke_evidence_excluded_from_release_fixture_unless_separately_approved
   staging_policy: do_not_stage_by_default
+  am3_note: runs/RUN-SMOKE-AM3-001/ is local AM3 smoke evidence and must not be staged or published in this gate, even if no ignore match is present.
 build_package_01_allowed_writes:
   root_files:
     - README.md

@@ -2,7 +2,9 @@
 
 Package: AISRAF SAS Prototype v0.1.2
 
-AISRAF v0.1.2 is an **AL2 controlled-output local security architecture review workbench**. It does not orchestrate multi-agent runtimes (AL3, future WP-ORCH0) and does not execute external adapters or post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems (AL4, future). AL5 closed-loop autonomy is out of scope.
+AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
+
+The everyday security architect and application architect workflow remains a local controlled-output workbench. AISRAF does not execute external adapters or post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems (AM4 / AL4, future). AL5 closed-loop autonomy is out of scope.
 
 ## v0.1.2 Release — Read First
 
@@ -14,7 +16,9 @@ Pick the entrypoint that matches your role.
 - **Maintainer** — read [docs/ARCHITECTURE-OVERVIEW.md](docs/ARCHITECTURE-OVERVIEW.md) and [RELEASE-MANIFEST.yaml](RELEASE-MANIFEST.yaml).
 - **Roadmap reader** — read [docs/ROADMAP.md](docs/ROADMAP.md).
 
-Release state: Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-REL0-QA is closed with documented warning-class gaps. **WP-12C-REL0-C** (focused doc-only / manifest / validator-allow-list micro-patch) is the active gate. WP-12C-REL0 closure is the next public release gate; WP-13 release visuals follow; WP-ORCH0 and AL4 adapter work remain blocked / future.
+Release state: Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim. **WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT** is the active gate. WP-12C-AM3-STAGE-COMMIT is next only if this gate passes and a later human gate authorizes staging. REL0 final QA, WP-13 release visuals, push, publish, and AM4 adapter work remain blocked / future.
+
+AM3 boundary: AISRAF Orchestrator owns run-state and event log. Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. Human gates remain required. AM4 external adapter execution remains future. The local smoke evidence under `runs/RUN-SMOKE-AM3-001/` must not be staged or published in this gate.
 
 > **Carried-forward blocker.** `BP12-SAMPLE-DFD-BLOCKER` (severity HARD, owner founder) records a defect in the canonical sample DFD (`samples/sample-001-dfd-crop/inputs/dfd-crop.png`/`.mmd` and the byte-copies under `runs/RUN-001/inputs/`). Build Package 13 (Diagrams) is also separately gated by founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD. See [validation/sample-input-readiness-checklist.md](validation/sample-input-readiness-checklist.md) for the full defect statement and gate verdicts.
 
@@ -54,6 +58,6 @@ Release state: Build Packages 01–12 are governed and validator-green. BP12C op
 
 ## Next Build Package
 
-The immediate governed gate is **WP-12C-REL0-C** — the focused doc-only / manifest / validator-allow-list micro-patch closing the five REL0-QA warning-class gaps (RB-REL0-001..005). After REL0-C closes, **WP-12C-REL0 closure** is the next public release gate. **Build Package 13 — Diagrams (release visuals)** opens only after REL0 closure and remains separately gated by `BP12-SAMPLE-DFD-BLOCKER` resolution (founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD) per [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md).
+The immediate governed gate is **WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT**. After it passes, **WP-12C-AM3-STAGE-COMMIT** may proceed only under the next explicit human gate. REL0 final QA, WP-13 release visuals, push, publish, and AM4 adapter work remain blocked.
 
-**WP-ORCH0** (orchestrated multi-agent runtime; future AL3) and **AL4 adapter work** (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution) are future and not part of the v0.1.2 release.
+**AM4 adapter work** (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution) is future and not part of the current v0.1.2 claim.

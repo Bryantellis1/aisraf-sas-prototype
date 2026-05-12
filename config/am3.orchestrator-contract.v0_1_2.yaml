@@ -1,0 +1,321 @@
+contract_id: am3.orchestrator-contract.v0_1_2
+contract_title: AISRAF AM3 Local Orchestrated Multi-Agent Runtime — Orchestrator Contract
+package_version: v0.1.2
+schema_version: am3.orchestrator_contract.v0_1_2
+authored_by_work_package: WP-12C-AM3-CONTRACTS
+authored_after_work_package: WP-12C-AM3-PLAN
+governs_runtime_authored_by_work_package: WP-12C-AM3-RUNTIME
+governs_smoke_evidence_work_package: WP-12C-AM3-EVIDENCE
+
+owner_agent: PRA-01-SAS-REVIEW-ORCHESTRATOR
+owner_agent_projection: .agents/aisraf-orchestrator.agent.md
+autonomy_target: AL3_local_orchestrated_multi_agent_runtime
+autonomy_pre_evidence_claim: AL2_controlled_output_local_workbench_orchestrator_first_and_multi_agent_packaged
+autonomy_post_evidence_claim_requires:
+  - WP-12C-AM3-CONTRACTS pass
+  - WP-12C-AM3-RUNTIME pass
+  - WP-12C-AM3-EVIDENCE pass
+  - WP-12C-AM3-QA pass
+
+mode: local_only
+network_calls_permitted: false
+external_execution_permitted: false
+closed_loop_autonomy_permitted: false
+
+state_ownership:
+  orchestrator_owns_run_state_file: true
+  run_state_file_path_target: "{{output_root}}/runtime/run-state.yaml"
+  run_state_schema_id: am3.run_state.v0_1_2
+  specialists_may_mutate_run_state_directly: false
+  specialists_return_structured_response_only: true
+  orchestrator_advances_state: true
+  orchestrator_pauses_state: true
+  orchestrator_stops_state: true
+  orchestrator_is_sole_writer_of_run_state: true
+  orchestrator_is_sole_writer_of_event_log: true
+  event_log_path_target: "{{output_root}}/runtime/events.ndjson"
+  event_log_schema_id: am3.event.v0_1_2
+
+delegation_map:
+  - step_id: AM3-INIT
+    specialist_agent_id: PRA-01-SAS-REVIEW-ORCHESTRATOR
+    specialist_role: Orchestrator initialization (run-state creation, run-profile load, pre-run human gate).
+    handoff_required: false
+    notes: Internal orchestrator-only step. No specialist handoff is issued; no specialist response is awaited.
+  - step_id: AM3-01
+    specialist_agent_id: PRA-02-INPUT-READER
+    specialist_role: Input Reader. Confirms staged inputs and produces 01-input-inventory.md.
+    handoff_required: true
+    handoff_contract_id: am3.handoff-contract.v0_1_2
+    expected_outputs:
+      - "{{output_root}}/01-input-inventory.md"
+  - step_id: AM3-02
+    specialist_agent_id: PRA-03-DFD-EXTRACTOR
+    specialist_role: DFD Extractor. Runs the PR-DFD-02..10 subskill chain and the design-fact extract. PRA-04 Legend Normalizer runs as the legend normalization subskill inside this step (not promoted to its own AM3 step).
+    handoff_required: true
+    handoff_contract_id: am3.handoff-contract.v0_1_2
+    embedded_subskill_specialist_agent_id: PRA-04-LEGEND-NORMALIZER
+    embedded_subskill_role: Legend Normalizer (PR-DFD-04). Invoked inside AM3-02; does not have its own AM3 step.
+    expected_outputs:
+      - "{{output_root}}/dfd/"
+      - "{{output_root}}/02-components-rs.md"
+      - "{{output_root}}/03-flows-rs.md"
+      - "{{output_root}}/04-boundaries-rs.md"
+      - "{{output_root}}/05-design-facts.md"
+      - "{{output_root}}/06-dfd-intake-verdict.md"
+  - step_id: AM3-03
+    specialist_agent_id: PRA-05-REVIEW-TABLE-BUILDER
+    specialist_role: Review Table Builder. Produces the stack assessment and internal review table.
+    handoff_required: true
+    handoff_contract_id: am3.handoff-contract.v0_1_2
+    expected_outputs:
+      - "{{output_root}}/07-security-stack-assessment.md"
+      - "{{output_root}}/08-internal-review-table.md"
+  - step_id: AM3-04
+    specialist_agent_id: PRA-06-BLUEPRINT-QUESTIONER
+    specialist_role: Blueprint Questioner. Produces missing facts, AI action level, blueprint match, and targeted questions.
+    handoff_required: true
+    handoff_contract_id: am3.handoff-contract.v0_1_2
+    expected_outputs:
+      - "{{output_root}}/09-missing-facts.md"
+      - "{{output_root}}/10-ai-action-level.md"
+      - "{{output_root}}/11-blueprint-match.md"
+      - "{{output_root}}/12-targeted-questions.md"
+  - step_id: AM3-05
+    specialist_agent_id: PRA-07-FINDING-RECOMMENDER
+    specialist_role: Finding Recommender. Produces findings and recommendations.
+    handoff_required: true
+    handoff_contract_id: am3.handoff-contract.v0_1_2
+    expected_outputs:
+      - "{{output_root}}/13-findings.md"
+      - "{{output_root}}/14-recommendations.md"
+  - step_id: AM3-06
+    specialist_agent_id: PRA-08-HANDOFF-QA-SCORER
+    specialist_role: Handoff QA Scorer. Produces handoff pack, validation notes, and (if scoring eligible) accuracy score; returns the final PASS / PARTIAL / FAIL / not_applicable verdict.
+    handoff_required: true
+    handoff_contract_id: am3.handoff-contract.v0_1_2
+    expected_outputs:
+      - "{{output_root}}/15-handoff-pack.md"
+      - "{{output_root}}/16-validation-notes.md"
+      - "{{output_root}}/17-accuracy-score.md"
+  - step_id: AM3-FINAL-GATE
+    specialist_agent_id: PRA-01-SAS-REVIEW-ORCHESTRATOR
+    specialist_role: Orchestrator final-gate decision (final PASS / PARTIAL / FAIL / not_applicable). Requires an explicit human gate event.
+    handoff_required: false
+    notes: Internal orchestrator-only step. No specialist handoff is issued.
+
+specialist_chain_alignment:
+  pra_01_role: orchestrator_and_control_plane
+  pra_04_role_in_am3: invoked_inside_am3_02_as_legend_normalization_subskill_not_a_separate_am3_step
+  do_not_invent_new_am3_steps: true
+  do_not_collapse_specialist_roles_into_a_single_generic_agent: true
+  total_specialist_handoff_steps: 6
+  total_steps_including_init_and_final_gate: 8
+  step_order_strict: true
+  step_order:
+    - AM3-INIT
+    - AM3-01
+    - AM3-02
+    - AM3-03
+    - AM3-04
+    - AM3-05
+    - AM3-06
+    - AM3-FINAL-GATE
+    - AM3-COMPLETE
+
+human_gates:
+  source_authority: PRA-01-SAS-REVIEW-ORCHESTRATOR section 8 ("Human Gates")
+  gate_contract_required_fields:
+    - gate_id
+    - gate_reason
+    - approval_required_by
+    - approved_action
+    - forbidden_actions
+    - evidence_required
+    - stop_condition
+  required_gates:
+    - gate_id: pre_run_approval
+      gate_reason: Reviewer confirms run profile, sensitive-data redaction, and controlled-output posture before any specialist handoff is issued.
+      approval_required_by: human_reviewer
+      approved_action: orchestrator_may_transition_from_AM3_INIT_to_AM3_01
+      forbidden_actions:
+        - issue_any_specialist_handoff_before_pre_run_approval
+        - write_any_output_outside_output_root
+        - call_any_external_system
+      evidence_required: paired_gate_request_and_gate_decision_events_in_events_ndjson_with_reviewer_identity
+      stop_condition: gate_denied_or_timeout
+    - gate_id: pre_output_generation_approval
+      gate_reason: Reviewer confirms that DFD intake (AM3-02) results are within controlled-output posture before downstream specialists generate review outputs.
+      approval_required_by: human_reviewer
+      approved_action: orchestrator_may_transition_from_AM3_02_to_AM3_03
+      forbidden_actions:
+        - issue_AM3_03_handoff_before_pre_output_generation_approval
+        - write_any_output_outside_output_root_or_output_root_dfd
+        - call_any_external_system
+      evidence_required: paired_gate_request_and_gate_decision_events_in_events_ndjson_with_reviewer_identity
+      stop_condition: gate_denied_or_timeout
+    - gate_id: final_review_approval
+      gate_reason: Reviewer confirms findings, recommendations, and handoff pack are complete and within controlled-output posture before the final verdict is recorded.
+      approval_required_by: human_reviewer
+      approved_action: orchestrator_may_transition_from_AM3_06_to_AM3_FINAL_GATE
+      forbidden_actions:
+        - record_final_verdict_before_final_review_approval
+        - publish_or_post_back_any_artifact
+        - call_any_external_system
+      evidence_required: paired_gate_request_and_gate_decision_events_in_events_ndjson_with_reviewer_identity
+      stop_condition: gate_denied_or_timeout
+    - gate_id: release_or_claim_approval
+      gate_reason: Reviewer confirms the AM3 evidence does not overclaim AM4 / AL4 / AL5 capability and does not loosen AL2 security controls.
+      approval_required_by: human_reviewer
+      approved_action: orchestrator_may_emit_release_or_claim_decision_event_only_after_explicit_human_approval
+      forbidden_actions:
+        - claim_AL3_complete_without_AM3_EVIDENCE_and_AM3_QA_pass
+        - claim_AM4_current
+        - claim_AL5_or_closed_loop_autonomy
+      evidence_required: paired_gate_request_and_gate_decision_events_in_events_ndjson_with_reviewer_identity
+      stop_condition: gate_denied_or_timeout
+    - gate_id: final_pass_partial_fail_not_applicable_decision
+      gate_reason: Final PASS / PARTIAL / FAIL / not_applicable decision requires an explicit gate event regardless of internal verdict.
+      approval_required_by: human_reviewer
+      approved_action: orchestrator_may_transition_run_status_to_complete_or_stopped
+      forbidden_actions:
+        - emit_final_verdict_without_explicit_gate_event
+        - publish_or_post_back_any_artifact
+        - call_any_external_system
+      evidence_required: paired_gate_request_and_gate_decision_events_in_events_ndjson_with_reviewer_identity_and_final_verdict_string
+      stop_condition: gate_denied_or_timeout
+  human_gate_pause_semantics:
+    orchestrator_must_pause_run_until_gate_decision_event_received: true
+    orchestrator_may_not_skip_a_required_gate: true
+    orchestrator_may_not_self_approve_a_gate: true
+
+stop_conditions:
+  validator_fail: stop
+  schema_fail: stop
+  missing_handoff_response: stop
+  output_outside_allowed_path: stop
+  external_execution_attempt: stop
+  sensitive_data_violation: stop
+  unsupported_connector_state: stop
+  human_gate_denied: stop
+  stop_condition_event_required: true
+  stop_condition_event_type: stop
+
+transition_rules:
+  advance_requires_prior_step_validator_pass: true
+  advance_requires_prior_specialist_response_present: true
+  advance_requires_prior_human_gate_decision_if_gate_is_required: true
+  advance_may_not_skip_any_step: true
+  pause_records_current_step_in_run_state: true
+  pause_records_pending_human_gate_in_run_state: true
+  stop_records_stop_event_in_event_log: true
+  stop_sets_run_state_status_to_stopped_or_failed: true
+
+allowed_output_paths:
+  - "{{output_root}}/"
+  - "{{output_root}}/dfd/"
+  - "{{output_root}}/runtime/"
+  - "{{output_root}}/runtime/handoffs/"
+  - "{{output_root}}/runtime/handoffs/AM3-01/"
+  - "{{output_root}}/runtime/handoffs/AM3-02/"
+  - "{{output_root}}/runtime/handoffs/AM3-03/"
+  - "{{output_root}}/runtime/handoffs/AM3-04/"
+  - "{{output_root}}/runtime/handoffs/AM3-05/"
+  - "{{output_root}}/runtime/handoffs/AM3-06/"
+path_guard_rule: reject_any_specialist_response_that_names_an_output_file_outside_allowed_output_paths
+
+sensitive_data_screen:
+  source_authority: config/sensitive-data-rules.md
+  must_apply_to:
+    - run_state_string_fields
+    - event_string_fields
+    - handoff_request_string_fields
+    - handoff_response_string_fields
+    - specialist_output_files
+  reject_on:
+    - destination_url_present
+    - credential_present
+    - email_address_present
+    - customer_identifying_string_present
+  run_profile_required_flag: sensitive_data_confirmed_redacted_true
+
+connector_posture_required:
+  output_destination_mode: local_only
+  postback_execution_status: deferred
+  jira_connector_status: not_required
+  confluence_connector_status: not_required
+  mcp_execution_status: not_required
+  rovo_mcp_available: false
+
+forbidden_side_effects:
+  - jira_execution
+  - confluence_post_back_execution
+  - lucidchart_adapter_execution
+  - rovo_mcp_execution
+  - any_mcp_server_or_client_execution
+  - anthropic_runtime_adapter_execution
+  - azure_ai_foundry_runtime_adapter_execution
+  - google_adk_runtime_adapter_execution
+  - microsoft_agent_framework_runtime_adapter_execution
+  - cloud_runtime_execution
+  - database_write_back
+  - terraform_or_infrastructure_as_code_execution
+  - event_bus_integration
+  - telemetry_backend_emission
+  - closed_loop_autonomy
+  - any_AM4_or_AL4_adapter_operation
+  - emitting_a_destination_url_in_any_event_or_handoff_or_run_state
+  - posting_a_handoff_pack_to_an_external_system
+
+am3_vs_am4_boundary:
+  am3_may_create_local_state_files: true
+  am3_may_append_local_event_log: true
+  am3_may_emit_local_checkpoints: true
+  am3_may_emit_local_handoff_files: true
+  am3_may_produce_local_controlled_outputs_under_output_root: true
+  am3_may_not_execute_jira: true
+  am3_may_not_execute_confluence: true
+  am3_may_not_execute_lucidchart: true
+  am3_may_not_execute_rovo_mcp: true
+  am3_may_not_execute_any_cloud_runtime: true
+  am3_may_not_write_to_a_database: true
+  am3_may_not_execute_terraform: true
+  am3_may_not_publish_to_an_event_bus: true
+  am3_may_not_emit_to_a_telemetry_backend: true
+  am3_may_not_post_back_any_artifact: true
+  am4_begins_only_after_am3_implemented_smoked_and_qa_passed: true
+
+validation_coupling:
+  per_step_validator_route_required: true
+  per_step_validator_outcome_event_required: true
+  package_validator: tools/Test-AisrafPackage.ps1
+  bp12a_validator: tools/Test-AisrafBp12AReadiness.ps1
+  run_profile_validator: tools/Test-AisrafRunProfile.ps1
+  runtime_validator_target_path: tools/Test-AisrafAm3Runtime.ps1
+  runtime_validator_authoring_work_package: WP-12C-AM3-RUNTIME
+
+contract_invariants:
+  orchestrator_is_single_writer_of_run_state: true
+  orchestrator_is_single_writer_of_event_log: true
+  handoff_request_precedes_specialist_response: true
+  specialist_response_precedes_validator_outcome_event: true
+  validator_outcome_precedes_next_handoff_request: true
+  human_gate_request_precedes_human_gate_decision: true
+  stop_event_terminates_the_run: true
+
+overclaim_guard:
+  may_claim_AL3_only_after_AM3_EVIDENCE_pass_and_AM3_QA_pass: true
+  may_claim_AM4_current: false
+  may_claim_AL5_or_closed_loop_autonomy: false
+  may_claim_external_execution: false
+  may_claim_cloud_runtime: false
+  may_claim_database_write_back: false
+  may_claim_event_bus_or_telemetry_backend: false
+
+contract_lifecycle:
+  authored_in_work_package: WP-12C-AM3-CONTRACTS
+  consumed_by_work_package: WP-12C-AM3-RUNTIME
+  validated_by_work_package: WP-12C-AM3-RUNTIME
+  evidenced_by_work_package: WP-12C-AM3-EVIDENCE
+  qa_closed_by_work_package: WP-12C-AM3-QA
+  versioning_policy: bump_minor_version_for_any_breaking_change_to_field_set_or_enum

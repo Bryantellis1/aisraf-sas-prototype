@@ -6,14 +6,14 @@
 | Source draft | validation/package-12c-operator-quickstart-draft.md |
 | Promoted by | WP-12C-REL0-B — Public Release Docs |
 | Release | AISRAF v0.1.2 |
-| Current autonomy | AL2 (controlled-output local workbench) |
+| Current claim | AM3 / AL3 local orchestrated multi-agent runtime evidence is proven |
 | External execution | not claimed; no live Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform, or post-back execution in v0.1.2 |
 
 ## 1. Start Here
 
-AISRAF v0.1.2 is an AL2 controlled-output local security architecture review workbench. Start in preview mode. Confirm what each role reads, what it may write during an approved controlled-output gate, what stops it, and what it must not claim. Do not write files until the controlled-output gate is explicitly approved.
+AISRAF v0.1.2 is a local security architecture review workbench with bounded AM3 / AL3 local orchestrated runtime evidence. Start in preview mode. Confirm what each role reads, what it may write during an approved controlled-output gate, what stops it, and what it must not claim. Do not write files until the controlled-output gate is explicitly approved.
 
-A true orchestrated multi-agent runtime (AL3) is a future WP-ORCH track, not v0.1.2 behavior. Current execution is one selected agent session acting as a temporary orchestrator that walks the operator through the chain sequentially. The plugin packages that orchestrator together with the specialist agents, skill wrappers, and hook scripts so the operator can install one thing.
+The day-to-day operator workflow remains the AL2 controlled-output workbench: one selected agent session acts as a temporary orchestrator that walks the operator through the chain sequentially. Separately, AM3 evidence proves the local orchestrated runtime path: AISRAF Orchestrator owns run-state and event log, specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs, and human gates remain required. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
 
 ## 2. Install And Discovery Expectation
 
@@ -60,7 +60,7 @@ pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/<
 
 ## 5. Local Folder-First Operation
 
-v0.1.2 operates in folder-first-only mode. Every input is a local file. Every output is a local Markdown file under the approved run folder. AISRAF does not contact Jira, Confluence, Lucidchart, MCP servers, cloud runtimes, databases, Terraform, event buses, or telemetry backends. There is no post-back execution.
+v0.1.2 operates in folder-first-only mode. Every input is a local file. Every output is a local Markdown file under the approved run folder. AM3 runtime evidence is also local-only, human-gated, validator-backed, and evidence-bound. AISRAF does not contact Jira, Confluence, Lucidchart, MCP servers, cloud runtimes, databases, Terraform, event buses, or telemetry backends. There is no post-back execution.
 
 If a run profile attempts to enable an external integration field, the run-profile validator fails closed.
 
@@ -104,7 +104,8 @@ An application or solution architect can use AISRAF locally as a shift-left lint
 - Do not edit `runs/RUN-001/`.
 - Do not edit `samples/`.
 - Do not edit `catalogs/`, `blueprints/`, `templates/`, `prompts/`, `skills/`, `prototype-agents/`, or `config/` without an approved work package.
-- Do not claim AL3, AL4, or AL5 behavior as current.
+- Do not claim AM3 / AL3 beyond the accepted local evidence path.
+- Do not claim AM4 / AL4 or AL5 behavior as current.
 - Do not claim live Jira, Confluence, Lucidchart, MCP, Foundry, ADK, MAF, database, Terraform, cloud runtime, event bus, telemetry backend, or external post-back execution.
 
 ## 10. Validator Ladder

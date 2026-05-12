@@ -178,7 +178,9 @@ function Test-ApprovedBundleSourcePath {
     $allowedBundleSourceFiles = @(
         'tools/Test-AisrafPackage.ps1',
         'tools/Test-AisrafBp12AReadiness.ps1',
-        'tools/Test-AisrafRunProfile.ps1'
+        'tools/Test-AisrafRunProfile.ps1',
+        'tools/Invoke-AisrafAm3LocalRun.ps1',
+        'tools/Test-AisrafAm3Runtime.ps1'
     )
     return (($allowedBundleSourceFiles -contains $RelativePath) -or (Test-PathUnderAnyPrefix -RelativePath $RelativePath -AllowedPrefixes $allowedBundleSourcePrefixes))
 }
@@ -1435,7 +1437,18 @@ $validationAllowed += @(
     'package-12c-rel0-final-release-qa-report.md',
     'package-12c-rel0-final-release-blocker-register.md',
     'package-12c-rel0-c-micropatch-report.md',
-    'package-12c-rel0-c-fix-a-report.md'
+    'package-12c-rel0-c-fix-a-report.md',
+    'package-12c-am3-runtime-plan.md',
+    'package-12c-am3-definition-of-done.md',
+    'package-12c-am3-test-plan.md',
+    'package-12c-am3-risk-register.md',
+    'package-12c-am3-contracts-report.md',
+    'package-12c-am3-runtime-report.md',
+    'package-12c-am3-runtime-mp1-report.md',
+    'package-12c-am3-smoke-evidence-report.md',
+    'package-12c-am3-smoke-retry-evidence-report.md',
+    'package-12c-am3-qa-report.md',
+    'package-12c-am3-release-claim-alignment-report.md'
 )
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
@@ -1454,7 +1467,7 @@ else {
 
 # 12. tools/ — Build Package 03 expected file set plus exact WP-12C-K3C bundle build script path
 $toolsAbs = Resolve-PackagePath 'tools'
-$toolsAllowed = @('README.md', 'New-AisrafRun.ps1', 'Test-AisrafRunProfile.ps1', 'Test-AisrafPackage.ps1', 'Test-AisrafBp12AReadiness.ps1', 'Build-AisrafCopilotPluginBundle.ps1')
+$toolsAllowed = @('README.md', 'New-AisrafRun.ps1', 'Test-AisrafRunProfile.ps1', 'Test-AisrafPackage.ps1', 'Test-AisrafBp12AReadiness.ps1', 'Build-AisrafCopilotPluginBundle.ps1', 'Invoke-AisrafAm3LocalRun.ps1', 'Test-AisrafAm3Runtime.ps1')
 $hookAllowed = @('README.md', 'hook-allow-list.yaml', 'aisraf-allowed-path-prewrite-guard.ps1', 'aisraf-focused-validator-postwrite.ps1', 'aisraf-session-stop-summary.ps1', 'aisraf-precommit-full-validator.ps1')
 $toolsFails = @()
 if (Test-Path -LiteralPath $toolsAbs -PathType Container) {
@@ -1499,6 +1512,17 @@ else {
 # 13. config/ — Build Package 02 expected file set
 $configAbs = Resolve-PackagePath 'config'
 $configAllowed = @('README.md', 'run-profile.schema.yaml', 'run-profile.template.yaml', 'run-profile.sample.folder-first.yaml', 'run-profile.sample.integration.yaml', 'run-profile.field-catalog.md', 'run-profile.validation-rules.md', 'path-resolution-rules.md', 'integration-fields.md', 'sensitive-data-rules.md')
+# WP-12C-AM3-CONTRACTS: four AM3 contract / schema files authored under config/ to
+# define the orchestrator contract, specialist handoff contract, run-state schema,
+# and event/checkpoint schema for the later AM3 local orchestrated multi-agent
+# runtime. Exact-path allow-list extension only; no wildcards; no broadening of
+# config/ surface. Authorized only for the WP-12C-AM3-CONTRACTS gate.
+$configAllowed += @(
+    'am3.orchestrator-contract.v0_1_2.yaml',
+    'am3.handoff-contract.v0_1_2.yaml',
+    'am3.run-state.schema.v0_1_2.yaml',
+    'am3.event.schema.v0_1_2.yaml'
+)
 $configFails = @()
 if (Test-Path -LiteralPath $configAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $configAbs -Force -File)) {
@@ -1511,7 +1535,7 @@ if ($configFails.Count -gt 0) {
     foreach ($s in $configFails) { Add-Result -Status FAIL -Check '13-config-allowed' -Detail "Unexpected file in config/: $s" }
 }
 else {
-    Add-Result -Status PASS -Check '13-config-allowed' -Detail "config/ contains only the nine Build Package 02 files plus README.md."
+    Add-Result -Status PASS -Check '13-config-allowed' -Detail "config/ contains only the nine Build Package 02 files plus README.md plus the four WP-12C-AM3-CONTRACTS contract / schema files (orchestrator contract, handoff contract, run-state schema, event schema)."
 }
 
 # 14. runs/ — Build Package 11 surface posture
@@ -1580,7 +1604,7 @@ else {
     $aisrafPluginAllowedFiles = $aisrafPluginScaffoldFiles + $aisrafPluginOptionalK3cFiles + $aisrafPluginOptionalL1aFiles
     $aisrafPluginAllowedDirs = @('bundle')
     $bundleTopAllowedDirs = @('.github', '.copilot-skills', '.agents', 'prompts', 'skills', 'prototype-agents', 'templates', 'catalogs', 'blueprints', 'tools')
-    $bundleToolsAllowedFiles = @('Test-AisrafPackage.ps1', 'Test-AisrafBp12AReadiness.ps1', 'Test-AisrafRunProfile.ps1')
+    $bundleToolsAllowedFiles = @('Test-AisrafPackage.ps1', 'Test-AisrafBp12AReadiness.ps1', 'Test-AisrafRunProfile.ps1', 'Invoke-AisrafAm3LocalRun.ps1', 'Test-AisrafAm3Runtime.ps1')
     foreach ($f in @(Get-ChildItem -LiteralPath $pluginsAbs -Force -File)) {
         Add-Result -Status FAIL -Check '16-plugin-content-limits' -Detail "Forbidden file at plugins/ root (only the aisraf-copilot-plugin/ subfolder is permitted): plugins/$($f.Name)"
     }

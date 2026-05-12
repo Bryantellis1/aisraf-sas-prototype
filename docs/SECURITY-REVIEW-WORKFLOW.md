@@ -6,7 +6,7 @@
 | Source draft | validation/package-12c-security-review-workflow-draft.md |
 | Promoted by | WP-12C-REL0-B — Public Release Docs |
 | Release | AISRAF v0.1.2 |
-| Current autonomy | AL2 (controlled-output local workbench) |
+| Current claim | AM3 / AL3 local orchestrated multi-agent runtime evidence is proven |
 | External execution | not claimed; outputs are local Markdown only |
 
 ## 1. Two Entry Points
@@ -17,6 +17,8 @@ AISRAF v0.1.2 supports two entry points into the same governed review chain:
 - **Post-design-review (security architect).** A security architect receives a DFD/design-review package and uses AISRAF to inspect it locally, preserve unknowns, generate targeted questions, structure the review table, draft findings and recommendations, and assemble handoff evidence.
 
 Both entry points use the same chain, the same inputs shape, and the same output set. The differences are who runs it and what they do with the outputs.
+
+AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. AISRAF Orchestrator owns run-state and event log, and specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. That evidence path does not prove full specialist-generated review output execution, production readiness, publication, or AM4 integration.
 
 ## 2. Inputs Expected
 

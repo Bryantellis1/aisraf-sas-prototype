@@ -2,8 +2,8 @@
 #
 # Authoritative public-release metadata for AISRAF v0.1.2.
 #
-# This manifest is non-executing. It declares the AL2 controlled-output
-# release surface, names current and future autonomy levels, fixes the
+# This manifest is non-executing. It declares the bounded AM3 / AL3
+# local orchestrated runtime evidence claim, names current and future autonomy levels, fixes the
 # AI component pattern wording, lists the validators that must remain
 # green, names local-only paths excluded from staging, names forbidden
 # claims, and lists known warnings carried into the release.
@@ -15,7 +15,7 @@ package_name: AISRAF SAS Prototype
 package_version: v0.1.2
 commit_hash: e641699f2586fb59654d2e08338fd822ec4e2e62
 release_status: pre_release_public_safe_local_first_evidence_bound
-release_posture: not_published; not_pushed; not_diagrammed; not_orchestrated
+release_posture: not_published; not_pushed; not_diagrammed; am3_local_runtime_evidence_proven; am4_not_implemented
 release_notes_doc: CHANGELOG.md
 license_doc: LICENSE
 notice_doc: NOTICE.md
@@ -28,17 +28,23 @@ public_docs:
   architecture_overview: docs/ARCHITECTURE-OVERVIEW.md
   roadmap: docs/ROADMAP.md
 
-current_autonomy_level: AL2
+current_autonomy_level: AM3_AL3_LOCAL_ORCHESTRATED_RUNTIME_EVIDENCE
 current_autonomy_description: >-
-  Controlled-output local workbench: operator selects an AISRAF role,
-  role writes governed outputs only inside an approved scratch run
-  folder, hooks enforce path guards and run validators.
-current_autonomy_proof: runs/RUN-SMOKE-PLUGIN-L2B-001
-future_autonomy_level: AL3_ORCH
+  AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime
+  evidence. AM3 evidence is local-only, human-gated, validator-backed,
+  and evidence-bound. AISRAF Orchestrator owns run-state and event log.
+  Specialist handoffs are represented by AM3-01 through AM3-06
+  request/response pairs. Human gates remain required.
+current_autonomy_limiter: >-
+  This is an evidence-path claim, not a claim of full
+  specialist-generated review output execution, production readiness,
+  publication, or AM4 integration.
+current_autonomy_proof: runs/RUN-SMOKE-AM3-001/runtime/
+controlled_output_proof: runs/RUN-SMOKE-PLUGIN-L2B-001
+future_autonomy_level: AM4_EXTERNAL_ADAPTERS
 future_autonomy_description: >-
-  AL3 orchestrated multi-agent runtime is future WP-ORCH; AL4 external
-  adapter / post-back execution is future adapter work; AL5 closed-loop
-  autonomy is out of scope.
+  AM4 external adapter / post-back execution is future adapter work.
+  AL5 closed-loop autonomy is out of scope.
 external_execution_status: not_claimed
 
 ai_component_pattern_current: AI_for_outside_component
@@ -67,20 +73,41 @@ validators:
     expected_status: 0_FAIL
     last_run_pass_count: 12
     last_run_fail_count: 0
+  - script: tools/Test-AisrafRunProfile.ps1
+    target: runs/RUN-SMOKE-AM3-001/run-profile.yaml
+    mode: ExecutionReady
+    expected_status: 0_FAIL
+    last_run_pass_count: 12
+    last_run_fail_count: 0
+  - script: tools/Test-AisrafAm3Runtime.ps1
+    mode: ContractsOnly
+    expected_status: 0_FAIL
+    last_run_pass_count: 4
+    last_run_fail_count: 0
+  - script: tools/Test-AisrafAm3Runtime.ps1
+    target: runs/RUN-SMOKE-AM3-001/run-profile.yaml
+    expected_status: 0_FAIL
+    last_run_pass_count: 23
+    last_run_fail_count: 0
 
 local_only_paths:
   - .claude/
   - runs/RUN-SMOKE-LOCAL-001/
   - runs/RUN-SMOKE-PLUGIN-L2B-001/
+  - runs/RUN-SMOKE-AM3-001/
 local_only_policy: >-
-  These paths are local-only smoke or environment evidence. They are
-  excluded from git staging via local ignore rules. They are not part
-  of the v0.1.2 public release surface and must not be committed or
-  published.
+  These paths are local-only smoke or environment evidence. They are not
+  part of the v0.1.2 public release surface and must not be committed or
+  published. .claude/, runs/RUN-SMOKE-LOCAL-001/, and
+  runs/RUN-SMOKE-PLUGIN-L2B-001/ are expected to be excluded from git
+  staging via local ignore rules. runs/RUN-SMOKE-AM3-001/ remains
+  local-only AM3 smoke evidence and must not be staged or published in
+  this gate even if no ignore match is present.
 
 forbidden_claims:
-  - AL3_orchestrated_multi_agent_runtime_as_current
-  - AL4_external_tool_post_back_execution_as_current
+  - full_specialist_generated_review_output_execution
+  - AM4_external_tool_post_back_execution_as_current
+  - AM4_implemented
   - AL5_closed_loop_autonomy
   - live_jira_integration
   - live_confluence_integration
@@ -112,20 +139,25 @@ known_warnings:
     detail: runs/RUN-SMOKE-PLUGIN-L2B-001/ exists alongside the governed RUN-001 fixture
     severity: warning
     resolution: local_only_path; excluded from staging via local ignore; preserved as L2B controlled-output evidence
+  - id: KW-003
+    source: git check-ignore release hygiene
+    detail: runs/RUN-SMOKE-AM3-001/ is local AM3 smoke evidence and may have no local ignore match
+    severity: blocker_for_publish
+    resolution: do_not_stage_or_publish_in_this_gate; resolve ignore policy only in a later authorized cleanup gate
 
 next_gates:
-  - id: WP-12C-REL0-B-STAGE-COMMIT
-    description: Stage and commit the WP-12C-REL0-B public release docs surface
-    blocked_by: explicit founder approval after this REL0-B report
-  - id: WP-12C-REL0-QA
-    description: QA pass over the public release docs surface
-    blocked_by: WP-12C-REL0-B-STAGE-COMMIT
+  - id: WP-12C-AM3-STAGE-COMMIT
+    description: Stage and commit the bounded AM3 / AL3 release claim alignment surface
+    blocked_by: explicit founder approval after WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT
+  - id: REL0-FINAL-QA
+    description: Final release QA after the AM3 stage commit gate
+    blocked_by: WP-12C-AM3-STAGE-COMMIT
   - id: WP-13
     description: Release diagrams and visuals
-    blocked_by: WP-12C-REL0 closure
-  - id: WP-ORCH0
-    description: AL3 orchestrated multi-agent runtime design
-    blocked_by: WP-13 closure and explicit founder authorization
+    blocked_by: REL0 final QA and explicit founder authorization
+  - id: AM4-ADAPTERS
+    description: External adapter execution work packages
+    blocked_by: REL0 final QA, WP-13 decisions, and explicit founder authorization
 
 license_status: pending_founder_legal_confirmation
 license_note: >-

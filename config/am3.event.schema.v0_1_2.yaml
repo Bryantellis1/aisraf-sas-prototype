@@ -1,0 +1,299 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: am3.event.v0_1_2
+title: AISRAF AM3 Event / Checkpoint Schema
+description: >
+  JSON Schema for individual NDJSON lines in the AM3 event / checkpoint
+  log authored and maintained by the AISRAF Orchestrator
+  (PRA-01-SAS-REVIEW-ORCHESTRATOR) under
+  {{output_root}}/runtime/events.ndjson. Each line is one event. The
+  orchestrator is the sole writer. Specialists may not append to the
+  event log directly; they return a structured response
+  (am3.handoff_response.v0_1_2) and the orchestrator emits the
+  corresponding handoff_response, validator_outcome, and (when
+  required) gate_request / gate_decision / stop events.
+schema_version: am3.event.v0_1_2
+package_version: v0.1.2
+authored_by_work_package: WP-12C-AM3-CONTRACTS
+governed_by_orchestrator_contract: am3.orchestrator-contract.v0_1_2
+
+target_path: "{{output_root}}/runtime/events.ndjson"
+target_path_is_local_only: true
+single_writer: PRA-01-SAS-REVIEW-ORCHESTRATOR
+append_only: true
+one_event_per_line: true
+encoding: utf-8
+line_delimiter: "\n"
+
+type: object
+additionalProperties: false
+
+required:
+  - schema_version
+  - event_id
+  - run_id
+  - timestamp
+  - event_type
+  - step_id
+  - actor
+  - checkpoint_id
+  - previous_state
+  - next_state
+  - input_ref
+  - output_ref
+  - validator_ref
+  - policy_decision
+  - human_gate_ref
+
+properties:
+
+  schema_version:
+    type: string
+    const: am3.event.v0_1_2
+    description: Pins the event schema. Orchestrator must not edit.
+
+  event_id:
+    type: string
+    minLength: 1
+    description: Globally unique event identifier within the run. Monotonically increasing within a run. Typical form is "EVT-<run_id>-<zero-padded-ordinal>".
+
+  run_id:
+    type: string
+    minLength: 1
+    description: AISRAF run identifier. Matches run-state.run_id.
+
+  timestamp:
+    type: string
+    format: date-time
+    description: ISO 8601 timestamp of event emission.
+
+  event_type:
+    type: string
+    enum:
+      - orchestrator_decision
+      - handoff_request
+      - handoff_response
+      - validator_outcome
+      - gate_request
+      - gate_decision
+      - stop
+    description: Strict enum. New event types may not be invented.
+
+  step_id:
+    type: string
+    enum:
+      - AM3-INIT
+      - AM3-01
+      - AM3-02
+      - AM3-03
+      - AM3-04
+      - AM3-05
+      - AM3-06
+      - AM3-FINAL-GATE
+      - AM3-COMPLETE
+      - AM3-STOPPED
+    description: The step this event pertains to. Strict enum.
+
+  actor:
+    type: string
+    enum:
+      - PRA-01-SAS-REVIEW-ORCHESTRATOR
+      - PRA-02-INPUT-READER
+      - PRA-03-DFD-EXTRACTOR
+      - PRA-04-LEGEND-NORMALIZER
+      - PRA-05-REVIEW-TABLE-BUILDER
+      - PRA-06-BLUEPRINT-QUESTIONER
+      - PRA-07-FINDING-RECOMMENDER
+      - PRA-08-HANDOFF-QA-SCORER
+      - human_reviewer
+      - validator
+    description: Identity of the actor whose decision or output the event records. Orchestrator is the writer regardless.
+
+  checkpoint_id:
+    description: Identifier of the checkpoint anchor this event records, or null when the event is not a checkpoint anchor. Typical form mirrors event_id ("CHK-<run_id>-<zero-padded-ordinal>"). Recorded into run-state.last_checkpoint_id when present.
+    oneOf:
+      - type: "null"
+      - type: string
+        minLength: 1
+
+  previous_state:
+    description: The run-state.current_step value before this event, or null at run inception.
+    oneOf:
+      - type: "null"
+      - type: string
+        enum:
+          - AM3-INIT
+          - AM3-01
+          - AM3-02
+          - AM3-03
+          - AM3-04
+          - AM3-05
+          - AM3-06
+          - AM3-FINAL-GATE
+          - AM3-COMPLETE
+          - AM3-STOPPED
+
+  next_state:
+    description: The run-state.current_step value after this event, or null when the event does not change run-state.current_step.
+    oneOf:
+      - type: "null"
+      - type: string
+        enum:
+          - AM3-INIT
+          - AM3-01
+          - AM3-02
+          - AM3-03
+          - AM3-04
+          - AM3-05
+          - AM3-06
+          - AM3-FINAL-GATE
+          - AM3-COMPLETE
+          - AM3-STOPPED
+
+  input_ref:
+    description: Relative local path of the primary input artifact associated with the event, or null. Must remain under {{input_root}} or {{output_root}}.
+    oneOf:
+      - type: "null"
+      - type: string
+        minLength: 1
+
+  output_ref:
+    description: Relative local path of the primary output artifact associated with the event, or null. Must remain under {{output_root}}.
+    oneOf:
+      - type: "null"
+      - type: string
+        minLength: 1
+
+  validator_ref:
+    description: Relative local path of the validator invoked for this event, or null. Typical values are tools/Test-AisrafPackage.ps1, tools/Test-AisrafRunProfile.ps1, or tools/Test-AisrafAm3Runtime.ps1 (the runtime validator authored in WP-12C-AM3-RUNTIME).
+    oneOf:
+      - type: "null"
+      - type: string
+        minLength: 1
+
+  policy_decision:
+    description: Orchestrator policy decision recorded with the event. Strict enum or null when the event does not record a policy decision.
+    oneOf:
+      - type: "null"
+      - type: string
+        enum:
+          - advance
+          - pause
+          - stop
+          - approve
+          - deny
+          - validator_pass
+          - validator_partial
+          - validator_fail
+          - validator_not_applicable
+          - sensitive_data_violation
+          - path_guard_violation
+          - external_execution_attempt
+          - missing_handoff_response
+          - schema_fail
+          - unsupported_connector_state
+
+  human_gate_ref:
+    description: Identifier of the human gate this event pairs with, or null when the event is not a gate event.
+    oneOf:
+      - type: "null"
+      - type: string
+        enum:
+          - pre_run_approval
+          - pre_output_generation_approval
+          - final_review_approval
+          - release_or_claim_approval
+          - final_pass_partial_fail_not_applicable_decision
+
+event_type_invariants:
+  orchestrator_decision:
+    actor_must_equal: PRA-01-SAS-REVIEW-ORCHESTRATOR
+    policy_decision_required: true
+    previous_state_and_next_state_should_be_present: true
+  handoff_request:
+    actor_must_equal: PRA-01-SAS-REVIEW-ORCHESTRATOR
+    output_ref_must_name_request_yaml: true
+    output_ref_pattern_hint: "^.*runtime/handoffs/AM3-(01|02|03|04|05|06)/request\\.yaml$"
+  handoff_response:
+    actor_must_be_one_of_specialist_prAs: true
+    output_ref_must_name_response_yaml: true
+    output_ref_pattern_hint: "^.*runtime/handoffs/AM3-(01|02|03|04|05|06)/response\\.yaml$"
+    must_be_preceded_by_a_matching_handoff_request_event_for_same_step: true
+  validator_outcome:
+    actor_must_equal: validator
+    policy_decision_must_be_in:
+      - validator_pass
+      - validator_partial
+      - validator_fail
+      - validator_not_applicable
+    validator_ref_required: true
+    must_be_preceded_by_a_matching_handoff_response_event_for_same_step: true
+  gate_request:
+    actor_must_equal: PRA-01-SAS-REVIEW-ORCHESTRATOR
+    human_gate_ref_required: true
+  gate_decision:
+    actor_must_equal: human_reviewer
+    human_gate_ref_required: true
+    policy_decision_must_be_in:
+      - approve
+      - deny
+    must_be_preceded_by_a_matching_gate_request_event_for_same_human_gate_ref: true
+  stop:
+    actor_must_equal: PRA-01-SAS-REVIEW-ORCHESTRATOR
+    policy_decision_must_be_in:
+      - stop
+      - sensitive_data_violation
+      - path_guard_violation
+      - external_execution_attempt
+      - missing_handoff_response
+      - schema_fail
+      - unsupported_connector_state
+      - validator_fail
+    next_state_must_equal: AM3-STOPPED
+
+ordering_invariants:
+  monotonically_increasing_event_id_within_run: true
+  monotonically_non_decreasing_timestamp_within_run: true
+  handoff_request_precedes_handoff_response_for_same_step: true
+  handoff_response_precedes_validator_outcome_for_same_step: true
+  validator_outcome_precedes_next_handoff_request_for_subsequent_step: true
+  gate_request_precedes_gate_decision_for_same_human_gate_ref: true
+  stop_event_is_terminal_for_the_run: true
+
+invariants:
+  orchestrator_is_sole_writer: true
+  append_only: true
+  one_event_per_line: true
+  additionalProperties_is_false: true
+  strict_field_rule_applies: true
+  event_type_must_be_in_enum: true
+  step_id_must_be_in_enum: true
+  actor_must_be_in_enum: true
+  no_external_destination_url_field_permitted: true
+  no_credential_field_permitted: true
+  no_email_address_field_permitted: true
+  no_customer_identifying_string_field_permitted: true
+
+forbidden_fields:
+  - destination_url
+  - jira_ticket_id
+  - confluence_page_id
+  - lucidchart_document_id
+  - mcp_server_url
+  - mcp_client_token
+  - cloud_resource_id
+  - database_connection_string
+  - terraform_workspace
+  - event_bus_topic
+  - telemetry_backend_endpoint
+  - any_credential
+  - any_api_key
+  - any_email_address
+  - any_customer_identifying_string
+
+contract_lifecycle:
+  authored_in_work_package: WP-12C-AM3-CONTRACTS
+  consumed_by_work_package: WP-12C-AM3-RUNTIME
+  validated_by_work_package: WP-12C-AM3-RUNTIME
+  evidenced_by_work_package: WP-12C-AM3-EVIDENCE
+  qa_closed_by_work_package: WP-12C-AM3-QA
+  versioning_policy: bump_minor_version_for_any_breaking_change_to_field_set_or_enum

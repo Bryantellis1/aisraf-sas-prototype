@@ -1,0 +1,226 @@
+contract_id: am3.handoff-contract.v0_1_2
+contract_title: AISRAF AM3 Specialist Handoff Contract
+package_version: v0.1.2
+schema_version: am3.handoff_contract.v0_1_2
+authored_by_work_package: WP-12C-AM3-CONTRACTS
+authored_after_work_package: WP-12C-AM3-PLAN
+governed_by_orchestrator_contract: am3.orchestrator-contract.v0_1_2
+
+mode: local_only
+network_calls_permitted: false
+external_execution_permitted: false
+
+scope:
+  governs_every_specialist_handoff_in_an_am3_run: true
+  applies_to_steps:
+    - AM3-01
+    - AM3-02
+    - AM3-03
+    - AM3-04
+    - AM3-05
+    - AM3-06
+  does_not_apply_to_steps:
+    - AM3-INIT
+    - AM3-FINAL-GATE
+    - AM3-COMPLETE
+    - AM3-STOPPED
+  reason_for_non_handoff_steps: orchestrator-internal steps do not issue a specialist handoff (no specialist is invoked).
+
+paths:
+  request_path_target: "{{output_root}}/runtime/handoffs/<step-id>/request.yaml"
+  response_path_target: "{{output_root}}/runtime/handoffs/<step-id>/response.yaml"
+  step_id_token_must_match_orchestrator_step_id: true
+  step_id_token_format: ^AM3-(01|02|03|04|05|06)$
+  files_must_be_local_only: true
+  files_must_remain_under_output_root_runtime_handoffs: true
+
+issuance_rules:
+  orchestrator_writes_request_yaml: true
+  specialist_writes_response_yaml: true
+  specialist_does_not_modify_request_yaml: true
+  orchestrator_does_not_modify_response_yaml_after_specialist_returns: true
+  one_request_per_step_per_run: true
+  one_response_per_step_per_run: true
+  response_must_reference_request_step_id_and_run_id: true
+
+required_request_fields:
+  - schema_version
+  - run_id
+  - step_id
+  - specialist_agent_id
+  - required_inputs
+  - allowed_output_paths
+  - upstream_artifacts
+  - expected_outputs
+  - validation_route
+  - human_gate_required
+  - external_execution_allowed
+
+required_request_field_specifications:
+  schema_version:
+    constant: am3.handoff_request.v0_1_2
+    description: Pins the handoff request schema. Specialists must not edit.
+  run_id:
+    description: Matches run-state run_id. Reuses the existing AISRAF run identifier.
+    pattern_hint: typically equals the run-profile run_id (for example, RUN-001 or RUN-SMOKE-AM3-001).
+  step_id:
+    enum:
+      - AM3-01
+      - AM3-02
+      - AM3-03
+      - AM3-04
+      - AM3-05
+      - AM3-06
+  specialist_agent_id:
+    enum:
+      - PRA-02-INPUT-READER
+      - PRA-03-DFD-EXTRACTOR
+      - PRA-05-REVIEW-TABLE-BUILDER
+      - PRA-06-BLUEPRINT-QUESTIONER
+      - PRA-07-FINDING-RECOMMENDER
+      - PRA-08-HANDOFF-QA-SCORER
+    description: PRA-01 is never the specialist for an AM3 handoff (orchestrator role). PRA-04 is invoked inside AM3-02 as a subskill, not as a separate handoff specialist.
+  required_inputs:
+    type: list_of_local_paths_under_input_root_or_output_root
+    description: Files and folders the specialist must have read access to. Paths must be repo-relative or {{input_root}} / {{output_root}} relative. No external URL is allowed.
+  allowed_output_paths:
+    type: list_of_local_paths_under_output_root_or_output_root_dfd_or_output_root_runtime
+    description: The exhaustive set of paths the specialist may write to during this step. Any specialist-named produced_output outside this set is a path-guard violation.
+  upstream_artifacts:
+    type: list_of_local_paths_under_output_root
+    description: Prior-step produced outputs the specialist may rely on. Empty for AM3-01.
+  expected_outputs:
+    type: list_of_local_paths_under_output_root_or_output_root_dfd
+    description: The orchestrator's declaration of what the specialist must produce in this step.
+  validation_route:
+    description: Validator the runtime will run between the specialist response and the next handoff request.
+    typical_values:
+      - tools/Test-AisrafRunProfile.ps1
+      - tools/Test-AisrafPackage.ps1
+      - tools/Test-AisrafAm3Runtime.ps1
+  human_gate_required:
+    type: boolean
+    description: True if a human gate is paired with this step's transition (per the orchestrator contract's required_gates list).
+  external_execution_allowed:
+    constant: false
+    description: External execution is never permitted in AM3. Any specialist that flips this flag fails the overclaim guard.
+
+required_response_fields:
+  - schema_version
+  - run_id
+  - step_id
+  - specialist_agent_id
+  - produced_outputs
+  - missing_inputs
+  - unknowns_preserved
+  - validation_status
+  - evidence_refs
+  - next_recommended_state
+  - external_execution_performed
+
+required_response_field_specifications:
+  schema_version:
+    constant: am3.handoff_response.v0_1_2
+    description: Pins the handoff response schema. Specialists must not edit.
+  run_id:
+    description: Must match the request run_id.
+  step_id:
+    description: Must match the request step_id.
+  specialist_agent_id:
+    description: Must match the request specialist_agent_id.
+  produced_outputs:
+    type: list_of_local_paths_under_output_root_or_output_root_dfd
+    description: Concrete files the specialist wrote. Every entry must fall under the request's allowed_output_paths.
+  missing_inputs:
+    type: list_of_strings
+    description: Inputs the specialist could not resolve. Empty when the step is fully resolvable. Drives the orchestrator's pause / human-gate decision.
+  unknowns_preserved:
+    type: list_of_strings
+    description: Unknowns the specialist intentionally surfaced rather than guessed. Aligns with the existing AISRAF "do not invent unknowns" posture.
+  validation_status:
+    enum:
+      - pass
+      - partial
+      - fail
+      - not_applicable
+    description: Specialist self-reported status for this step. The orchestrator overrides with the runtime validator outcome before advancing.
+  evidence_refs:
+    type: list_of_local_paths
+    description: Local files the specialist relied on as evidence (input files, upstream produced_outputs, run-profile fields). No external URL.
+  next_recommended_state:
+    enum:
+      - advance_to_next_step
+      - pause_for_human_gate
+      - request_orchestrator_decision
+      - stop
+    description: Specialist's recommendation. The orchestrator is sole decider; the field is informational.
+  external_execution_performed:
+    constant: false
+    description: Specialists may not perform external execution. Any true value fails the overclaim guard and triggers a stop event.
+
+forbidden_request_fields: &forbidden_handoff_fields
+  - destination_url
+  - jira_ticket_id
+  - confluence_page_id
+  - lucidchart_document_id
+  - mcp_server_url
+  - mcp_client_token
+  - cloud_resource_id
+  - database_connection_string
+  - terraform_workspace
+  - event_bus_topic
+  - telemetry_backend_endpoint
+  - any_credential
+  - any_api_key
+  - any_email_address
+  - any_customer_identifying_string
+
+forbidden_response_fields: *forbidden_handoff_fields
+
+path_guard:
+  every_produced_output_must_be_under: "{{output_root}}/ or {{output_root}}/dfd/ or {{output_root}}/runtime/"
+  every_required_input_must_be_under: "{{input_root}}/ or {{output_root}}/ or repo-relative governed source surfaces"
+  no_path_may_escape_output_root_with_dotdot: true
+  no_path_may_be_an_absolute_path_outside_workspace_root: true
+
+sensitive_data_screen:
+  source_authority: config/sensitive-data-rules.md
+  must_apply_to_request_fields: true
+  must_apply_to_response_fields: true
+  reject_on:
+    - destination_url_present
+    - credential_present
+    - email_address_present
+    - customer_identifying_string_present
+
+validator_coupling:
+  per_step_validator_outcome_event_required: true
+  validator_outcome_must_precede_next_handoff_request: true
+  validator_fail_halts_run_and_records_stop_event: true
+
+handoff_invariants:
+  request_yaml_must_be_written_before_specialist_is_invoked: true
+  response_yaml_must_be_written_before_validator_outcome_event_is_emitted: true
+  validator_outcome_event_must_be_emitted_before_next_handoff_request: true
+  human_gate_request_must_precede_human_gate_decision: true
+  no_skipping_steps: true
+  no_replay_with_modified_request_or_response: true
+
+am3_vs_am4_boundary:
+  am3_handoff_is_a_local_file_pair: true
+  am3_handoff_is_not_a_network_call: true
+  am3_handoff_must_not_invoke_any_adapter: true
+  am4_handoff_is_future_and_not_governed_by_this_contract: true
+
+overclaim_guard:
+  any_request_or_response_that_implies_external_execution_must_be_rejected: true
+  any_response_that_sets_external_execution_performed_true_must_trigger_a_stop_event: true
+  any_response_that_names_a_destination_url_must_trigger_a_stop_event: true
+
+contract_lifecycle:
+  authored_in_work_package: WP-12C-AM3-CONTRACTS
+  consumed_by_work_package: WP-12C-AM3-RUNTIME
+  validated_by_work_package: WP-12C-AM3-RUNTIME
+  evidenced_by_work_package: WP-12C-AM3-EVIDENCE
+  qa_closed_by_work_package: WP-12C-AM3-QA
+  versioning_policy: bump_minor_version_for_any_breaking_change_to_field_set_or_enum

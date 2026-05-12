@@ -7,8 +7,8 @@
 | Promoted by | WP-12C-REL0-B — Public Release Docs |
 | Release | AISRAF v0.1.2 |
 | Release status | pre-release; staging and publication still gated |
-| Current autonomy | AL2 (controlled-output local workbench) |
-| Future autonomy | AL3 orchestrated multi-agent runtime is future WP-ORCH; AL4 external tool/post-back execution is future adapter work; AL5 closed-loop autonomy is out of scope |
+| Current claim | AM3 / AL3 local orchestrated multi-agent runtime evidence is proven |
+| Claim boundary | Local-only, human-gated, validator-backed, evidence-bound; AM4 external tool/post-back execution is future adapter work; AL5 closed-loop autonomy is out of scope |
 
 ## 1. What AISRAF Is
 
@@ -20,7 +20,7 @@ AISRAF is:
 - An evidence-bound design review helper.
 - A DFD/design-package analysis workflow.
 - A governed package of agents, skills, prompts, catalogs, blueprints, templates, validators, hooks, and evidence.
-- A plugin/projection-ready package, currently shipping AL2 controlled-output behavior.
+- A plugin/projection-ready package with AL2 controlled-output workbench behavior and AM3 / AL3 local orchestrated runtime evidence.
 
 ## 2. What AISRAF Is Not
 
@@ -46,9 +46,9 @@ The v0.1.2 release ships AISRAF as a local-first workbench with three reinforcin
 
 | Level | Description | v0.1.2 state |
 |---|---|---|
-| AL2 | Controlled-output local workbench: operator selects an AISRAF role, role writes governed outputs only inside an approved scratch run folder, hooks enforce path guards and run validators. | **Current.** Proven by L2B controlled-output execution under `runs/RUN-SMOKE-PLUGIN-L2B-001/`. |
-| AL3 | Orchestrated multi-agent runtime: the Orchestrator role formally delegates to specialist agents under runtime policy enforcement and runtime evidence emission. | **Future WP-ORCH.** Not implemented. |
-| AL4 | External tool/post-back execution (Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform). | **Future adapter work.** Not implemented. |
+| AL2 | Controlled-output local workbench: operator selects an AISRAF role, role writes governed outputs only inside an approved scratch run folder, hooks enforce path guards and run validators. | **Current user experience.** Proven by L2B controlled-output execution under `runs/RUN-SMOKE-PLUGIN-L2B-001/`. |
+| AM3 / AL3 | Local orchestrated multi-agent runtime evidence: AISRAF Orchestrator owns run-state and event log; specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs; human gates remain required. | **Proven evidence path.** Local-only smoke evidence under `runs/RUN-SMOKE-AM3-001/runtime/`; not full specialist-generated review output execution, production readiness, publication, or AM4 integration. |
+| AM4 / AL4 | External tool/post-back execution (Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform). | **Future adapter work.** Not implemented. |
 | AL5 | Closed-loop autonomy. | **Out of scope.** |
 
 Plain words: today, one selected AISRAF agent session (typically `@aisraf-orchestrator`) acts as a temporary orchestrator that walks the operator through the review chain sequentially. Specialist agents remain available as direct entrypoints for expert use. The plugin packages the orchestrator, specialists, skills, hooks, and validator references together so the operator can install one thing.
@@ -58,7 +58,7 @@ Plain words: today, one selected AISRAF agent session (typically `@aisraf-orches
 | Pattern | Meaning | v0.1.2 state |
 |---|---|---|
 | AI **for** / **outside** component | AI assists the human reviewer from outside the system under review; outputs are operator-driven controlled-output writes. | **Current.** |
-| AI **beside** / **on** component | AI sits alongside the component under review (orchestrator-coordinated specialist roles, still chat-preview-only with controlled-write-on-approval). | **Near-term target.** |
+| AI **beside** / **on** component | AI sits alongside the component under review (orchestrator-coordinated specialist roles, still local-only and human-gated). | **AM3 evidence path proven.** |
 | AI **inside** component | AI embedded in component runtime with its own state, tools, memory, and policy enforcement. | **Not current.** Deferred to ORCH. |
 
 ## 6. Who AISRAF Is For
@@ -96,12 +96,12 @@ This matters because every public-reader claim must map to a governed layer. Des
 
 ## 8. Release Boundary
 
-AISRAF v0.1.2 is a public-safe, local-first, evidence-bound, AL2 controlled-output local workbench. Public release artifacts (this document, `RELEASE-MANIFEST.yaml`, `CHANGELOG.md`, `SECURITY.md`, `CONTRIBUTING.md`, `LICENSE`, `NOTICE.md`, and the four companion docs) describe the AL2 surface only.
+AISRAF v0.1.2 is public-safe, local-first, evidence-bound, and human-gated. Public release artifacts (this document, `RELEASE-MANIFEST.yaml`, `CHANGELOG.md`, `SECURITY.md`, `CONTRIBUTING.md`, `LICENSE`, `NOTICE.md`, and the four companion docs) describe the AL2 workbench experience and the bounded AM3 / AL3 local orchestrated runtime evidence claim.
 
 What is **not** part of v0.1.2:
 
-- AL3 orchestrated multi-agent runtime (future WP-ORCH).
-- AL4 external adapter / post-back execution (Jira, Confluence, Lucidchart, MCP, Foundry, ADK, MAF, database, Terraform, cloud runtime, event bus, telemetry backend).
+- Full specialist-generated review output execution through AM3.
+- AM4 external adapter / post-back execution (Jira, Confluence, Lucidchart, MCP, Foundry, ADK, MAF, database, Terraform, cloud runtime, event bus, telemetry backend).
 - AL5 closed-loop autonomy.
 - Release visuals (future WP-13).
 
@@ -109,5 +109,5 @@ What is **not** part of v0.1.2:
 
 - [docs/OPERATOR-QUICKSTART.md](OPERATOR-QUICKSTART.md) — install/discovery expectation, clean smoke workspace vs governed prototype repo, run-profile variables, security architect and app architect usage paths.
 - [docs/SECURITY-REVIEW-WORKFLOW.md](SECURITY-REVIEW-WORKFLOW.md) — pre-design and post-design workflows, inputs, the 17 RS + 9 DFD outputs, evidence rules, no-fake-proof posture.
-- [docs/ARCHITECTURE-OVERVIEW.md](ARCHITECTURE-OVERVIEW.md) — canonical source surfaces, provider projections, plugin bundle, and the current role-sequenced workbench vs future orchestrated runtime.
-- [docs/ROADMAP.md](ROADMAP.md) — v0.1.2 AL2 release, WP-13 release visuals, WP-ORCH0..ORCH5 future AL3 path, AL4 adapter futures, AL5 out of scope.
+- [docs/ARCHITECTURE-OVERVIEW.md](ARCHITECTURE-OVERVIEW.md) — canonical source surfaces, provider projections, plugin bundle, AL2 workbench behavior, and AM3 runtime evidence.
+- [docs/ROADMAP.md](ROADMAP.md) — v0.1.2 AM3 evidence claim, WP-13 release visuals, AM4 adapter futures, AL5 out of scope.

@@ -6,14 +6,14 @@
 | Source draft | validation/package-12c-architecture-overview-draft.md |
 | Promoted by | WP-12C-REL0-B — Public Release Docs |
 | Release | AISRAF v0.1.2 |
-| Current autonomy | AL2 (controlled-output local workbench) |
+| Current claim | AM3 / AL3 local orchestrated multi-agent runtime evidence is proven |
 | External execution | not claimed; provider projections and plugin packaging are not runtime proof |
 
 ## 1. Architecture Summary
 
 AISRAF is a governed local AI-assisted security architecture review workbench. It keeps canonical review logic in package source folders, projects thin provider-facing surfaces for operator use, validates boundaries through local tools and hooks, and treats plugin packaging as a projection layer rather than a source of truth.
 
-The current package is a public-safe AL2 controlled-output local workbench. It is evidence-bound and validation-backed. It is **not** a production cloud service, **not** a live external-integration runtime, and **not** an orchestrated multi-agent runtime.
+The current package is a public-safe local workbench with bounded AM3 / AL3 local orchestrated multi-agent runtime evidence. It is evidence-bound and validation-backed. It is **not** a production cloud service, **not** a live external-integration runtime, and **not** a claim of full specialist-generated review output execution.
 
 ## 2. Concept-To-Release Spine
 
@@ -86,24 +86,25 @@ Projection surfaces do not authorize runtime, cloud, database, Terraform, MCP, J
 - **Run profiles.** Schema, template, and samples under `config/`. Each review run is governed by a `run-profile.yaml` validated by `Test-AisrafRunProfile.ps1`.
 - **Evidence controls.** Path guards, focused validators, sensitive-data screen, scoring eligibility coupling, no-fake-proof rules, unknown preservation, byte-identical projection enforcement, plugin bundle SHA-256 checksum manifest.
 
-## 6. Current Role-Sequenced Workbench Vs Future Orchestrated Runtime
+## 6. Role-Sequenced Workbench Vs AM3 Runtime Evidence
 
-Current execution model (AL2):
+Current security architect and application architect workbench experience (AL2):
 
 - One selected AISRAF agent session (typically `@aisraf-orchestrator`) acts as a temporary orchestrator that walks the operator through the chain sequentially.
 - Specialist agents remain available as direct entrypoints for expert use.
 - All writes are operator-driven, controlled-output, path-guarded, validator-followed.
 - All outputs are local Markdown files. There is no runtime delegation, no agent-side runtime state, no agent-owned tools beyond the four conservative hook scripts, no runtime policy enforcement layer, no runtime evidence emission layer.
 
-Future runtime (AL3, WP-ORCH):
+Accepted AM3 / AL3 runtime evidence path:
 
-- True runtime delegation from the Orchestrator to specialist agents.
-- Agent-side state and memory contracts.
-- Agent-owned tools beyond the four conservative hook scripts.
-- Runtime policy enforcement and runtime evidence emission.
-- Runtime validation paths.
+- AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence.
+- AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound.
+- AISRAF Orchestrator owns run-state and event log.
+- Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs.
+- Human gates remain required.
+- The local smoke evidence is under `runs/RUN-SMOKE-AM3-001/runtime/` and must not be staged or published in this gate.
 
-WP-ORCH is **not in v0.1.2 scope**. The current package proves only AL2 controlled-output local behavior.
+This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration. AM4 external adapter execution remains future.
 
 ## 7. Plugin Vs Release
 

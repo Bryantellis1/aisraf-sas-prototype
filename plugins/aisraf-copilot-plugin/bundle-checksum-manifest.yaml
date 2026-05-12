@@ -9,8 +9,8 @@ plugin_id: aisraf-copilot-plugin
 work_package: WP-12C-K3C
 bundle_target: plugins/aisraf-copilot-plugin/bundle
 manifest_path: plugins/aisraf-copilot-plugin/bundle-checksum-manifest.yaml
-generated_at_utc: 2026-05-11T23:12:20Z
-entry_count: 199
+generated_at_utc: 2026-05-12T02:35:51Z
+entry_count: 201
 hash_algorithm: sha256
 entries:
   - source_path: .agents/aisraf-blueprint-questioner.agent.md
@@ -797,14 +797,22 @@ entries:
     target_path: plugins/aisraf-copilot-plugin/bundle/tools/hooks/README.md
     source_sha256: daf95ffa2b0185d6d655add94226c00a7f4d9bc09ba3f862517cabd51f5d1b7b
     target_sha256: daf95ffa2b0185d6d655add94226c00a7f4d9bc09ba3f862517cabd51f5d1b7b
+  - source_path: tools/Invoke-AisrafAm3LocalRun.ps1
+    target_path: plugins/aisraf-copilot-plugin/bundle/tools/Invoke-AisrafAm3LocalRun.ps1
+    source_sha256: e2ee0aeb9e881ef796d48ab84aabdf96f21c818e8be2093fcd77fc224905afa1
+    target_sha256: e2ee0aeb9e881ef796d48ab84aabdf96f21c818e8be2093fcd77fc224905afa1
+  - source_path: tools/Test-AisrafAm3Runtime.ps1
+    target_path: plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafAm3Runtime.ps1
+    source_sha256: 9c904c48f270acd7c2c02776d4c5e94f2e1992ce4e94b32a605cdf83a09188bc
+    target_sha256: 9c904c48f270acd7c2c02776d4c5e94f2e1992ce4e94b32a605cdf83a09188bc
   - source_path: tools/Test-AisrafBp12AReadiness.ps1
     target_path: plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafBp12AReadiness.ps1
-    source_sha256: 3af41340266ed689b5662cec0db7f8ea05e8747c3fd0e693f56ac25cd11d3b2b
-    target_sha256: 3af41340266ed689b5662cec0db7f8ea05e8747c3fd0e693f56ac25cd11d3b2b
+    source_sha256: ea1c9dc6cda42aac43cff862d5c1d232fab90c8e7c405660b5eeb07093415cb9
+    target_sha256: ea1c9dc6cda42aac43cff862d5c1d232fab90c8e7c405660b5eeb07093415cb9
   - source_path: tools/Test-AisrafPackage.ps1
     target_path: plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafPackage.ps1
-    source_sha256: abe36fc80f800dcf17109e36fd199d3f0f4ea47852e0af7bb33c5b8e732c7abd
-    target_sha256: abe36fc80f800dcf17109e36fd199d3f0f4ea47852e0af7bb33c5b8e732c7abd
+    source_sha256: 30305f01f74eda4c2aadc38a974a75e8304f0e6015b83abbbe80326bd956f8ed
+    target_sha256: 30305f01f74eda4c2aadc38a974a75e8304f0e6015b83abbbe80326bd956f8ed
   - source_path: tools/Test-AisrafRunProfile.ps1
     target_path: plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafRunProfile.ps1
     source_sha256: e48074d4b985eb3579ac256bc66ad726a29c0e47e28afbfcd4f9a7ea77b53cc7
