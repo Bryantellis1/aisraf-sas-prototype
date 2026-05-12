@@ -1,3 +1,64 @@
+# WP-12C-REL0 Final Release Blocker Register
+
+work_package_status: WP-12C-REL0_FINAL_QA_RERUN_PASS_READY_FOR_REMEDIATION_STAGE_COMMIT
+head_commit: 34c1d55ce79e6bb0f9f274bef335af42600ef3f7
+created_by_gate: WP-12C-REL0-FINAL-QA
+remediated_by_gate: WP-12C-REL0-FINAL-QA-REMEDIATION
+remediation_status: all_three_rel0_final_qa_blockers_closed_bp12a_allowlist_pass_final_qa_rerun_pass_ready_for_remediation_stage_commit
+
+blockers:
+- id: REL0-BLOCKER-001
+  severity: release_blocking
+  type: public_release_claim_drift
+  affected_paths:
+  - CHANGELOG.md
+  - NOTICE.md
+  - CONTRIBUTING.md
+  finding: Root release artifacts still describe v0.1.2 as AL2-only or AL3-future, which conflicts with the accepted AM3 / AL3 local runtime evidence claim at HEAD.
+  required_resolution: Align root release artifacts to the bounded AM3 / AL3 local runtime evidence claim while preserving AM4 future and AL5 out-of-scope boundaries.
+  remediation_status: closed
+  remediation_evidence: CHANGELOG.md, NOTICE.md, and CONTRIBUTING.md now state the bounded AM3 / AL3 local runtime evidence claim and preserve local-only, human-gated, validator-backed, evidence-bound limiters plus AM4 / AL5 / production / post-back / marketplace / push / publish denials.
+
+- id: REL0-BLOCKER-002
+  severity: release_blocking
+  type: stale_gate_state
+  affected_paths:
+  - README.md
+  - START-HERE.md
+  - PACKAGE-MANIFEST.yaml
+  - RELEASE-MANIFEST.yaml
+  - docs/ROADMAP.md
+  finding: Release-facing gate text still presents WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT as active, WP-12C-AM3-STAGE-COMMIT as blocked, or REL0-FINAL-QA as blocked, despite HEAD being the accepted AM3 stage commit and this gate being REL0 final QA.
+  required_resolution: Update release-state and next-gate language to reflect AM3 stage commit closure and REL0 final QA remediation before release decision can reopen.
+  remediation_status: closed
+  remediation_evidence: README.md, START-HERE.md, PACKAGE-MANIFEST.yaml, RELEASE-MANIFEST.yaml, and docs/ROADMAP.md now record AM3 stage commit 34c1d55ce79e6bb0f9f274bef335af42600ef3f7, REL0 final QA remediation as current, and REL0 final QA rerun / release decision as next.
+
+- id: REL0-BLOCKER-003
+  severity: release_blocking
+  type: release_manifest_metadata_drift
+  affected_paths:
+  - RELEASE-MANIFEST.yaml
+  finding: Release manifest metadata is stale: commit_hash points to an older commit, package validator warning count records 2 instead of the observed 3, AM3 smoke ignore text is outdated, and next-gate blockers still point behind the AM3 stage commit.
+  required_resolution: Refresh release manifest metadata after public artifact alignment and rerun the validator ladder.
+  remediation_status: closed
+  remediation_evidence: RELEASE-MANIFEST.yaml now points commit_hash to 34c1d55ce79e6bb0f9f274bef335af42600ef3f7, records 3 package-validator WARN rows, classifies all three smoke folders as ignored/untracked/unstaged local-only evidence, and sets REL0-FINAL-QA-REMEDIATION then REL0-FINAL-QA-RERUN / release decision as the gate path.
+
+non_blocking_confirmations:
+- exact forbidden current-claim phrase scan returned 0 matches across release-facing docs and manifests.
+- AM4 external adapter execution remains future-only in reviewed current public docs.
+- AL5 closed-loop autonomy remains out of scope in reviewed current public docs.
+- Plugin projection checks passed: plugin.json has no mcpServers; AM3 runner and AM3 validator are present in the bundle and checksum manifest.
+- Local-only smoke evidence is ignored, untracked, and unstaged.
+- WP-12C-REL0-FINAL-QA-RERUN passed after BP12A closure; no REL0 final QA rerun blocker remains for the human-gated remediation stage/commit.
+
+release_blocker_register_status: rel0_final_qa_rerun_pass_ready_for_remediation_stage_commit
+may_REL0_FINAL_QA_RERUN_proceed: completed
+may_REL0_REMEDIATION_STAGE_COMMIT_proceed: true
+may_REL0_RELEASE_DECISION_proceed: false
+may_WP13_proceed: false
+may_AM4_ADAPTERS_proceed: false
+may_push_or_publish_proceed: false
+exact_next_gate: WP-12C-REL0-REMEDIATION-STAGE-COMMIT
 # WP-12C-REL0-QA — Final Release Blocker Register (Gap Detail)
 
 | Field | Value |

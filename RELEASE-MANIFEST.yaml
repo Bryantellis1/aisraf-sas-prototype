@@ -13,9 +13,14 @@
 release_id: aisraf-v0.1.2
 package_name: AISRAF SAS Prototype
 package_version: v0.1.2
-commit_hash: e641699f2586fb59654d2e08338fd822ec4e2e62
+commit_hash: 34c1d55ce79e6bb0f9f274bef335af42600ef3f7
+commit_hash_note: AM3 stage commit reviewed by REL0 final QA; update only if a later remediation commit is created and approved.
 release_status: pre_release_public_safe_local_first_evidence_bound
 release_posture: not_published; not_pushed; not_diagrammed; am3_local_runtime_evidence_proven; am4_not_implemented
+current_gate: WP-12C-REL0-FINAL-QA-REMEDIATION
+next_gate: REL0-FINAL-QA-RERUN
+next_gate_after_rerun: REL0-RELEASE-DECISION
+rel0_final_qa_result: WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON
 release_notes_doc: CHANGELOG.md
 license_doc: LICENSE
 notice_doc: NOTICE.md
@@ -47,6 +52,47 @@ future_autonomy_description: >-
   AL5 closed-loop autonomy is out of scope.
 external_execution_status: not_claimed
 
+release_journey_modes:
+  mode_0:
+    name: read_preview_no_writes
+    display_label: Mode 0 - read/preview, no writes
+    release_state: current_preview_path
+    description: >-
+      Read-only inspection of roles, inputs, run profiles, expected outputs,
+      manifests, and evidence. No writes are performed.
+  mode_1:
+    name: AL2_controlled_output_workbench
+    display_label: Mode 1 - AL2 controlled-output workbench
+    release_state: current_everyday_practitioner_ux
+    description: >-
+      Normal security architect and application architect workflow. Outputs are
+      governed local Markdown files under approved run folders.
+  mode_2:
+    name: AM3_AL3_local_orchestrated_runtime_evidence
+    display_label: Mode 2 - AM3 / AL3 local orchestrated runtime evidence
+    release_state: current_release_visible_local_runtime_journey_and_proof_path
+    description: >-
+      AISRAF Orchestrator owns run-state and event log. AM3-01 through AM3-06
+      specialist handoffs and human gates are represented in local-only runtime
+      evidence. This is not full specialist-generated review output execution
+      and not AM4 external adapter execution.
+  mode_3:
+    name: maintainer_validation_and_release_QA
+    display_label: Mode 3 - maintainer validation and release QA
+    release_state: current_maintainer_path
+    description: >-
+      Validators, bundle checksum validation, manifests, blocker registers,
+      closeout reports, and release QA. This path does not generate practitioner
+      review outputs.
+  mode_4:
+    name: AM4_external_adapter_post_back_execution
+    display_label: Mode 4 - AM4 external adapter / post-back execution
+    release_state: future_only_not_implemented
+    description: >-
+      Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform, event bus,
+      telemetry, and external post-back execution are deferred adapter work.
+  al5_boundary: out_of_scope_for_v0_1_2_and_v0_1_x
+
 ai_component_pattern_current: AI_for_outside_component
 ai_component_pattern_near_term: AI_beside_on_component
 ai_component_pattern_not_current: AI_inside_component
@@ -55,7 +101,7 @@ validators:
   - script: tools/Test-AisrafPackage.ps1
     expected_status: 0_FAIL
     last_run_pass_count: 83
-    last_run_warn_count: 2
+    last_run_warn_count: 3
     last_run_fail_count: 0
   - script: tools/Test-AisrafBp12AReadiness.ps1
     expected_status: 0_FAIL
@@ -98,11 +144,10 @@ local_only_paths:
 local_only_policy: >-
   These paths are local-only smoke or environment evidence. They are not
   part of the v0.1.2 public release surface and must not be committed or
-  published. .claude/, runs/RUN-SMOKE-LOCAL-001/, and
-  runs/RUN-SMOKE-PLUGIN-L2B-001/ are expected to be excluded from git
-  staging via local ignore rules. runs/RUN-SMOKE-AM3-001/ remains
-  local-only AM3 smoke evidence and must not be staged or published in
-  this gate even if no ignore match is present.
+  published. .claude/, runs/RUN-SMOKE-LOCAL-001/,
+  runs/RUN-SMOKE-PLUGIN-L2B-001/, and runs/RUN-SMOKE-AM3-001/ are
+  excluded from git staging via local ignore rules; the smoke folders are
+  ignored, untracked, unstaged, and not publication artifacts.
 
 forbidden_claims:
   - full_specialist_generated_review_output_execution
@@ -140,24 +185,27 @@ known_warnings:
     severity: warning
     resolution: local_only_path; excluded from staging via local ignore; preserved as L2B controlled-output evidence
   - id: KW-003
-    source: git check-ignore release hygiene
-    detail: runs/RUN-SMOKE-AM3-001/ is local AM3 smoke evidence and may have no local ignore match
-    severity: blocker_for_publish
-    resolution: do_not_stage_or_publish_in_this_gate; resolve ignore policy only in a later authorized cleanup gate
+    source: Test-AisrafPackage.ps1 Check 14-runs-readme-only
+    detail: runs/RUN-SMOKE-AM3-001/ exists alongside the governed RUN-001 fixture as accepted AM3 local runtime evidence
+    severity: warning
+    resolution: local_only_path; excluded from staging via local ignore; ignored, untracked, unstaged, and not a publication artifact
 
 next_gates:
-  - id: WP-12C-AM3-STAGE-COMMIT
-    description: Stage and commit the bounded AM3 / AL3 release claim alignment surface
-    blocked_by: explicit founder approval after WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT
-  - id: REL0-FINAL-QA
-    description: Final release QA after the AM3 stage commit gate
-    blocked_by: WP-12C-AM3-STAGE-COMMIT
+  - id: REL0-FINAL-QA-REMEDIATION
+    description: Align release-facing claim text, gate-state text, and release manifest metadata after REL0 final QA blockers
+    blocked_by: none_current_gate_active
+  - id: REL0-FINAL-QA-RERUN
+    description: Rerun final release QA after remediation
+    blocked_by: REL0-FINAL-QA-REMEDIATION
+  - id: REL0-RELEASE-DECISION
+    description: Founder release decision after a clean REL0 final QA rerun
+    blocked_by: REL0-FINAL-QA-RERUN
   - id: WP-13
     description: Release diagrams and visuals
-    blocked_by: REL0 final QA and explicit founder authorization
+    blocked_by: REL0 release decision closure and explicit founder authorization
   - id: AM4-ADAPTERS
     description: External adapter execution work packages
-    blocked_by: REL0 final QA, WP-13 decisions, and explicit founder authorization
+    blocked_by: REL0 release decision, WP-13 decisions, and explicit founder authorization
 
 license_status: pending_founder_legal_confirmation
 license_note: >-

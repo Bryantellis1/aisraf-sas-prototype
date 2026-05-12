@@ -10,6 +10,9 @@
 | Release | AISRAF v0.1.2 |
 | Current claim | AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence |
 | Claim limiter | Evidence-path claim only; not full specialist-generated review output execution, production readiness, publication, or AM4 integration |
+| Gate state | AM3 stage commit closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7`; REL0 final QA ran and found remediation blockers |
+| Current gate | WP-12C-REL0-FINAL-QA-REMEDIATION |
+| Next gate | REL0 final QA rerun / release decision |
 | Deferred autonomy | AM4 external adapter / post-back execution remains future adapter work; AL5 closed-loop autonomy remains out of scope |
 
 ## 1. v0.1.2 Current Claim: AM3 / AL3 Local Runtime Evidence
@@ -23,9 +26,19 @@ AISRAF v0.1.2 ships:
 - The validator ladder: `Test-AisrafPackage.ps1`, `Test-AisrafBp12AReadiness.ps1`, `Test-AisrafRunProfile.ps1`.
 - The public docs package: this document plus AISRAF-PRIMER, OPERATOR-QUICKSTART, SECURITY-REVIEW-WORKFLOW, ARCHITECTURE-OVERVIEW; and root release artifacts `RELEASE-MANIFEST.yaml`, `CHANGELOG.md`, `SECURITY.md`, `CONTRIBUTING.md`, `LICENSE`, `NOTICE.md`.
 
-What the current release proves: AL2 controlled-output local workbench behavior on the installed plugin path under `runs/RUN-SMOKE-PLUGIN-L2B-001/`, with 0 FAIL across all four validators and no overclaim of external execution.
+What the current release proves: AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence, while preserving the AL2 controlled-output local workbench as the everyday operator experience. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. AISRAF Orchestrator owns run-state and event log. Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. Human gates remain required. The validator ladder returns 0 FAIL; package-validator WARN rows are limited to local-only smoke folders.
 
-What the current AM3 gate proves: AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. AISRAF Orchestrator owns run-state and event log. Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. Human gates remain required.
+Release journey modes for v0.1.2:
+
+| Mode | Release state |
+|---|---|
+| Mode 0 - read/preview, no writes | Current read-only entry path. Inspect roles, inputs, run profiles, expected outputs, and release evidence without file changes. |
+| Mode 1 - AL2 controlled-output workbench | Current everyday security architect and application architect UX. Outputs are governed local Markdown files under approved run folders. |
+| Mode 2 - AM3 / AL3 local orchestrated runtime evidence | Current release-visible local runtime journey/proof path. Orchestrator-owned run-state, event log, AM3-01 through AM3-06 handoffs, and human gates are proven in local-only smoke evidence. |
+| Mode 3 - maintainer validation and release QA | Current maintainer path for validator ladders, manifests, bundle checksum validation, blocker registers, and QA reports. |
+| Mode 4 - AM4 external adapter / post-back execution | Future only. Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform, event bus, telemetry, and post-back execution remain deferred. |
+
+AL5 closed-loop autonomy remains out of scope.
 
 What the current release does **not** claim: full specialist-generated review output execution, AM4 external adapter / post-back execution, AL5 closed-loop autonomy, marketplace publication, production operation, or any live external integration.
 
@@ -40,7 +53,10 @@ The WP-12C-AM3 lane delivered the local evidence path for AM3 / AL3 as the closi
 - **WP-12C-AM3-RUNTIME** — authors `tools/Invoke-AisrafAm3LocalRun.ps1` (local-only AM3 runner) and `tools/Test-AisrafAm3Runtime.ps1` (AM3 validator route), with runtime scaffold writes restricted to a selected non-RUN-001 `output_root/runtime/`. Local-only. No network call.
 - **WP-12C-AM3-EVIDENCE / SMOKE RETRY** — executes the founder-approved AM3 smoke run and captures evidence under local-only `runs/RUN-SMOKE-AM3-001/runtime/`.
 - **WP-12C-AM3-QA** — accepts only the bounded AM3 / AL3 local orchestrated multi-agent runtime evidence claim and rejects any full-output, production, publication, or AM4 claim.
-- **WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT** — active language alignment gate for public docs and manifests. No staging, push, publish, runtime edits, or AM4 work.
+- **WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT** — closed language alignment gate for public docs and manifests. No runtime edits or AM4 work.
+- **WP-12C-AM3-STAGE-COMMIT** — closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7` as `WP-12C-AM3_STAGE_COMMIT_PASS_READY_FOR_REL0_FINAL_QA`.
+- **WP-12C-REL0-FINAL-QA** — ran and returned `WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON`.
+- **WP-12C-REL0-FINAL-QA-REMEDIATION** — current gate. Align release-facing claim text, gate-state text, and release manifest metadata. No staging, push, publish, runtime edits, WP-13 work, or AM4 work.
 
 Each AM3 gate requires the previous gate's evidence and passes the validator ladder with 0 FAIL.
 
@@ -48,7 +64,7 @@ Each AM3 gate requires the previous gate's evidence and passes the validator lad
 
 WP-13 covers release diagrams and release visuals (architecture diagrams, workflow diagrams, plugin install diagrams, evidence diagrams). WP-13 has not started in v0.1.2; `diagrams/` and `release/` remain README-only folders reserved for their owning build packages.
 
-WP-13 begins only after the docs/release boundary opens and a later gate authorizes publication preparation. WP-13 remains blocked after AM3 release-claim alignment.
+WP-13 begins only after the REL0 release decision closes and a later gate authorizes publication preparation. WP-13 remains blocked during REL0 final QA remediation and final QA rerun.
 
 ## 4. Historical Orchestration Planning Names
 
@@ -90,10 +106,12 @@ v0.1.2 (AM3 / AL3 local runtime evidence accepted; not published)
   → WP-12C-AM3-RUNTIME       (closed — AM3 local runner + AM3 validator)
   → WP-12C-AM3-EVIDENCE      (closed — local smoke evidence captured)
   → WP-12C-AM3-QA            (closed — bounded evidence claim accepted)
-  → WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT (active — public language alignment)
-  → WP-12C-AM3-STAGE-COMMIT  (blocked pending this gate and human approval)
-  → REL0-FINAL-QA            (blocked)
-  → WP-13 release visuals    (still blocked by REL0 closure and BP12-SAMPLE-DFD blocker)
+  → WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT (closed — public language alignment)
+  → WP-12C-AM3-STAGE-COMMIT  (closed — commit 34c1d55ce79e6bb0f9f274bef335af42600ef3f7)
+  → REL0-FINAL-QA            (ran — blockers found)
+  → WP-12C-REL0-FINAL-QA-REMEDIATION (active)
+  → REL0-FINAL-QA-RERUN / release decision
+  → WP-13 release visuals    (still blocked by REL0 release decision closure and BP12-SAMPLE-DFD blocker)
   → AL4 adapter work packages (one per adapter; future)
   → (AL5 is not on the roadmap)
 ```

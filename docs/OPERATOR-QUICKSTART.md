@@ -15,6 +15,18 @@ AISRAF v0.1.2 is a local security architecture review workbench with bounded AM3
 
 The day-to-day operator workflow remains the AL2 controlled-output workbench: one selected agent session acts as a temporary orchestrator that walks the operator through the chain sequentially. Separately, AM3 evidence proves the local orchestrated runtime path: AISRAF Orchestrator owns run-state and event log, specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs, and human gates remain required. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
 
+Release journey modes:
+
+| Mode | Operator meaning |
+|---|---|
+| Mode 0 - read/preview, no writes | Inspect the selected role, expected inputs, planned outputs, run profile, and stop conditions. No file changes. |
+| Mode 1 - AL2 controlled-output workbench | Normal security architect / application architect path. The operator approves local Markdown writes under an approved run folder. |
+| Mode 2 - AM3 / AL3 local orchestrated runtime evidence | Release-visible local runtime journey/proof path. AM3 shows the orchestrator-owned run-state, event log, AM3-01 through AM3-06 handoffs, and human gates in local evidence. |
+| Mode 3 - maintainer validation and release QA | Maintainer path for package validation, bundle checksum validation, release manifests, blocker registers, and QA reports. |
+| Mode 4 - AM4 external adapter / post-back execution | Future only. No Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform, event bus, telemetry, or post-back execution occurs in v0.1.2. |
+
+AL5 closed-loop autonomy remains out of scope.
+
 ## 2. Install And Discovery Expectation
 
 The AISRAF v0.1.2 plugin is delivered as a folder package under `plugins/aisraf-copilot-plugin/`. Discovery happens through your provider surface (VS Code Local plugin list, GitHub Copilot agent dropdown, or Copilot CLI) — not through marketplace publication. v0.1.2 is not published to a public marketplace.

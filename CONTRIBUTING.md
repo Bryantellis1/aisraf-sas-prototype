@@ -19,7 +19,7 @@ AISRAF is a governed package. Contributions are evidence-first and validator-bac
 
 ## 3. No Generated Smoke Runs In Commits
 
-- `runs/RUN-SMOKE-LOCAL-*/` and `runs/RUN-SMOKE-PLUGIN-*/` are local-only smoke evidence folders. They are excluded from staging via local ignore rules and must never be committed.
+- `runs/RUN-SMOKE-LOCAL-*/`, `runs/RUN-SMOKE-PLUGIN-*/`, and `runs/RUN-SMOKE-AM3-*/` are local-only smoke evidence folders. They are excluded from staging via local ignore rules and must never be committed or published.
 - `Test-AisrafPackage.ps1` Check 14-runs-readme-only emits WARN rows for any smoke run folder present alongside `runs/RUN-001/`. The WARN is intentional; the folders stay local.
 - Do not move smoke runs into a different folder to bypass the WARN. If you need long-term smoke evidence, propose a founder-approved smoke-evidence retention policy first.
 
@@ -30,10 +30,14 @@ Run the full validator ladder before staging:
 ```powershell
 pwsh -NoProfile -File ./tools/Test-AisrafPackage.ps1
 pwsh -NoProfile -File ./tools/Test-AisrafBp12AReadiness.ps1
+pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/RUN-SMOKE-AM3-001/run-profile.yaml -ExecutionReady
+pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/RUN-SMOKE-PLUGIN-L2B-001/run-profile.yaml -ExecutionReady
 pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/RUN-001/run-profile.yaml -ExecutionReady
+pwsh -NoProfile -File ./tools/Test-AisrafAm3Runtime.ps1 -ContractsOnly
+pwsh -NoProfile -File ./tools/Test-AisrafAm3Runtime.ps1 -RunProfilePath ./runs/RUN-SMOKE-AM3-001/run-profile.yaml
 ```
 
-All three must return 0 FAIL. Smoke run folders may emit WARN rows (Check 14) — those are expected. Anything else FAIL or new WARN must be diagnosed before staging.
+All validators must return 0 FAIL. Smoke run folders may emit WARN rows (Check 14) — those are expected when classified as local-only, ignored, untracked, unstaged evidence. Anything else FAIL or new WARN must be diagnosed before staging.
 
 If you are working on a controlled-output run, also validate the run profile:
 
@@ -78,7 +82,7 @@ These are deferred AL4 adapter work. They may be discussed only as future / defe
 
 ## 8. No Autonomy Overclaim
 
-Do not introduce wording that claims AL3 orchestrated multi-agent runtime, AL4 external tool / post-back execution, or AL5 closed-loop autonomy as current. v0.1.2 ships AL2 controlled-output local workbench behavior only.
+Do not contradict the accepted bounded claim that AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. When mentioning AM3 / AL3, preserve the limiter: local-only, human-gated, validator-backed, and evidence-bound. The current release does not claim full specialist-generated review output execution, AM4 external tool / post-back execution, AL5 closed-loop autonomy, production operation, external post-back, marketplace publication, or push/publish approval.
 
 ## 9. Public-Safety Posture
 

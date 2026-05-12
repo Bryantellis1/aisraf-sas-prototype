@@ -388,8 +388,46 @@ else {
 
 $stagedResult = Invoke-LoggedCommand -FilePath 'git' -ArgumentList @('diff', '--cached', '--name-only')
 $stagedFiles = @($stagedResult.Output -split "`r?`n" | Where-Object { $_.Trim().Length -gt 0 })
+$approvedRel0RemediationStageCommitStagedFiles = @(
+    'CHANGELOG.md',
+    'CONTRIBUTING.md',
+    'NOTICE.md',
+    'PACKAGE-MANIFEST.yaml',
+    'README.md',
+    'RELEASE-MANIFEST.yaml',
+    'START-HERE.md',
+    'docs/AISRAF-PRIMER.md',
+    'docs/ARCHITECTURE-OVERVIEW.md',
+    'docs/OPERATOR-QUICKSTART.md',
+    'docs/ROADMAP.md',
+    'docs/SECURITY-REVIEW-WORKFLOW.md',
+    'plugins/aisraf-copilot-plugin/bundle-checksum-manifest.yaml',
+    'plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafBp12AReadiness.ps1',
+    'plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafPackage.ps1',
+    'tools/Test-AisrafBp12AReadiness.ps1',
+    'tools/Test-AisrafPackage.ps1',
+    'validation/package-12c-rel0-final-qa-remediation-bp12a-drift-allowlist-decision-report.md',
+    'validation/package-12c-rel0-final-qa-remediation-closeout-report.md',
+    'validation/package-12c-rel0-final-qa-remediation-report.md',
+    'validation/package-12c-rel0-final-qa-report.md',
+    'validation/package-12c-rel0-final-qa-rerun-report.md',
+    'validation/package-12c-rel0-final-release-blocker-register.md'
+)
 if ($stagedResult.ExitCode -eq 0 -and $stagedFiles.Count -eq 0) {
     Add-Result -Area '01-git-workspace' -Status PASS -Check 'no-staged-files' -Detail 'No files are staged.'
+}
+elseif ($stagedResult.ExitCode -eq 0) {
+    $unexpectedStagedFiles = @($stagedFiles | Where-Object { $approvedRel0RemediationStageCommitStagedFiles -notcontains $_ })
+    $missingRel0RemediationStageCommitFiles = @($approvedRel0RemediationStageCommitStagedFiles | Where-Object { $stagedFiles -notcontains $_ })
+    if ($unexpectedStagedFiles.Count -eq 0 -and $missingRel0RemediationStageCommitFiles.Count -eq 0) {
+        Add-Result -Area '01-git-workspace' -Status PASS -Check 'no-staged-files' -Detail 'Only the exact WP-12C-REL0-REMEDIATION-STAGE-COMMIT file set is staged.'
+    }
+    else {
+        $stagedFailureParts = @()
+        if ($unexpectedStagedFiles.Count -gt 0) { $stagedFailureParts += ('unexpected=' + ($unexpectedStagedFiles -join ', ')) }
+        if ($missingRel0RemediationStageCommitFiles.Count -gt 0) { $stagedFailureParts += ('missing=' + ($missingRel0RemediationStageCommitFiles -join ', ')) }
+        Add-Result -Area '01-git-workspace' -Status FAIL -Check 'no-staged-files' -Detail ('Staged file set does not match WP-12C-REL0-REMEDIATION-STAGE-COMMIT approval: ' + ($stagedFailureParts -join '; '))
+    }
 }
 else {
     Add-Result -Area '01-git-workspace' -Status FAIL -Check 'no-staged-files' -Detail ('Staged file(s): ' + ($stagedFiles -join ', '))
@@ -511,7 +549,17 @@ $wp12cAm3ReleaseClaimAlignmentDrift = @(
     'docs/SECURITY-REVIEW-WORKFLOW.md'
 )
 
-$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift + $wp12cAm3PlanRoadmapDrift + $wp12cAm3ReleaseClaimAlignmentDrift
+# WP-12C-REL0-FINAL-QA-REMEDIATION: exact release hygiene files updated to close
+# the tracked-drift gap identified by BP12A after REL0 final QA remediation closeout.
+# Exact-path only; no wildcards; no broad docs/ or validation/ allowance.
+$wp12cRel0FinalQaRemediationDrift = @(
+    'CHANGELOG.md',
+    'CONTRIBUTING.md',
+    'NOTICE.md',
+    'validation/package-12c-rel0-final-release-blocker-register.md'
+)
+
+$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift + $wp12cAm3PlanRoadmapDrift + $wp12cAm3ReleaseClaimAlignmentDrift + $wp12cRel0FinalQaRemediationDrift
 $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     $trackedPath = $_
     $isExactAllowed = $allowedTrackedDriftExact -contains $trackedPath
@@ -519,7 +567,7 @@ $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     (-not $isExactAllowed) -and (-not $isExactFutureBundlePath)
 })
 if ($trackedDiffResult.ExitCode -eq 0 -and $unexpectedTrackedDiff.Count -eq 0) {
-    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, exact K3C future bundle paths, WP-12C-REL0-C public-entrypoint files (README.md, START-HERE.md), WP-12C-AM3-PLAN roadmap re-positioning (docs/ROADMAP.md), and WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT public release language surfaces only; no broad plugins/** allowance; no broad docs/ allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
+    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, exact K3C future bundle paths, WP-12C-REL0-C public-entrypoint files (README.md, START-HERE.md), WP-12C-AM3-PLAN roadmap re-positioning (docs/ROADMAP.md), WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT public release language surfaces, and WP-12C-REL0-FINAL-QA-REMEDIATION exact release hygiene files only; no broad plugins/** allowance; no broad docs/ allowance; no broad validation/ allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
 }
 else {
     Add-Result -Area '01-git-workspace' -Status FAIL -Check 'tracked-drift' -Detail ('Unexpected tracked drift: ' + ($unexpectedTrackedDiff -join ', '))

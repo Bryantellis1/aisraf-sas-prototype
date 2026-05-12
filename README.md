@@ -6,6 +6,8 @@ AISRAF SAS means AISRAF Security Advisory Services. This package is a local-firs
 
 AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
 
+Gate state: AM3 stage commit is closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7`. REL0 final QA ran and found remediation blockers. The current gate is **WP-12C-REL0-FINAL-QA-REMEDIATION**; next is REL0 final QA rerun / release decision. WP-13, AM4, push, and publish remain blocked until the REL0 release decision closes.
+
 The day-to-day security architect and application architect experience remains a local controlled-output workbench under VS Code + GitHub Copilot. AISRAF runs against governed prompt cards, skill contracts, prototype-agent specifications, catalogs, blueprints, templates, samples, and run profiles. It does not execute external adapters and does not post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems.
 
 Public reader entrypoints (read these first):
@@ -18,7 +20,19 @@ Public reader entrypoints (read these first):
 - [RELEASE-MANIFEST.yaml](RELEASE-MANIFEST.yaml) — machine-readable release manifest.
 - [CHANGELOG.md](CHANGELOG.md) — release changelog.
 
-Current autonomy posture:
+Release journey modes and autonomy posture:
+
+| Mode | v0.1.2 status |
+|---|---|
+| Mode 0 - read/preview, no writes | Current preview path. The operator may inspect roles, prompts, run profiles, planned outputs, manifests, and evidence without changing files. |
+| Mode 1 - AL2 controlled-output workbench | Current everyday practitioner UX for security architects and application architects. Outputs are governed local Markdown files under an approved run folder. |
+| Mode 2 - AM3 / AL3 local orchestrated runtime evidence | Current release-visible local runtime journey/proof path. AISRAF Orchestrator owns run-state and event log; AM3-01 through AM3-06 specialist handoffs and human gates are represented under local-only smoke evidence. |
+| Mode 3 - maintainer validation and release QA | Current maintainer path for validators, bundle checksum checks, manifests, blocker registers, and QA reports. It does not generate practitioner review outputs. |
+| Mode 4 - AM4 external adapter / post-back execution | Future only. Jira, Confluence, Lucidchart, Rovo, MCP, cloud, database, Terraform, event bus, telemetry, and external post-back execution are not implemented in v0.1.2. |
+
+AL5 closed-loop autonomy is out of scope for v0.1.2 and the v0.1.x line.
+
+Current autonomy posture details:
 
 - **AL2 — controlled-output local workbench (current user experience).** Practitioner-driven prompt/skill execution in VS Code; outputs are governed Markdown under `runs/{run_id}/`.
 - **AM3 / AL3 — local orchestrated multi-agent runtime evidence (proven evidence path).** AISRAF Orchestrator owns run-state and event log. Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. Human gates remain required. The accepted smoke evidence is under local-only `runs/RUN-SMOKE-AM3-001/runtime/` and must not be staged or published in this gate.
@@ -41,7 +55,7 @@ The sections below describe the internal governed build sequence (Build Packages
 
 ## Current State
 
-Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim. WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT is the active gate. WP-13, WP-13 follow-on release visuals, WP-13-dependent publication preparation, and AM4 adapter work remain blocked / future.
+Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim, and the AM3 stage commit is closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7`. REL0 final QA ran and returned `WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON`; the active gate is **WP-12C-REL0-FINAL-QA-REMEDIATION**. Next is REL0 final QA rerun / release decision. WP-13 release visuals, WP-13-dependent publication preparation, AM4 adapter work, push, and publish remain blocked / future until REL0 release decision closes.
 
 - **Build Package 01** — Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent instruction standard.
 - **Build Package 02** — Config and run-profile variable model (`config/`).
@@ -88,7 +102,7 @@ The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md).
 
 ## Next Build Package
 
-The immediate governed gate is **WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT**, followed by **WP-12C-AM3-STAGE-COMMIT** only if this alignment passes and a later human gate authorizes staging. REL0 final QA, WP-13 release visuals, WP-13-dependent publication preparation, push, and publish remain blocked.
+The immediate governed gate is **WP-12C-REL0-FINAL-QA-REMEDIATION**. If remediation passes, the next gate is REL0 final QA rerun / release decision. WP-13 release visuals, WP-13-dependent publication preparation, AM4 adapter work, push, and publish remain blocked until REL0 release decision closes. WP-13 also remains subject to `BP12-SAMPLE-DFD-BLOCKER` resolution per [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md).
 
 Out-of-scope-for-this-release governed work, retained here so a contributor cannot mistake it for current release behavior:
 

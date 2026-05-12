@@ -88,6 +88,18 @@ Projection surfaces do not authorize runtime, cloud, database, Terraform, MCP, J
 
 ## 6. Role-Sequenced Workbench Vs AM3 Runtime Evidence
 
+Release-visible journey modes:
+
+| Mode | Architectural boundary |
+|---|---|
+| Mode 0 - read/preview, no writes | Read-only inspection of role instructions, source surfaces, run profiles, planned outputs, and release evidence. |
+| Mode 1 - AL2 controlled-output workbench | Current everyday practitioner UX. Agent sessions produce governed local Markdown only under approved run folders, with path guards and validators. |
+| Mode 2 - AM3 / AL3 local orchestrated runtime evidence | Current release-visible local runtime journey/proof path. AISRAF Orchestrator owns run-state and event log; AM3-01 through AM3-06 handoffs and human gates are represented in local evidence. |
+| Mode 3 - maintainer validation and release QA | Maintainer-only validation path for package shape, projection checks, bundle checksum validation, blocker registers, and release QA reports. |
+| Mode 4 - AM4 external adapter / post-back execution | Future adapter architecture only. External systems, cloud runtime, database, Terraform, event bus, telemetry, and post-back execution are not current. |
+
+AL5 closed-loop autonomy is out of scope.
+
 Current security architect and application architect workbench experience (AL2):
 
 - One selected AISRAF agent session (typically `@aisraf-orchestrator`) acts as a temporary orchestrator that walks the operator through the chain sequentially.

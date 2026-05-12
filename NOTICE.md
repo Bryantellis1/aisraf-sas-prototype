@@ -9,7 +9,7 @@ This NOTICE accompanies the AISRAF SAS Prototype v0.1.2 release. It does not gra
 - **Project name:** AISRAF — AI-assisted Security Architecture Review Framework
 - **Package name:** AISRAF SAS Prototype
 - **Package version:** v0.1.2
-- **Release status:** pre-release; AL2 controlled-output local workbench
+- **Release status:** pre-release; AM3 / AL3 local orchestrated multi-agent runtime evidence; local-only, human-gated, validator-backed, evidence-bound
 - **License status:** placeholder pending founder / legal confirmation (see `LICENSE`)
 
 ## 2. Author
@@ -19,9 +19,11 @@ This NOTICE accompanies the AISRAF SAS Prototype v0.1.2 release. It does not gra
 
 ## 3. Boundary
 
-AISRAF v0.1.2 is a local-first, evidence-bound, AL2 controlled-output local security architecture review workbench. It is not a production cloud service. It does not perform external execution. It does not contact Jira, Confluence, Lucidchart, MCP servers, cloud runtimes, databases, Terraform pipelines, event buses, or telemetry backends.
+AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. The accepted evidence is local-only, human-gated, validator-backed, and evidence-bound. The operator experience remains a local controlled-output workbench. AISRAF is not a production cloud service. It does not perform AM4 external adapter execution, external post-back, marketplace publication, push/publish approval, or production operation. It does not contact Jira, Confluence, Lucidchart, MCP servers, cloud runtimes, databases, Terraform pipelines, event buses, or telemetry backends.
 
-AL3 orchestrated multi-agent runtime is future WP-ORCH work. AL4 external adapter / post-back execution is future adapter work. AL5 closed-loop autonomy is out of scope.
+AM4 external adapter / post-back execution is future adapter work. AL5 closed-loop autonomy is out of scope.
+
+The release journey modes are: Mode 0 read/preview with no writes; Mode 1 AL2 controlled-output workbench as the normal practitioner workflow; Mode 2 AM3 / AL3 local orchestrated runtime evidence as the release-visible local runtime journey/proof path; Mode 3 maintainer validation and release QA; and Mode 4 AM4 external adapter / post-back execution as future only. Mode 2 remains local-only, human-gated, validator-backed, and evidence-bound. Mode 4 is not current behavior. AL5 closed-loop autonomy remains out of scope.
 
 ## 4. Provider Surface
 

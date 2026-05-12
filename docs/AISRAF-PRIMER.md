@@ -44,6 +44,18 @@ The v0.1.2 release ships AISRAF as a local-first workbench with three reinforcin
 
 ## 4. Autonomy Levels
 
+Release-visible journey modes:
+
+| Mode | v0.1.2 status |
+|---|---|
+| Mode 0 - read/preview, no writes | Current preview path for reading instructions, role boundaries, run profiles, expected outputs, and release evidence without changing files. |
+| Mode 1 - AL2 controlled-output workbench | Current everyday practitioner workflow. Security architects and application architects produce governed local Markdown outputs only inside an approved run folder. |
+| Mode 2 - AM3 / AL3 local orchestrated runtime evidence | Current release-visible local runtime journey/proof path. AISRAF Orchestrator owns run-state and event log; AM3-01 through AM3-06 handoffs and human gates are represented in local-only runtime evidence. |
+| Mode 3 - maintainer validation and release QA | Current maintainer workflow for validators, manifests, bundle checksum checks, blocker registers, and release QA reports. |
+| Mode 4 - AM4 external adapter / post-back execution | Future only. Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform, event bus, telemetry, and post-back execution are not implemented in v0.1.2. |
+
+AL5 closed-loop autonomy is out of scope.
+
 | Level | Description | v0.1.2 state |
 |---|---|---|
 | AL2 | Controlled-output local workbench: operator selects an AISRAF role, role writes governed outputs only inside an approved scratch run folder, hooks enforce path guards and run validators. | **Current user experience.** Proven by L2B controlled-output execution under `runs/RUN-SMOKE-PLUGIN-L2B-001/`. |

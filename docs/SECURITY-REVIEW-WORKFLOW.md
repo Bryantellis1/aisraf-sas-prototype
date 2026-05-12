@@ -20,6 +20,18 @@ Both entry points use the same chain, the same inputs shape, and the same output
 
 AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. AISRAF Orchestrator owns run-state and event log, and specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. That evidence path does not prove full specialist-generated review output execution, production readiness, publication, or AM4 integration.
 
+Release journey modes in this workflow:
+
+| Mode | Workflow meaning |
+|---|---|
+| Mode 0 - read/preview, no writes | Inspect the input package, selected role, expected output contract, and evidence requirements before any file is changed. |
+| Mode 1 - AL2 controlled-output workbench | Normal practitioner journey for security architects and application architects. The chain writes local Markdown only under an approved run folder. |
+| Mode 2 - AM3 / AL3 local orchestrated runtime evidence | Release-visible local runtime journey/proof path. AM3 records orchestrator-owned run-state, event log, specialist handoffs, and human gates as local evidence. |
+| Mode 3 - maintainer validation and release QA | Maintainer journey for proving package shape, validator results, release metadata, and blocker closure. |
+| Mode 4 - AM4 external adapter / post-back execution | Future only. Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform, event bus, telemetry, and post-back are deferred adapters. |
+
+AL5 closed-loop autonomy is not part of the workflow.
+
 ## 2. Inputs Expected
 
 The chain reads local files only:
