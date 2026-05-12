@@ -388,6 +388,8 @@ else {
 
 $stagedResult = Invoke-LoggedCommand -FilePath 'git' -ArgumentList @('diff', '--cached', '--name-only')
 $stagedFiles = @($stagedResult.Output -split "`r?`n" | Where-Object { $_.Trim().Length -gt 0 })
+# WP-12C-REL0-REMEDIATION-STAGE-COMMIT: prior gate. Kept for historical exactness;
+# no wildcards; no broad allowance.
 $approvedRel0RemediationStageCommitStagedFiles = @(
     'CHANGELOG.md',
     'CONTRIBUTING.md',
@@ -413,20 +415,70 @@ $approvedRel0RemediationStageCommitStagedFiles = @(
     'validation/package-12c-rel0-final-qa-rerun-report.md',
     'validation/package-12c-rel0-final-release-blocker-register.md'
 )
+# WP-12C-REL0-RELEASE-DECISION-STAGE-COMMIT: exact public release-decision file set
+# carrying the remediated REL0 candidate forward to the release-decision stage commit.
+# Exact-path; no wildcards; no docs/** allowance; no validation/** allowance; no broad
+# plugins/** allowance.
+$approvedRel0ReleaseDecisionStageCommitBaseStagedFiles = @(
+    'PACKAGE-MANIFEST.yaml',
+    'README.md',
+    'RELEASE-MANIFEST.yaml',
+    'START-HERE.md',
+    'docs/AISRAF-PRIMER.md',
+    'docs/ARCHITECTURE-OVERVIEW.md',
+    'docs/OPERATOR-QUICKSTART.md',
+    'docs/ROADMAP.md',
+    'docs/SECURITY-REVIEW-WORKFLOW.md',
+    'plugins/aisraf-copilot-plugin/README.md',
+    'plugins/aisraf-copilot-plugin/bundle-checksum-manifest.yaml',
+    'plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafPackage.ps1',
+    'tools/Test-AisrafPackage.ps1',
+    'validation/package-12c-rel0-release-decision-report.md',
+    'validation/package-12c-rel0-release-decision-remediation-report.md',
+    'validation/package-12c-rel0-release-decision-rerun-report.md'
+)
+# WP-12C-REL0-RELEASE-DECISION-STAGE-COMMIT-FIX-A: exact addon files permitted only when
+# Fix-A patched BP12A policy. The staged set may include any non-empty subset of these
+# in addition to the base set when the corresponding files actually changed during
+# Fix-A. Exact-path; no wildcards; no broad allowance.
+$approvedRel0ReleaseDecisionStageCommitFixAAddonStagedFiles = @(
+    'tools/Test-AisrafBp12AReadiness.ps1',
+    'tools/Test-AisrafPackage.ps1',
+    'plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafBp12AReadiness.ps1',
+    'plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafPackage.ps1',
+    'plugins/aisraf-copilot-plugin/bundle-checksum-manifest.yaml',
+    'validation/package-12c-rel0-release-decision-stage-commit-fix-a-report.md'
+)
 if ($stagedResult.ExitCode -eq 0 -and $stagedFiles.Count -eq 0) {
     Add-Result -Area '01-git-workspace' -Status PASS -Check 'no-staged-files' -Detail 'No files are staged.'
 }
 elseif ($stagedResult.ExitCode -eq 0) {
-    $unexpectedStagedFiles = @($stagedFiles | Where-Object { $approvedRel0RemediationStageCommitStagedFiles -notcontains $_ })
-    $missingRel0RemediationStageCommitFiles = @($approvedRel0RemediationStageCommitStagedFiles | Where-Object { $stagedFiles -notcontains $_ })
-    if ($unexpectedStagedFiles.Count -eq 0 -and $missingRel0RemediationStageCommitFiles.Count -eq 0) {
+    # Acceptance order: try release-decision base (+optional Fix-A addon) first, then
+    # the prior remediation gate as a historical exact match.
+    $rdBase = $approvedRel0ReleaseDecisionStageCommitBaseStagedFiles
+    $rdAddon = $approvedRel0ReleaseDecisionStageCommitFixAAddonStagedFiles
+    $rdEnvelope = @(($rdBase + $rdAddon) | Sort-Object -Unique)
+    $rdMissingBase = @($rdBase | Where-Object { $stagedFiles -notcontains $_ })
+    $rdExtraBeyondEnvelope = @($stagedFiles | Where-Object { $rdEnvelope -notcontains $_ })
+    $remUnexpected = @($stagedFiles | Where-Object { $approvedRel0RemediationStageCommitStagedFiles -notcontains $_ })
+    $remMissing = @($approvedRel0RemediationStageCommitStagedFiles | Where-Object { $stagedFiles -notcontains $_ })
+    if ($rdMissingBase.Count -eq 0 -and $rdExtraBeyondEnvelope.Count -eq 0) {
+        $rdAddonStaged = @($stagedFiles | Where-Object { $rdBase -notcontains $_ })
+        if ($rdAddonStaged.Count -eq 0) {
+            Add-Result -Area '01-git-workspace' -Status PASS -Check 'no-staged-files' -Detail 'Only the exact WP-12C-REL0-RELEASE-DECISION-STAGE-COMMIT base file set is staged.'
+        }
+        else {
+            Add-Result -Area '01-git-workspace' -Status PASS -Check 'no-staged-files' -Detail ('Only the exact WP-12C-REL0-RELEASE-DECISION-STAGE-COMMIT base file set plus approved Fix-A addon files is staged: addon=' + ($rdAddonStaged -join ', '))
+        }
+    }
+    elseif ($remUnexpected.Count -eq 0 -and $remMissing.Count -eq 0) {
         Add-Result -Area '01-git-workspace' -Status PASS -Check 'no-staged-files' -Detail 'Only the exact WP-12C-REL0-REMEDIATION-STAGE-COMMIT file set is staged.'
     }
     else {
         $stagedFailureParts = @()
-        if ($unexpectedStagedFiles.Count -gt 0) { $stagedFailureParts += ('unexpected=' + ($unexpectedStagedFiles -join ', ')) }
-        if ($missingRel0RemediationStageCommitFiles.Count -gt 0) { $stagedFailureParts += ('missing=' + ($missingRel0RemediationStageCommitFiles -join ', ')) }
-        Add-Result -Area '01-git-workspace' -Status FAIL -Check 'no-staged-files' -Detail ('Staged file set does not match WP-12C-REL0-REMEDIATION-STAGE-COMMIT approval: ' + ($stagedFailureParts -join '; '))
+        if ($rdMissingBase.Count -gt 0) { $stagedFailureParts += ('release-decision missing=' + ($rdMissingBase -join ', ')) }
+        if ($rdExtraBeyondEnvelope.Count -gt 0) { $stagedFailureParts += ('release-decision unexpected=' + ($rdExtraBeyondEnvelope -join ', ')) }
+        Add-Result -Area '01-git-workspace' -Status FAIL -Check 'no-staged-files' -Detail ('Staged file set does not match WP-12C-REL0-RELEASE-DECISION-STAGE-COMMIT approval: ' + ($stagedFailureParts -join '; '))
     }
 }
 else {
@@ -559,7 +611,14 @@ $wp12cRel0FinalQaRemediationDrift = @(
     'validation/package-12c-rel0-final-release-blocker-register.md'
 )
 
-$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift + $wp12cAm3PlanRoadmapDrift + $wp12cAm3ReleaseClaimAlignmentDrift + $wp12cRel0FinalQaRemediationDrift
+# WP-12C-REL0-RELEASE-DECISION-STAGE-COMMIT-FIX-A: exact validator-policy patch report
+# file produced when BP12A is patched to recognize the WP-12C-REL0-RELEASE-DECISION
+# staged-file set. Exact-path only; no wildcards; no broad validation/ allowance.
+$wp12cRel0ReleaseDecisionStageCommitFixADrift = @(
+    'validation/package-12c-rel0-release-decision-stage-commit-fix-a-report.md'
+)
+
+$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift + $wp12cAm3PlanRoadmapDrift + $wp12cAm3ReleaseClaimAlignmentDrift + $wp12cRel0FinalQaRemediationDrift + $wp12cRel0ReleaseDecisionStageCommitFixADrift
 $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     $trackedPath = $_
     $isExactAllowed = $allowedTrackedDriftExact -contains $trackedPath
@@ -567,7 +626,7 @@ $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     (-not $isExactAllowed) -and (-not $isExactFutureBundlePath)
 })
 if ($trackedDiffResult.ExitCode -eq 0 -and $unexpectedTrackedDiff.Count -eq 0) {
-    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, exact K3C future bundle paths, WP-12C-REL0-C public-entrypoint files (README.md, START-HERE.md), WP-12C-AM3-PLAN roadmap re-positioning (docs/ROADMAP.md), WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT public release language surfaces, and WP-12C-REL0-FINAL-QA-REMEDIATION exact release hygiene files only; no broad plugins/** allowance; no broad docs/ allowance; no broad validation/ allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
+    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, exact K3C future bundle paths, WP-12C-REL0-C public-entrypoint files (README.md, START-HERE.md), WP-12C-AM3-PLAN roadmap re-positioning (docs/ROADMAP.md), WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT public release language surfaces, WP-12C-REL0-FINAL-QA-REMEDIATION exact release hygiene files, and WP-12C-REL0-RELEASE-DECISION-STAGE-COMMIT-FIX-A validator-policy patch report only; no broad plugins/** allowance; no broad docs/ allowance; no broad validation/ allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
 }
 else {
     Add-Result -Area '01-git-workspace' -Status FAIL -Check 'tracked-drift' -Detail ('Unexpected tracked drift: ' + ($unexpectedTrackedDiff -join ', '))

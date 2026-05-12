@@ -13,18 +13,27 @@ terminology:
   build_package: Governed implementation phase in the 01-16 build sequence.
   root_area: Visible top-level area used for package-tree rows, folder contracts, diagrams, and documentation.
   filesystem_path: Actual lowercase folder or file path in this workspace.
+  autonomy_level_al: "AL means Autonomy Level: how autonomous the user experience is."
+  autonomy_mode_am: "AM means Autonomy Mode / release evidence lane: how AISRAF proves that autonomy capability."
+  mode_0: preview/read-only, no writes.
+  mode_1_al2: everyday controlled-output local workbench.
+  mode_2_am3_al3: local orchestrated runtime evidence path.
+  mode_3: maintainer validation and release QA.
+  mode_4_am4: future external adapter/post-back execution.
+  al5: closed-loop autonomy; out of scope.
 current_build_package:
-  build_package_number: "12C-REL0-FINAL-QA-REMEDIATION"
-  build_package_name: Release-Facing Claim, Gate-State, And Manifest Metadata Alignment
-  build_package_status: active_rel0_final_qa_remediation
+  build_package_number: "12C-REL0-RELEASE-DECISION-REMEDIATION"
+  build_package_name: Release Decision Remediation, Public Reader Clarity, And Metadata Alignment
+  build_package_status: active_rel0_release_decision_remediation
 next_build_package:
-  build_package_number: "12C-REL0-FINAL-QA-RERUN"
-  build_package_name: REL0 Final QA Rerun And Release Decision Gate
-  build_package_status: blocked_pending_wp_12c_rel0_final_qa_remediation_pass
+  build_package_number: "12C-REL0-RELEASE-DECISION-RERUN"
+  build_package_name: REL0 Release Decision Rerun
+  build_package_status: blocked_pending_wp_12c_rel0_release_decision_remediation_pass
 wp12c_current_state:
-  active_work_package: WP-12C-REL0-FINAL-QA-REMEDIATION
-  accepted_status_through: WP-12C-AM3_STAGE_COMMIT_PASS_READY_FOR_REL0_FINAL_QA
-  am3_stage_commit_hash: 34c1d55ce79e6bb0f9f274bef335af42600ef3f7
+  active_work_package: WP-12C-REL0-RELEASE-DECISION-REMEDIATION
+  accepted_status_through: WP-12C-REL0_RELEASE_DECISION_BLOCKED_WITH_REASON
+  rel0_remediation_baseline_commit_hash: abcad6feb16a94ed71c81f6620032584f22e5a68
+  am3_stage_commit_hash_historical: 34c1d55ce79e6bb0f9f274bef335af42600ef3f7
   rel0_final_qa_result: WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON
   wp12c_h_status: BLACK_CLOSED
   wp12c_i_status: BLACK_CLOSED
@@ -63,13 +72,15 @@ wp12c_current_state:
   wp12c_am3_release_claim_alignment_status: BLACK_CLOSED
   wp12c_am3_stage_commit_status: BLACK_CLOSED_STAGE_COMMIT_PASS
   wp12c_rel0_final_qa_status: BLACK_CLOSED_BLOCKED_WITH_REMEDIATION_BLOCKERS
-  wp12c_rel0_final_qa_remediation_status: ACTIVE
-  wp12c_rel0_status: BLOCKED_PENDING_REL0_FINAL_QA_REMEDIATION_AND_RELEASE_DECISION
-  wp13_status: BLOCKED_PENDING_REL0_FINAL_QA_AND_RELEASE_CLOSURE
+  wp12c_rel0_final_qa_remediation_status: BLACK_CLOSED_AT_abcad6feb16a94ed71c81f6620032584f22e5a68
+  wp12c_rel0_release_decision_status: BLACK_CLOSED_BLOCKED_WITH_REMEDIATION_BLOCKERS
+  wp12c_rel0_release_decision_remediation_status: ACTIVE
+  wp12c_rel0_status: BLOCKED_PENDING_REL0_RELEASE_DECISION_REMEDIATION_RERUN_PUSH_PREP_AND_RELEASE_DECISION
+  wp13_status: BLOCKED_PENDING_REL0_RELEASE_DECISION_AND_PUSH_PREP
   wp_orch_status: SUPERSEDED_BY_WP_12C_AM3_LANE_FOR_V0_1_2
   adapter0_status: FUTURE_NOT_IN_V0_1_2_SCOPE_AL4_NOT_CURRENT_RELEASE
-  current_gate: wp_12c_rel0_final_qa_remediation
-  next_gate: wp_12c_rel0_final_qa_rerun_then_release_decision
+  current_gate: wp_12c_rel0_release_decision_remediation
+  next_gate: wp_12c_rel0_release_decision_rerun
   current_autonomy_level: AM3_AL3_local_orchestrated_multi_agent_runtime_evidence_path
   current_release_claim: AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence.
   claim_limiter: This is a local-only, human-gated, validator-backed, evidence-bound evidence-path claim; it is not a claim of full specialist-generated review output execution, production readiness, publication, push/publish approval, or AM4 integration.
@@ -84,6 +95,8 @@ wp12c_current_state:
   plugin_scaffold_status: complete_and_validated_check_16_16a_16b_16c_pass
   plugin_packaging_status: byte_identical_bundle_with_checksum_manifest_validated_under_runs_run_smoke_plugin_l2b_001_evidence
   diagrams_status: blocked_until_rel0_release_decision_closes_and_bp12_sample_dfd_blocker_resolved
+  license_notice_status: placeholder_evaluation_only_all_rights_reserved_pending_founder_legal_confirmation
+  publication_policy: blocked_unless_founder_explicitly_accepts_placeholder_license_notice_posture_and_release_push_prep_passes
 authority_chain:
   law: Capability -> Value Outcome -> ProcessFlowSpecification -> TaskFlowSpecification -> Agent -> Skill -> Tool / Hook / Policy -> Memory / State -> Evaluation -> Evidence -> Platform Projection -> Plugin / Release
   current_posture: local_first_governed_workbench

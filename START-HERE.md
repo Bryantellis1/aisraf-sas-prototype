@@ -2,11 +2,35 @@
 
 Package: AISRAF SAS Prototype v0.1.2
 
+## Autonomy Terms In Plain English
+
+- **AL means Autonomy Level:** how autonomous the user experience is.
+- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability.
+- **Mode 0:** preview/read-only; no writes.
+- **Mode 1 / AL2:** everyday controlled-output local workbench.
+- **Mode 2 / AM3 / AL3:** local orchestrated runtime evidence path.
+- **Mode 3:** maintainer validation and release QA.
+- **Mode 4 / AM4:** future external adapter/post-back execution.
+- **AL5:** closed-loop autonomy; out of scope.
+
 AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
 
-Gate state: AM3 stage commit is closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7`. REL0 final QA ran and found remediation blockers. The current gate is **WP-12C-REL0-FINAL-QA-REMEDIATION**; next is REL0 final QA rerun / release decision. WP-13, AM4, push, and publish remain blocked until the REL0 release decision closes.
+Gate state: REL0 remediation baseline commit `abcad6feb16a94ed71c81f6620032584f22e5a68` is the accepted technical candidate for this release-decision remediation pass. The current gate is **WP-12C-REL0-RELEASE-DECISION-REMEDIATION**; next is **WP-12C-REL0-RELEASE-DECISION-RERUN**. WP-13, AM4, push, and publish remain blocked until the REL0 release decision and push-prep gates pass.
 
 The everyday security architect and application architect workflow remains a local controlled-output workbench. AISRAF does not execute external adapters or post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems (AM4 / AL4, future). AL5 closed-loop autonomy is out of scope.
+
+## Review Journey In One Pass
+
+1. Load or open the AISRAF package/plugin from this workspace or its local provider surface.
+2. In the provider surface, expect the AISRAF agents, provider Agent Skills, and hook configuration; start with `@aisraf-orchestrator`.
+3. Create or use a run folder at `runs/<run_id>/`.
+4. Put DFD/design package inputs under `runs/<run_id>/inputs/`.
+5. Control the run with `runs/<run_id>/run-profile.yaml`.
+6. Receive local Markdown outputs: `00-run-log.md`, `01-input-inventory.md` through `17-accuracy-score.md`, plus the DFD outputs under `dfd/01` through `dfd/09`.
+7. Use a separate `runs/<run_id>/` folder for each separate DFD or review.
+8. v0.1.2 performs no external post-back; AM4 external adapter execution remains future only.
+
+License and notice posture: `LICENSE` and `NOTICE.md` are placeholder / evaluation-only / all-rights-reserved documents pending founder/legal confirmation. Public publication remains blocked unless the founder explicitly accepts that placeholder posture for the release lane.
 
 Release journey modes:
 
@@ -30,7 +54,7 @@ Pick the entrypoint that matches your role.
 - **Maintainer** — read [docs/ARCHITECTURE-OVERVIEW.md](docs/ARCHITECTURE-OVERVIEW.md) and [RELEASE-MANIFEST.yaml](RELEASE-MANIFEST.yaml).
 - **Roadmap reader** — read [docs/ROADMAP.md](docs/ROADMAP.md).
 
-Release state: Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim, and the AM3 stage commit is closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7`. REL0 final QA ran and returned `WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON`; the active gate is **WP-12C-REL0-FINAL-QA-REMEDIATION**. Next is REL0 final QA rerun / release decision. WP-13 release visuals, push, publish, and AM4 adapter work remain blocked / future until REL0 release decision closes.
+Release state: Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim. REL0 final QA remediation closed at `abcad6feb16a94ed71c81f6620032584f22e5a68`; the active gate is **WP-12C-REL0-RELEASE-DECISION-REMEDIATION**. Next is **WP-12C-REL0-RELEASE-DECISION-RERUN**. WP-13 release visuals, push, publish, and AM4 adapter work remain blocked / future until the REL0 release decision and push-prep gates pass.
 
 AM3 boundary: AISRAF Orchestrator owns run-state and event log. Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. Human gates remain required. AM4 external adapter execution remains future. The local smoke evidence under `runs/RUN-SMOKE-AM3-001/` must not be staged or published in this gate.
 
@@ -72,6 +96,6 @@ AM3 boundary: AISRAF Orchestrator owns run-state and event log. Specialist hando
 
 ## Next Build Package
 
-The immediate governed gate is **WP-12C-REL0-FINAL-QA-REMEDIATION**. If remediation passes, the next gate is REL0 final QA rerun / release decision. WP-13 release visuals, push, publish, and AM4 adapter work remain blocked until REL0 release decision closes.
+The immediate governed gate is **WP-12C-REL0-RELEASE-DECISION-REMEDIATION**. If remediation passes, the next gate is **WP-12C-REL0-RELEASE-DECISION-RERUN**. WP-13 release visuals, push, publish, and AM4 adapter work remain blocked until the REL0 release decision and push-prep gates pass.
 
 **AM4 adapter work** (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution) is future and not part of the current v0.1.2 claim.

@@ -2,13 +2,37 @@
 
 AISRAF SAS means AISRAF Security Advisory Services. This package is a local-first security advisory review prototype for testing how VS Code, GitHub Copilot, prompt cards, skill contracts, PRA specifications, local adapter wrappers, catalogs, blueprints, templates, samples, run profiles, validation checks, diagrams, and practitioner documentation work together.
 
+## Autonomy Terms In Plain English
+
+- **AL means Autonomy Level:** how autonomous the user experience is.
+- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability.
+- **Mode 0:** preview/read-only; no writes.
+- **Mode 1 / AL2:** everyday controlled-output local workbench.
+- **Mode 2 / AM3 / AL3:** local orchestrated runtime evidence path.
+- **Mode 3:** maintainer validation and release QA.
+- **Mode 4 / AM4:** future external adapter/post-back execution.
+- **AL5:** closed-loop autonomy; out of scope.
+
 ## v0.1.2 Release — Read First
 
 AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
 
-Gate state: AM3 stage commit is closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7`. REL0 final QA ran and found remediation blockers. The current gate is **WP-12C-REL0-FINAL-QA-REMEDIATION**; next is REL0 final QA rerun / release decision. WP-13, AM4, push, and publish remain blocked until the REL0 release decision closes.
+Gate state: REL0 remediation baseline commit `abcad6feb16a94ed71c81f6620032584f22e5a68` is the accepted technical candidate for this release-decision remediation pass. The current gate is **WP-12C-REL0-RELEASE-DECISION-REMEDIATION**; next is **WP-12C-REL0-RELEASE-DECISION-RERUN**. WP-13, AM4, push, and publish remain blocked until the REL0 release decision and push-prep gates pass.
 
 The day-to-day security architect and application architect experience remains a local controlled-output workbench under VS Code + GitHub Copilot. AISRAF runs against governed prompt cards, skill contracts, prototype-agent specifications, catalogs, blueprints, templates, samples, and run profiles. It does not execute external adapters and does not post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems.
+
+## Local Review Journey
+
+1. Load or open the AISRAF package/plugin from this workspace or its local provider surface.
+2. In the provider surface, expect the AISRAF agents, provider Agent Skills, and hook configuration; start with `@aisraf-orchestrator`.
+3. Create or use a run folder at `runs/<run_id>/`.
+4. Place DFD/design package inputs under `runs/<run_id>/inputs/`.
+5. Control the run with `runs/<run_id>/run-profile.yaml`; it declares the run id, local input paths, local output path, sensitive-data confirmation, and deferred external integration posture.
+6. Receive local Markdown outputs: `00-run-log.md`, `01-input-inventory.md` through `17-accuracy-score.md`, plus the DFD outputs under `dfd/01` through `dfd/09`.
+7. Use a separate `runs/<run_id>/` folder for each separate DFD or review.
+8. v0.1.2 performs no external post-back. Jira, Confluence, Lucidchart, MCP/Rovo, cloud, database, Terraform, event bus, telemetry, and external adapter execution are future AM4 work only.
+
+License and notice posture: `LICENSE` and `NOTICE.md` are placeholder / evaluation-only / all-rights-reserved documents pending founder/legal confirmation. Public publication remains blocked unless the founder explicitly accepts that placeholder posture for the release lane.
 
 Public reader entrypoints (read these first):
 
@@ -55,7 +79,7 @@ The sections below describe the internal governed build sequence (Build Packages
 
 ## Current State
 
-Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim, and the AM3 stage commit is closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7`. REL0 final QA ran and returned `WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON`; the active gate is **WP-12C-REL0-FINAL-QA-REMEDIATION**. Next is REL0 final QA rerun / release decision. WP-13 release visuals, WP-13-dependent publication preparation, AM4 adapter work, push, and publish remain blocked / future until REL0 release decision closes.
+Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim. REL0 final QA remediation closed at `abcad6feb16a94ed71c81f6620032584f22e5a68`; the active gate is **WP-12C-REL0-RELEASE-DECISION-REMEDIATION**. Next is **WP-12C-REL0-RELEASE-DECISION-RERUN**. WP-13 release visuals, WP-13-dependent publication preparation, AM4 adapter work, push, and publish remain blocked / future until the REL0 release decision and push-prep gates pass.
 
 - **Build Package 01** — Foundation, root structure, charter, manifest, folder contracts, build order, and authoring-agent instruction standard.
 - **Build Package 02** — Config and run-profile variable model (`config/`).
@@ -102,7 +126,7 @@ The governed build sequence is recorded in [BUILD-ORDER.md](BUILD-ORDER.md).
 
 ## Next Build Package
 
-The immediate governed gate is **WP-12C-REL0-FINAL-QA-REMEDIATION**. If remediation passes, the next gate is REL0 final QA rerun / release decision. WP-13 release visuals, WP-13-dependent publication preparation, AM4 adapter work, push, and publish remain blocked until REL0 release decision closes. WP-13 also remains subject to `BP12-SAMPLE-DFD-BLOCKER` resolution per [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md).
+The immediate governed gate is **WP-12C-REL0-RELEASE-DECISION-REMEDIATION**. If remediation passes, the next gate is **WP-12C-REL0-RELEASE-DECISION-RERUN**. WP-13 release visuals, WP-13-dependent publication preparation, AM4 adapter work, push, and publish remain blocked until the REL0 release decision and push-prep gates pass. WP-13 also remains subject to `BP12-SAMPLE-DFD-BLOCKER` resolution per [validation/diagram-readiness-pre-render-checklist.md](validation/diagram-readiness-pre-render-checklist.md).
 
 Out-of-scope-for-this-release governed work, retained here so a contributor cannot mistake it for current release behavior:
 

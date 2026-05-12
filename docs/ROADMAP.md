@@ -1,5 +1,16 @@
 # AISRAF Roadmap
 
+## Autonomy Terms In Plain English
+
+- **AL means Autonomy Level:** how autonomous the user experience is.
+- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability.
+- **Mode 0:** preview/read-only; no writes.
+- **Mode 1 / AL2:** everyday controlled-output local workbench.
+- **Mode 2 / AM3 / AL3:** local orchestrated runtime evidence path.
+- **Mode 3:** maintainer validation and release QA.
+- **Mode 4 / AM4:** future external adapter/post-back execution.
+- **AL5:** closed-loop autonomy; out of scope.
+
 | Field | Value |
 |---|---|
 | Document | docs/ROADMAP.md |
@@ -10,9 +21,9 @@
 | Release | AISRAF v0.1.2 |
 | Current claim | AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence |
 | Claim limiter | Evidence-path claim only; not full specialist-generated review output execution, production readiness, publication, or AM4 integration |
-| Gate state | AM3 stage commit closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7`; REL0 final QA ran and found remediation blockers |
-| Current gate | WP-12C-REL0-FINAL-QA-REMEDIATION |
-| Next gate | REL0 final QA rerun / release decision |
+| Gate state | REL0 remediation baseline commit `abcad6feb16a94ed71c81f6620032584f22e5a68` is the accepted technical candidate for release-decision remediation |
+| Current gate | WP-12C-REL0-RELEASE-DECISION-REMEDIATION |
+| Next gate | WP-12C-REL0-RELEASE-DECISION-RERUN |
 | Deferred autonomy | AM4 external adapter / post-back execution remains future adapter work; AL5 closed-loop autonomy remains out of scope |
 
 ## 1. v0.1.2 Current Claim: AM3 / AL3 Local Runtime Evidence
@@ -27,6 +38,8 @@ AISRAF v0.1.2 ships:
 - The public docs package: this document plus AISRAF-PRIMER, OPERATOR-QUICKSTART, SECURITY-REVIEW-WORKFLOW, ARCHITECTURE-OVERVIEW; and root release artifacts `RELEASE-MANIFEST.yaml`, `CHANGELOG.md`, `SECURITY.md`, `CONTRIBUTING.md`, `LICENSE`, `NOTICE.md`.
 
 What the current release proves: AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence, while preserving the AL2 controlled-output local workbench as the everyday operator experience. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. AISRAF Orchestrator owns run-state and event log. Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. Human gates remain required. The validator ladder returns 0 FAIL; package-validator WARN rows are limited to local-only smoke folders.
+
+License and notice posture: `LICENSE` and `NOTICE.md` are placeholder / evaluation-only / all-rights-reserved documents pending founder/legal confirmation. Public publication remains blocked unless the founder explicitly accepts that placeholder posture for the release lane.
 
 Release journey modes for v0.1.2:
 
@@ -56,7 +69,9 @@ The WP-12C-AM3 lane delivered the local evidence path for AM3 / AL3 as the closi
 - **WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT** — closed language alignment gate for public docs and manifests. No runtime edits or AM4 work.
 - **WP-12C-AM3-STAGE-COMMIT** — closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7` as `WP-12C-AM3_STAGE_COMMIT_PASS_READY_FOR_REL0_FINAL_QA`.
 - **WP-12C-REL0-FINAL-QA** — ran and returned `WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON`.
-- **WP-12C-REL0-FINAL-QA-REMEDIATION** — current gate. Align release-facing claim text, gate-state text, and release manifest metadata. No staging, push, publish, runtime edits, WP-13 work, or AM4 work.
+- **REL0 final QA remediation** — closed at `abcad6feb16a94ed71c81f6620032584f22e5a68` as the accepted technical remediation baseline.
+- **WP-12C-REL0-RELEASE-DECISION-REMEDIATION** — current gate. Align release-decision metadata, plugin reader journey, plain-language autonomy terms, and exact validator allow-listing. No staging, push, publish, runtime edits, WP-13 work, or AM4 work.
+- **WP-12C-REL0-RELEASE-DECISION-RERUN** — next gate after this remediation passes.
 
 Each AM3 gate requires the previous gate's evidence and passes the validator ladder with 0 FAIL.
 
@@ -64,7 +79,7 @@ Each AM3 gate requires the previous gate's evidence and passes the validator lad
 
 WP-13 covers release diagrams and release visuals (architecture diagrams, workflow diagrams, plugin install diagrams, evidence diagrams). WP-13 has not started in v0.1.2; `diagrams/` and `release/` remain README-only folders reserved for their owning build packages.
 
-WP-13 begins only after the REL0 release decision closes and a later gate authorizes publication preparation. WP-13 remains blocked during REL0 final QA remediation and final QA rerun.
+WP-13 begins only after the REL0 release decision closes and a later gate authorizes publication preparation. WP-13 remains blocked during release-decision remediation and release-decision rerun.
 
 ## 4. Historical Orchestration Planning Names
 
@@ -109,8 +124,9 @@ v0.1.2 (AM3 / AL3 local runtime evidence accepted; not published)
   → WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT (closed — public language alignment)
   → WP-12C-AM3-STAGE-COMMIT  (closed — commit 34c1d55ce79e6bb0f9f274bef335af42600ef3f7)
   → REL0-FINAL-QA            (ran — blockers found)
-  → WP-12C-REL0-FINAL-QA-REMEDIATION (active)
-  → REL0-FINAL-QA-RERUN / release decision
+  → REL0 final QA remediation (closed — commit abcad6feb16a94ed71c81f6620032584f22e5a68)
+  → WP-12C-REL0-RELEASE-DECISION-REMEDIATION (active)
+  → WP-12C-REL0-RELEASE-DECISION-RERUN
   → WP-13 release visuals    (still blocked by REL0 release decision closure and BP12-SAMPLE-DFD blocker)
   → AL4 adapter work packages (one per adapter; future)
   → (AL5 is not on the roadmap)

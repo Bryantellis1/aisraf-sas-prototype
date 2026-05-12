@@ -2,6 +2,14 @@
 #
 # Authoritative public-release metadata for AISRAF v0.1.2.
 #
+# Plain-language autonomy terms: AL means Autonomy Level (how autonomous
+# the user experience is). AM means Autonomy Mode / release evidence lane
+# (how AISRAF proves that autonomy capability). Mode 0 is preview/read-only,
+# Mode 1 / AL2 is the controlled-output local workbench, Mode 2 / AM3 / AL3
+# is the local orchestrated runtime evidence path, Mode 3 is maintainer
+# validation and release QA, Mode 4 / AM4 is future external adapter/post-back
+# execution, and AL5 closed-loop autonomy is out of scope.
+#
 # This manifest is non-executing. It declares the bounded AM3 / AL3
 # local orchestrated runtime evidence claim, names current and future autonomy levels, fixes the
 # AI component pattern wording, lists the validators that must remain
@@ -13,14 +21,15 @@
 release_id: aisraf-v0.1.2
 package_name: AISRAF SAS Prototype
 package_version: v0.1.2
-commit_hash: 34c1d55ce79e6bb0f9f274bef335af42600ef3f7
-commit_hash_note: AM3 stage commit reviewed by REL0 final QA; update only if a later remediation commit is created and approved.
+commit_hash: abcad6feb16a94ed71c81f6620032584f22e5a68
+commit_hash_note: Accepted REL0 remediation baseline for release-decision remediation; AM3 stage commit remains historical evidence, not the current release metadata pointer.
 release_status: pre_release_public_safe_local_first_evidence_bound
 release_posture: not_published; not_pushed; not_diagrammed; am3_local_runtime_evidence_proven; am4_not_implemented
-current_gate: WP-12C-REL0-FINAL-QA-REMEDIATION
-next_gate: REL0-FINAL-QA-RERUN
-next_gate_after_rerun: REL0-RELEASE-DECISION
+current_gate: WP-12C-REL0-RELEASE-DECISION-REMEDIATION
+next_gate: WP-12C-REL0-RELEASE-DECISION-RERUN
+next_gate_after_rerun: REL0-PUSH-PREP_ONLY_IF_RELEASE_DECISION_PASSES
 rel0_final_qa_result: WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON
+rel0_release_decision_result: WP-12C-REL0_RELEASE_DECISION_BLOCKED_WITH_REASON
 release_notes_doc: CHANGELOG.md
 license_doc: LICENSE
 notice_doc: NOTICE.md
@@ -32,6 +41,16 @@ public_docs:
   security_review_workflow: docs/SECURITY-REVIEW-WORKFLOW.md
   architecture_overview: docs/ARCHITECTURE-OVERVIEW.md
   roadmap: docs/ROADMAP.md
+
+autonomy_terms_plain_english:
+  al: "AL means Autonomy Level: how autonomous the user experience is."
+  am: "AM means Autonomy Mode / release evidence lane: how AISRAF proves that autonomy capability."
+  mode_0: preview/read-only; no writes.
+  mode_1_al2: everyday controlled-output local workbench.
+  mode_2_am3_al3: local orchestrated runtime evidence path.
+  mode_3: maintainer validation and release QA.
+  mode_4_am4: future external adapter/post-back execution.
+  al5: closed-loop autonomy; out of scope.
 
 current_autonomy_level: AM3_AL3_LOCAL_ORCHESTRATED_RUNTIME_EVIDENCE
 current_autonomy_description: >-
@@ -191,18 +210,18 @@ known_warnings:
     resolution: local_only_path; excluded from staging via local ignore; ignored, untracked, unstaged, and not a publication artifact
 
 next_gates:
-  - id: REL0-FINAL-QA-REMEDIATION
-    description: Align release-facing claim text, gate-state text, and release manifest metadata after REL0 final QA blockers
+  - id: WP-12C-REL0-RELEASE-DECISION-REMEDIATION
+    description: Align release-decision metadata, plugin user journey, autonomy terms, exact validator allow-listing, and placeholder license/notice posture
     blocked_by: none_current_gate_active
-  - id: REL0-FINAL-QA-RERUN
-    description: Rerun final release QA after remediation
-    blocked_by: REL0-FINAL-QA-REMEDIATION
-  - id: REL0-RELEASE-DECISION
-    description: Founder release decision after a clean REL0 final QA rerun
-    blocked_by: REL0-FINAL-QA-RERUN
+  - id: WP-12C-REL0-RELEASE-DECISION-RERUN
+    description: Rerun the founder release decision after remediation
+    blocked_by: WP-12C-REL0-RELEASE-DECISION-REMEDIATION
+  - id: REL0-PUSH-PREP
+    description: Push preparation only if the release decision passes and founder authorization is explicit
+    blocked_by: WP-12C-REL0-RELEASE-DECISION-RERUN
   - id: WP-13
     description: Release diagrams and visuals
-    blocked_by: REL0 release decision closure and explicit founder authorization
+    blocked_by: REL0 release decision, push-prep, and explicit founder authorization
   - id: AM4-ADAPTERS
     description: External adapter execution work packages
     blocked_by: REL0 release decision, WP-13 decisions, and explicit founder authorization
@@ -211,4 +230,6 @@ license_status: pending_founder_legal_confirmation
 license_note: >-
   LICENSE is a public-safe placeholder (all rights reserved) until founder
   / legal selects the final public license. NOTICE.md mirrors the placeholder
-  posture. No open-source rights are granted by this placeholder.
+  posture. No open-source rights are granted by this placeholder. Public
+  publication remains blocked unless the founder explicitly accepts this
+  placeholder posture for the release lane.

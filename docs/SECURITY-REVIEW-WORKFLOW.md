@@ -1,5 +1,16 @@
 # AISRAF Security Review Workflow
 
+## Autonomy Terms In Plain English
+
+- **AL means Autonomy Level:** how autonomous the user experience is.
+- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability.
+- **Mode 0:** preview/read-only; no writes.
+- **Mode 1 / AL2:** everyday controlled-output local workbench.
+- **Mode 2 / AM3 / AL3:** local orchestrated runtime evidence path.
+- **Mode 3:** maintainer validation and release QA.
+- **Mode 4 / AM4:** future external adapter/post-back execution.
+- **AL5:** closed-loop autonomy; out of scope.
+
 | Field | Value |
 |---|---|
 | Document | docs/SECURITY-REVIEW-WORKFLOW.md |

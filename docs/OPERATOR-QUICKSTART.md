@@ -1,5 +1,16 @@
 # AISRAF Operator Quickstart
 
+## Autonomy Terms In Plain English
+
+- **AL means Autonomy Level:** how autonomous the user experience is.
+- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability.
+- **Mode 0:** preview/read-only; no writes.
+- **Mode 1 / AL2:** everyday controlled-output local workbench.
+- **Mode 2 / AM3 / AL3:** local orchestrated runtime evidence path.
+- **Mode 3:** maintainer validation and release QA.
+- **Mode 4 / AM4:** future external adapter/post-back execution.
+- **AL5:** closed-loop autonomy; out of scope.
+
 | Field | Value |
 |---|---|
 | Document | docs/OPERATOR-QUICKSTART.md |
@@ -64,6 +75,8 @@ Key fields:
 
 The evidence ledger is `runs/<run_id>/00-run-log.md`. Inputs live under `runs/<run_id>/inputs/`. Generated outputs are the root `01` through `17` Markdown files plus `dfd/01` through `dfd/09`.
 
+Use a separate `runs/<run_id>/` folder for each separate DFD or review. Do not reuse `runs/RUN-001/`; it is the governed fixture.
+
 Validate any run profile with:
 
 ```powershell
@@ -86,6 +99,7 @@ If a run profile attempts to enable an external integration field, the run-profi
 6. Use the sample DFD/design package first (`samples/sample-001-dfd-crop/inputs/`), or stage a local input package under `runs/<your_run_id>/inputs/`.
 7. Review the output expectations before any controlled write.
 8. Confirm no external execution claim appears.
+9. For another DFD or review, create another `runs/<run_id>/` folder and repeat the same local input, run-profile, and output pattern.
 
 If any role writes during preview, claims external execution, mutates `RUN-001`, mutates `samples/`, or makes a live integration claim, stop and record the gap.
 

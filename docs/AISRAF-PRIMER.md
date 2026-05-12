@@ -1,5 +1,16 @@
 # AISRAF Primer
 
+## Autonomy Terms In Plain English
+
+- **AL means Autonomy Level:** how autonomous the user experience is.
+- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability.
+- **Mode 0:** preview/read-only; no writes.
+- **Mode 1 / AL2:** everyday controlled-output local workbench.
+- **Mode 2 / AM3 / AL3:** local orchestrated runtime evidence path.
+- **Mode 3:** maintainer validation and release QA.
+- **Mode 4 / AM4:** future external adapter/post-back execution.
+- **AL5:** closed-loop autonomy; out of scope.
+
 | Field | Value |
 |---|---|
 | Document | docs/AISRAF-PRIMER.md |
@@ -109,6 +120,8 @@ This matters because every public-reader claim must map to a governed layer. Des
 ## 8. Release Boundary
 
 AISRAF v0.1.2 is public-safe, local-first, evidence-bound, and human-gated. Public release artifacts (this document, `RELEASE-MANIFEST.yaml`, `CHANGELOG.md`, `SECURITY.md`, `CONTRIBUTING.md`, `LICENSE`, `NOTICE.md`, and the four companion docs) describe the AL2 workbench experience and the bounded AM3 / AL3 local orchestrated runtime evidence claim.
+
+`LICENSE` and `NOTICE.md` are placeholder / evaluation-only / all-rights-reserved documents pending founder/legal confirmation. Public publication remains blocked unless the founder explicitly accepts that placeholder posture for the release lane.
 
 What is **not** part of v0.1.2:
 
