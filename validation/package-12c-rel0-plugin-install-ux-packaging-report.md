@@ -161,6 +161,9 @@ After commit, the following commands are re-run for parity confirmation and reco
 
 ## 10. Post-Commit Evidence
 
-To be appended after stage/commit.
+- Post-commit HEAD: `12ea750 docs: clarify AISRAF plugin install UX for public evaluation` on top of `56ee28e`.
+- Post-commit `git status --short`: empty (clean working tree).
+- Post-commit `Test-AisrafPackage`: **83 PASS, 3 WARN, 0 FAIL** (the 3 WARNs are the expected `RUN-SMOKE-AM3-001`, `RUN-SMOKE-LOCAL-001`, and `RUN-SMOKE-PLUGIN-L2B-001` smoke-folder notices).
+- Post-commit `Test-AisrafBp12AReadiness`: **77 PASS, 0 FAIL**. STATUS: BP12A_AUTOMATED_TEST_HARNESS_PASS.
 
 The gate stops here. No push. No tag. No GitHub Release. No adapter implementation. No threat-intel implementation. No Mermaid generation implementation. No binary commit.
