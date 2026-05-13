@@ -171,9 +171,9 @@ The post-commit numbers are also captured in section 4. The post-commit head, th
 
 ## 13. Post-Commit Evidence
 
-To be filled in by the gate executor immediately after the commit.
+- Post-commit HEAD: `5d67287 docs: add cross-shell command UX for AISRAF evaluation` on top of `6215ccb`.
+- Post-commit `git status --short`: empty (clean working tree).
+- Post-commit `Test-AisrafPackage`: 83 PASS, 3 WARN, 0 FAIL (the 3 WARNs are the expected `RUN-SMOKE-AM3-001`, `RUN-SMOKE-LOCAL-001`, and `RUN-SMOKE-PLUGIN-L2B-001` smoke-folder notices).
+- Post-commit `Test-AisrafBp12AReadiness`: 77 PASS, 0 FAIL. STATUS: BP12A_AUTOMATED_TEST_HARNESS_PASS.
 
-- Post-commit HEAD: _filled in after commit_
-- Post-commit `git status --short`: _filled in after commit_
-- Post-commit Test-AisrafPackage result: _filled in after commit_
-- Post-commit Test-AisrafBp12AReadiness result: _filled in after commit_
+The gate stops here. No push. No tag. No GitHub Release. No adapter implementation. No binary commit.
