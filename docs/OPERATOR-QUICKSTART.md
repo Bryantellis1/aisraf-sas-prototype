@@ -205,26 +205,32 @@ pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/R
 
 All three must return 0 FAIL before any contribution or staging activity.
 
-## 11. Cross-Shell Command Snippets
+## 11. Command Options: PowerShell 7, Windows PowerShell, and Git Bash
 
-The validator commands above are written for **PowerShell 7 (`pwsh`)** because that is the shell tested by the gate. The same scripts can be invoked from **Windows PowerShell (`powershell.exe`)** and from **Git Bash invoking `powershell.exe`**, but cross-shell command parity is **not yet validated by an automated gate**. The cross-shell command UX is covered by the next gate (`WP-12C-REL0-CROSS-SHELL-COMMAND-UX`).
+The validator commands above are written for **PowerShell 7 (`pwsh`)** because that is the recommended shell. The WP-12C-REL0-CROSS-SHELL-COMMAND-UX gate validated the same scripts under three shells with identical PASS counts:
+
+1. **PowerShell 7 (`pwsh`)** — recommended when installed.
+2. **Windows PowerShell 5.1 (`powershell.exe`)** — preinstalled on Windows; pass `-ExecutionPolicy Bypass` per command if the local execution policy is restricted.
+3. **Git Bash invoking `powershell.exe`** — use Git Bash for `git`; call `powershell.exe` explicitly for any `.ps1` script.
+
+The full cross-shell command table (validator ladder, git status, git log, bundle rebuild, new-run scaffold) lives in [COMMANDS.md](COMMANDS.md). The snippets below give the three forms for the most common command in this quickstart, the package validator.
 
 ```powershell
-# PowerShell 7 / pwsh (validator-tested shell)
+# PowerShell 7 / pwsh — recommended when installed
 pwsh -NoProfile -File ./tools/Test-AisrafPackage.ps1
 pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/RUN-001/run-profile.yaml -ExecutionReady
 ```
 
 ```powershell
-# Windows PowerShell / powershell.exe (cross-shell parity is planned; not yet validated)
-powershell.exe -NoProfile -File .\tools\Test-AisrafPackage.ps1
-powershell.exe -NoProfile -File .\tools\Test-AisrafRunProfile.ps1 -RunProfilePath .\runs\RUN-001\run-profile.yaml -ExecutionReady
+# Windows PowerShell / powershell.exe — works on Windows without PowerShell 7
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Test-AisrafPackage.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Test-AisrafRunProfile.ps1 -RunProfilePath .\runs\RUN-001\run-profile.yaml -ExecutionReady
 ```
 
 ```bash
-# Git Bash invoking powershell.exe (cross-shell parity is planned; not yet validated)
-powershell.exe -NoProfile -File ./tools/Test-AisrafPackage.ps1
-powershell.exe -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/RUN-001/run-profile.yaml -ExecutionReady
+# Git Bash invoking powershell.exe — use forward slashes; quote paths with spaces
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./tools/Test-AisrafPackage.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/RUN-001/run-profile.yaml -ExecutionReady
 ```
 
-Do not assume Windows PowerShell or Git Bash invocations match the `pwsh` baseline until the cross-shell gate explicitly validates them.
+If `pwsh` is not recognized on your system, use the `powershell.exe` form. The `-ExecutionPolicy Bypass` flag applies to the single command only; do not change the machine execution policy globally. See [COMMANDS.md](COMMANDS.md) for the per-command table and failure guidance.

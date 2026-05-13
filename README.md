@@ -106,24 +106,26 @@ pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/R
 11. Do not use `runs/RUN-001/` for personal reviews; it is the governed fixture.
 12. v0.1.2 is not marketplace-published and performs no external post-back. Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, and external adapter execution are planned for the Connected Review Flow (Flow 4, v0.2.0); they are not implemented in v0.1.2.
 
-### Cross-Shell Command Snippets
+### Command Options: PowerShell 7, Windows PowerShell, and Git Bash
 
-The commands above are written for **PowerShell 7 (`pwsh`)** because that is the validator-tested shell. The same scripts can be invoked from **Windows PowerShell (`powershell.exe`)** and **Git Bash (invoking `powershell.exe`)**, but the cross-shell command parity is **not yet validated by an automated gate**. The cross-shell command UX is covered by the next gate (`WP-12C-REL0-CROSS-SHELL-COMMAND-UX`).
+The commands above are written for **PowerShell 7 (`pwsh`)** because that is the recommended shell. The validator ladder and helper scripts also run identically under **Windows PowerShell 5.1 (`powershell.exe`)**, and from **Git Bash** by calling `powershell.exe` explicitly. The WP-12C-REL0-CROSS-SHELL-COMMAND-UX gate validated all three shells against the full validator ladder; see [docs/COMMANDS.md](docs/COMMANDS.md) for the full cross-shell command table, the support matrix, and failure guidance.
 
 ```powershell
-# PowerShell 7 / pwsh (validator-tested)
+# PowerShell 7 / pwsh — recommended when installed
 pwsh -NoProfile -File ./tools/New-AisrafRun.ps1 -RunId RUN-MY-REVIEW-001 -SampleId sample-001-dfd-crop -CopySampleInputs
 ```
 
 ```powershell
-# Windows PowerShell / powershell.exe (cross-shell parity is planned; not yet validated)
-powershell.exe -NoProfile -File .\tools\New-AisrafRun.ps1 -RunId RUN-MY-REVIEW-001 -SampleId sample-001-dfd-crop -CopySampleInputs
+# Windows PowerShell / powershell.exe — works on Windows without PowerShell 7
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-AisrafRun.ps1 -RunId RUN-MY-REVIEW-001 -SampleId sample-001-dfd-crop -CopySampleInputs
 ```
 
 ```bash
-# Git Bash invoking powershell.exe (cross-shell parity is planned; not yet validated)
-powershell.exe -NoProfile -File ./tools/New-AisrafRun.ps1 -RunId RUN-MY-REVIEW-001 -SampleId sample-001-dfd-crop -CopySampleInputs
+# Git Bash invoking powershell.exe — use forward slashes; quote paths with spaces
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./tools/New-AisrafRun.ps1 -RunId RUN-MY-REVIEW-001 -SampleId sample-001-dfd-crop -CopySampleInputs
 ```
+
+If `pwsh` is not recognized on your system, use the `powershell.exe` form. The `-ExecutionPolicy Bypass` flag applies to the single command only; do not change the machine execution policy globally. The full per-command table for the validator ladder, git checks, and bundle rebuild is in [docs/COMMANDS.md](docs/COMMANDS.md).
 
 License and notice posture: `LICENSE` and `NOTICE.md` now define a public source-available evaluation-only proof-of-concept posture. The license permits evaluation, review, demonstration, and proof-of-concept testing only, and does not grant production use, commercial use, redistribution, hosted service offering, or marketplace publication rights without separate written permission.
 
@@ -131,6 +133,7 @@ Public reader entrypoints (read these first):
 
 - [docs/AISRAF-PRIMER.md](docs/AISRAF-PRIMER.md) — evaluator primer; what AISRAF is and is not. (Note: this primer still uses some of the older `AM`/`AL`/`Mode N` vocabulary; that vocabulary is now internal architecture/evidence vocabulary only. The public operating model is the seven flows above.)
 - [docs/OPERATOR-QUICKSTART.md](docs/OPERATOR-QUICKSTART.md) — operator quickstart for local controlled-output review.
+- [docs/COMMANDS.md](docs/COMMANDS.md) — cross-shell command table: PowerShell 7, Windows PowerShell, and Git Bash.
 - [docs/SECURITY-REVIEW-WORKFLOW.md](docs/SECURITY-REVIEW-WORKFLOW.md) — security architect's end-to-end review workflow.
 - [docs/ARCHITECTURE-OVERVIEW.md](docs/ARCHITECTURE-OVERVIEW.md) — maintainer architecture overview.
 - [docs/ROADMAP.md](docs/ROADMAP.md) — release roadmap (v0.1.2 evaluation baseline; WP-13 release visuals registered; Connected Review Flow + Threat Intelligence Enrichment planned for v0.2.x).

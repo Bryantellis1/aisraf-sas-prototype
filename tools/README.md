@@ -56,7 +56,9 @@ The Build Package 03 tools do not:
 
 ## Dependencies
 
-- PowerShell 7+ (`pwsh`) on Windows. The scripts use `Set-StrictMode -Version Latest` and `$ErrorActionPreference = 'Stop'`.
+- PowerShell 7+ (`pwsh`) is the recommended shell. The scripts use `Set-StrictMode -Version Latest` and `$ErrorActionPreference = 'Stop'`.
+- Windows PowerShell 5.1 (`powershell.exe`) is also supported for the v0.1.2 script surface; the WP-12C-REL0-CROSS-SHELL-COMMAND-UX gate validated identical PASS counts for every validator under `pwsh` 7.5 and `powershell.exe` 5.1. Pass `-ExecutionPolicy Bypass` per command on systems with a restricted execution policy. Do not change machine execution policy globally.
+- Git Bash users can call `powershell.exe` explicitly. See [../docs/COMMANDS.md](../docs/COMMANDS.md) for the cross-shell command table covering the validator ladder, git checks, bundle rebuild, and new-run scaffold.
 - No external PowerShell modules. The flat-scalar YAML used by `run-profile.yaml` is parsed in-script.
 - Scripts resolve `PackageRoot` as the parent of `$PSScriptRoot` (this `tools/` directory's parent), so they can be invoked from anywhere.
 
