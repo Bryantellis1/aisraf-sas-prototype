@@ -51,6 +51,49 @@ Public users do **not** "run AM3." Public users run an **AISRAF Local Orchestrat
 4. Confirm there are no binaries, no secrets, and no overclaim in the repo.
 5. Confirm release posture before push / release.
 
+## How To Evaluate AISRAF v0.1.2 From GitHub
+
+AISRAF v0.1.2 is a **public source-available evaluation-only proof-of-concept** delivered as a **repo-local evaluation package**. It is **not marketplace-published** and there is **no one-click marketplace install**. The clean plugin install/load UX is planned for v0.1.3 onward (Flow 7) and is governed by [docs/PLUGIN-INSTALL-UX-PLAN.md](docs/PLUGIN-INSTALL-UX-PLAN.md).
+
+To evaluate v0.1.2 from GitHub:
+
+1. **Clone or download the public repository.** The proof-of-concept lives in a public GitHub repository. Either `git clone` the repository or download the source archive from the GitHub Release page once published.
+2. **Open the repository folder in VS Code.** VS Code with GitHub Copilot is the recommended editor. Provider discovery (the VS Code Local plugin list, the GitHub Copilot agent dropdown, or the Copilot CLI) picks up AISRAF from the repository's local provider surface (`.agents/`, `.github/agents/`, `.github/skills/`, `.github/hooks/`, `.copilot-skills/`, and `plugins/aisraf-copilot-plugin/`).
+3. **Read [START-HERE.md](START-HERE.md) and [docs/OPERATOR-QUICKSTART.md](docs/OPERATOR-QUICKSTART.md).** START-HERE is the entry point; OPERATOR-QUICKSTART is the operator path.
+4. **Use [docs/COMMANDS.md](docs/COMMANDS.md) for shell commands.** The full cross-shell command table covers PowerShell 7 (`pwsh`), Windows PowerShell 5.1 (`powershell.exe`), and Git Bash invoking `powershell.exe`.
+5. **Read [plugins/aisraf-copilot-plugin/README.md](plugins/aisraf-copilot-plugin/README.md).** It explains what the repo-local plugin package is and is not, and what the evaluator sees on the local provider surface.
+
+### Plain-English answers to the most common evaluator questions
+
+| Question | Answer (v0.1.2) |
+|---|---|
+| Where do I get it? | The public GitHub proof-of-concept repository. Clone it with `git clone` or download the source archive. There is no IDE marketplace listing in v0.1.2. |
+| What do I open? | The repository folder in VS Code (GitHub Copilot enabled). |
+| Is this installed from a marketplace? | No. v0.1.2 is **not marketplace-published** and there is no one-click marketplace install. The provider surface loads from the repository tree. |
+| What is the `plugins/aisraf-copilot-plugin/` folder for? | A **repo-local public evaluation package** that bundles the local provider projection (agents, skills, hooks) for Copilot discovery. It is **not** a packaged, installable plugin artifact in v0.1.2. See [plugins/aisraf-copilot-plugin/README.md](plugins/aisraf-copilot-plugin/README.md). |
+| What do I do first? | Read START-HERE.md, then docs/OPERATOR-QUICKSTART.md, then start the orchestrator. |
+| Which agent do I talk to? | `@aisraf-orchestrator`. It is the recommended entry point. |
+| Do I always start with `@aisraf-orchestrator`? | Yes, for a normal Local Orchestrated Review. Specialist agents (`@aisraf-input-reader`, `@aisraf-dfd-extractor`, `@aisraf-review-table-builder`, `@aisraf-blueprint-questioner`, `@aisraf-finding-recommender`, `@aisraf-handoff-qa-scorer`) exist as helper roles for the orchestrator. |
+| When do I use specialist agents? | Only when the orchestrator routes to one, or when a reviewer explicitly wants a single targeted step (for example only a DFD extraction). They are not the main first-run UX. |
+| Where do review inputs go? | Local files under `runs/<run_id>/inputs/`. |
+| Where do outputs go? | Local Markdown under `runs/<run_id>/` (root files `00-run-log.md`, `01-input-inventory.md` through `17-accuracy-score.md`, plus `dfd/dfd-01-intake-quality-check.md` through `dfd/dfd-09-extraction-summary.md`). |
+| How do I create a second or third review run? | Run `tools/New-AisrafRun.ps1` with a fresh `RUN-MY-REVIEW-002`, `RUN-MY-REVIEW-003`, etc. Each review gets its own `runs/<run_id>/` folder. Cross-shell commands are in [docs/COMMANDS.md](docs/COMMANDS.md). |
+| What inputs are supported today? | Local text/Markdown/structured artifacts and the governed Mermaid DFD source under `runs/<run_id>/inputs/`. Operators stage the DFD source diagram (Mermaid where available), legend excerpts, design notes, intake ticket text, and review transcripts/questionnaires. |
+| Are PNG/PDF diagrams read directly today? | No. v0.1.2 does not claim direct PNG/PDF image understanding. The governed source-of-truth for the canonical sample is the Mermaid DFD (`samples/sample-001-dfd-crop/inputs/dfd-crop.mmd`); a PNG companion exists for human reading only. Operators provide DFD content as text/Mermaid. Direct image-to-DFD extraction is not an implemented feature in v0.1.2. |
+| Is Lucid/JSON current or future? | Future. Lucid/Lucidchart source ingestion is **planned under Connected Review Flow (Flow 4, v0.2.0)** and is **not implemented in v0.1.2**. See [docs/CONNECTED-REVIEW-FLOW-PLAN.md](docs/CONNECTED-REVIEW-FLOW-PLAN.md). |
+| What does the plugin actually do in v0.1.2? | It is the repo-local provider projection. It surfaces `@aisraf-orchestrator` and six specialist agents, the provider Agent Skills, and the AISRAF hook config to the local provider surface. It does not execute external adapters, does not post back to Jira/Confluence/Lucid/Rovo/MCP, and writes only local Markdown under the approved run folder. |
+| What is planned for the future clean install / marketplace path? | A clean packaged plugin install path is planned for v0.1.3/v0.1.4 (Plugin Install UX, Flow 7). Marketplace or private-distribution evaluation is a later gated decision, not a current claim. See [docs/PLUGIN-INSTALL-UX-PLAN.md](docs/PLUGIN-INSTALL-UX-PLAN.md). |
+
+### What v0.1.2 does NOT do (overclaim guardrails)
+
+- No marketplace install. No one-click install.
+- No external adapter execution. No Jira/Confluence/Lucidchart/Rovo/MCP/cloud/database/Terraform/event-bus/telemetry/post-back execution.
+- No online threat-intelligence execution (Flow 5 / `SKL-THREAT-INTEL-CURRENT-CONTEXT` is planned for v0.2.1).
+- No Mermaid diagram generation feature (Flow 6 is planned).
+- No direct PNG/PDF image-to-DFD extraction.
+- No closed-loop autonomy (AL5 is out of scope).
+- No "user runs AM3" instruction. Public users run **AISRAF Local Orchestrated Review**; `AM3` / `AL3` remain internal architecture/evidence vocabulary.
+
 ## Internal Autonomy Vocabulary (For Contributors Only)
 
 The terms below are **internal architecture/evidence vocabulary**. They are not the public way users describe what AISRAF does. Use the product flows above in public documentation.

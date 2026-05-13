@@ -81,12 +81,45 @@ Each install gate is a separate, validator-backed step. AISRAF must pass earlier
 - **Status.** Planned. Required so that AISRAF can be used inside a project repository without polluting the project tree.
 - **Proof gate.** A run started from the new command lands in the chosen path and the run-profile validator passes.
 
+## 4a. Plugin Install UX Milestones (Current vs Target)
+
+The table below summarizes the install UX milestones from current v0.1.2 reality through the v0.2.x adapter horizon. Each row references the install gate in section 4.
+
+| Milestone | Release | Status | Install gate(s) |
+|---|---|---|---|
+| **Repo-local evaluation.** Clone or download the public GitHub repository; open the folder in VS Code; local provider surface (`.agents/`, `.github/agents/`, `.github/skills/`, `.github/hooks/`, `.copilot-skills/`, `plugins/aisraf-copilot-plugin/`) is discovered from the repository tree. | v0.1.2 (current) | **Current.** Validator ladder green on a fresh clone. | 4.1 |
+| **Local package load/discovery from a clean workspace.** A user opens a clean (non-AISRAF) workspace and AISRAF surfaces (orchestrator agent, specialist agents, provider Agent Skills, hook config) appear in the provider picker without copying the whole repository tree into the user's project. | v0.1.3 | **Planned.** Requires the maintainer smoke-workspace proof. | 4.2 |
+| **Clean packaged plugin install.** A user installs AISRAF from a packaged plugin artifact (VS Code extension package, GitHub Copilot plugin package, Copilot CLI plugin) rather than from a repository clone. | v0.1.3 / v0.1.4 | **Planned.** Requires bundle parity validation and a release pipeline that produces the plugin artifact. | 4.3 |
+| **Marketplace / private distribution evaluation.** AISRAF is evaluated for distribution through a marketplace or a private distribution channel. | v0.1.4 / v0.2.0 | **Planned evaluation only.** v0.1.2 is **not marketplace-published**; public language must remain "evaluation-only" until the marketplace gate explicitly opens. | 4.4 |
+| **Connected adapter enablement (Connected Review Flow, Flow 4).** Jira intake, Confluence output, Lucid/Lucidchart source ingestion, Rovo/MCP, post-back controls. | v0.2.0 | **Planned.** Governed by [`docs/CONNECTED-REVIEW-FLOW-PLAN.md`](CONNECTED-REVIEW-FLOW-PLAN.md). Connected adapters are a **later gate** after the packaged plugin install path lands. | 4.3 + Connected Review Flow gate |
+
+Until each milestone passes its install gate, the public documentation must continue to describe the **prior** milestone as the current install path. No milestone is implied to be complete simply because its successor is planned.
+
 ## 5. What Plugin Install UX Does Not Cover
 
-- AL5 closed-loop autonomy.
-- Connected Review Flow adapters (governed by `docs/CONNECTED-REVIEW-FLOW-PLAN.md`).
-- Threat Intelligence Enrichment (governed by `docs/THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md`).
+The Plugin Install UX scope is the packaging-and-load surface. The following items are **out of scope** for this plan and have their own governing documents:
+
+- AL5 closed-loop autonomy. Out of scope for the AISRAF roadmap.
+- Connected Review Flow adapter implementation (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution). Governed by [`docs/CONNECTED-REVIEW-FLOW-PLAN.md`](CONNECTED-REVIEW-FLOW-PLAN.md). Planned for v0.2.0.
+- Threat Intelligence Enrichment implementation. Governed by [`docs/THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md`](THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md). Planned for v0.2.1.
+- Mermaid Diagram Generation. Flow 6. Planned. Not in scope for this plan.
 - Cloud runtime, database runtime, Terraform, event bus, telemetry backend, or marketplace publication inside the v0.1.2 release-hardening branch.
+
+### 5a. Explicit Non-Claims
+
+This plan does **not** claim any of the following for v0.1.2:
+
+- **Marketplace install is current.** It is not. v0.1.2 is **not marketplace-published** and the install is manual.
+- **Direct PNG/PDF image-to-DFD reading is implemented.** It is not. The governed DFD source-of-truth is the Mermaid file under `samples/sample-001-dfd-crop/inputs/dfd-crop.mmd`; PNG companions exist for human reading only.
+- **Live Lucid/Lucidchart JSON ingestion is implemented.** It is not. Lucid source ingestion is part of Connected Review Flow (Flow 4, v0.2.0).
+- **Live Jira intake, Confluence publication, Rovo, or MCP execution is implemented.** It is not. These are part of Connected Review Flow (Flow 4, v0.2.0).
+- **Online threat-intelligence execution is implemented.** It is not. `SKL-THREAT-INTEL-CURRENT-CONTEXT` is part of Flow 5 (v0.2.1).
+- **External post-back is performed.** No. AISRAF v0.1.2 writes only local Markdown under `runs/<run_id>/`.
+- **Production readiness or hosted-service operation.** No. v0.1.2 is evaluation-only.
+- **Closed-loop autonomy.** No. AL5 is out of scope.
+- **Public users "run AM3."** No. Public users run AISRAF Local Orchestrated Review (Flow 1). `AM3` / `AL3` remain internal architecture/evidence vocabulary.
+
+If any one of the items above becomes implemented in a later release, this plan must be updated together with the implementing work package, and the corresponding public claim must move from "planned" to "current" only after its install gate has passed.
 
 ## 6. References
 

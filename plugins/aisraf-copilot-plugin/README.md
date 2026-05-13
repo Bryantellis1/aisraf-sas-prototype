@@ -85,6 +85,37 @@ Provider and local projection surfaces also remain governed outside this README:
 
 No file inside this plugin folder overrides canonical prompts, skills, prototype-agent specifications, catalogs, blueprints, templates, run-profile rules, validators, or fixture content.
 
+## What This Plugin Package Is Today (v0.1.2)
+
+- A **repo-local public evaluation package**. The plugin folder ships inside the public GitHub repository; it is **not** an installable artifact from a marketplace.
+- A **bundled projection of the canonical provider surfaces** for agents, skills, and hooks. The bundle is governed and built from canonical sources by `tools/Build-AisrafCopilotPluginBundle.ps1`.
+- **Not marketplace-published.** AISRAF v0.1.2 is not listed in any IDE marketplace, GitHub Marketplace, Visual Studio Marketplace, or Copilot extension marketplace.
+- **Not a one-click install.** Discovery happens by opening the repository folder in VS Code and letting the local provider surface (VS Code Local plugin list, GitHub Copilot agent dropdown, or Copilot CLI) read the AISRAF surfaces from the repo tree.
+- **Not external execution.** External adapter execution, post-back, online threat-intel calls, Mermaid generation, and closed-loop autonomy are **not** implemented in v0.1.2.
+
+## What The Evaluator Sees
+
+When the AISRAF v0.1.2 repository is open in VS Code (with GitHub Copilot enabled) and the provider surface has loaded, the evaluator should see:
+
+- **`@aisraf-orchestrator`** in the Copilot agent picker. This is the **main entrypoint** and recommended first contact.
+- Six **specialist agents** as helper roles: `@aisraf-input-reader`, `@aisraf-dfd-extractor`, `@aisraf-review-table-builder`, `@aisraf-blueprint-questioner`, `@aisraf-finding-recommender`, `@aisraf-handoff-qa-scorer`. These are routed to by the orchestrator or invoked directly only for targeted single-step expert use.
+- The **AISRAF provider Agent Skills packages** under `.github/skills/<name>/SKILL.md`, loaded through the agents.
+- The **AISRAF hook configuration** (`.github/hooks/aisraf-guardrails.json`) declaring `PreToolUse`, `PostToolUse`, and `Stop` events.
+- The **plugin bundle** under `plugins/aisraf-copilot-plugin/bundle/` and the governed `bundle-checksum-manifest.yaml`, which the package validator verifies against canonical surfaces.
+
+Outputs from any review session land only as **local Markdown** under the operator's `runs/<run_id>/` folder. The plugin makes **no network call** and performs **no external post-back** in v0.1.2.
+
+## Future Plugin UX (Planned, Not Active Today)
+
+The clean plugin install/load UX is governed by [`../../docs/PLUGIN-INSTALL-UX-PLAN.md`](../../docs/PLUGIN-INSTALL-UX-PLAN.md). The planned milestones are:
+
+1. **Local package load/discovery from a clean workspace (v0.1.3).** An evaluator opens a clean (non-AISRAF) workspace, and AISRAF agents/skills/hooks appear in the provider picker without copying the whole repository tree into the user's project.
+2. **Clean packaged plugin install (v0.1.3 / v0.1.4).** Install AISRAF from a packaged plugin artifact (VS Code extension package, GitHub Copilot plugin package, or Copilot CLI plugin) rather than from a repository clone. Bundle parity is validated by the package validator.
+3. **Marketplace or private-distribution evaluation (v0.1.4 / v0.2.0).** A later, separately-gated decision. v0.1.2 is **not** marketplace-published and public language remains "evaluation-only" until the marketplace gate explicitly opens.
+4. **Connected Review Flow adapter enablement (v0.2.0).** Jira intake, Confluence publication, Lucid/Lucidchart source ingestion, Rovo/MCP mediation, operator-approved post-back. Governed by [`../../docs/CONNECTED-REVIEW-FLOW-PLAN.md`](../../docs/CONNECTED-REVIEW-FLOW-PLAN.md). Requires the packaged plugin install path to be in place first.
+
+Each milestone is gated; AISRAF will not claim a milestone is complete until its install gate has passed.
+
 ## Current Boundaries
 
 - AISRAF v0.1.2 supports Local Orchestrated Review (Flow 1) with Run Observability (Flow 2) captured through a local runtime evidence harness.
@@ -95,6 +126,7 @@ No file inside this plugin folder overrides canonical prompts, skills, prototype
 - No Connected Review Flow (Flow 4) adapter execution is active. Jira, Confluence, Lucidchart, MCP/Rovo, cloud, database, Terraform, event bus, telemetry, and external post-back execution are planned for v0.2.0 and are not active in v0.1.2.
 - No Threat Intelligence Enrichment (Flow 5) is active. `SKL-THREAT-INTEL-CURRENT-CONTEXT` is planned for v0.2.1 and is not active in v0.1.2.
 - No Mermaid Diagram Generation (Flow 6) is active. It is planned and not active in v0.1.2.
+- No direct PNG/PDF image-to-DFD extraction is claimed. The governed sample DFD source-of-truth is the Mermaid file under `samples/sample-001-dfd-crop/inputs/dfd-crop.mmd`.
 - Closed-loop autonomy is out of scope.
 
 ## Validation

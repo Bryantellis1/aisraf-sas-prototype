@@ -643,7 +643,17 @@ $wp13FirstPublicVisualPackDrift = @(
     'diagrams/README.md'
 )
 
-$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift + $wp12cAm3PlanRoadmapDrift + $wp12cAm3ReleaseClaimAlignmentDrift + $wp12cRel0FinalQaRemediationDrift + $wp12cRel0ReleaseDecisionStageCommitFixADrift + $wp12cRel0ReleaseDecisionFounderApprovalDrift + $wp12cRel0PublicLicenseNoticeFixEvalDrift + $wp13FirstPublicVisualPackDrift
+# WP-12C-REL0-PLUGIN-INSTALL-UX-PACKAGING: exact allowance for the
+# plugin-install-ux plan file when this gate edits its milestone summary,
+# scope clarifications, and explicit non-claims section. Exact-path only;
+# no wildcards; no broad docs/ allowance. Authorized solely for the
+# WP-12C-REL0-PLUGIN-INSTALL-UX-PACKAGING gate. The file is governed under
+# this gate's "Required content changes" item 5.
+$wp12cRel0PluginInstallUxPackagingDrift = @(
+    'docs/PLUGIN-INSTALL-UX-PLAN.md'
+)
+
+$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift + $wp12cAm3PlanRoadmapDrift + $wp12cAm3ReleaseClaimAlignmentDrift + $wp12cRel0FinalQaRemediationDrift + $wp12cRel0ReleaseDecisionStageCommitFixADrift + $wp12cRel0ReleaseDecisionFounderApprovalDrift + $wp12cRel0PublicLicenseNoticeFixEvalDrift + $wp13FirstPublicVisualPackDrift + $wp12cRel0PluginInstallUxPackagingDrift
 $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     $trackedPath = $_
     $isExactAllowed = $allowedTrackedDriftExact -contains $trackedPath

@@ -75,6 +75,26 @@ pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/R
 
 License and notice posture: `LICENSE` and `NOTICE.md` now define a public source-available evaluation-only proof-of-concept posture. The license permits evaluation, review, demonstration, and proof-of-concept testing only, and does not grant production use, commercial use, redistribution, hosted service offering, or marketplace publication rights without separate written permission.
 
+## First 15 Minutes (Public Evaluator Path)
+
+If you have just landed on the AISRAF v0.1.2 GitHub repository for evaluation and want a fast, predictable path through the package, follow these seven steps.
+
+1. **Confirm license/notice posture.** Read [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md). AISRAF v0.1.2 is **public source-available evaluation-only**. It is **not open source**, **not production software**, and **not marketplace-published**. Confirm this posture matches your intent before continuing.
+2. **Open the repository folder in VS Code.** Clone or download the public proof-of-concept repository, then open the repo folder in VS Code with GitHub Copilot enabled. The local provider surface (`.agents/`, `.github/agents/`, `.github/skills/`, `.github/hooks/`, `.copilot-skills/`, `plugins/aisraf-copilot-plugin/`) is what Copilot discovers. There is no one-click marketplace install in v0.1.2 — that clean install/load UX is planned for v0.1.3 onward under [docs/PLUGIN-INSTALL-UX-PLAN.md](docs/PLUGIN-INSTALL-UX-PLAN.md).
+3. **Read [docs/COMMANDS.md](docs/COMMANDS.md).** This is the canonical cross-shell command table for PowerShell 7 (`pwsh`), Windows PowerShell 5.1 (`powershell.exe`), and Git Bash invoking `powershell.exe`. If `pwsh` is not on your workstation, use the `powershell.exe` form.
+4. **Read [docs/OPERATOR-QUICKSTART.md](docs/OPERATOR-QUICKSTART.md).** This is the operator path for Local Orchestrated Review (Flow 1): the everyday user flow.
+5. **Use `@aisraf-orchestrator` as first contact.** From Copilot Chat, start the conversation at `@aisraf-orchestrator`. It is the recommended entry point and coordinates the whole review chain. The six specialist agents (`@aisraf-input-reader`, `@aisraf-dfd-extractor`, `@aisraf-review-table-builder`, `@aisraf-blueprint-questioner`, `@aisraf-finding-recommender`, `@aisraf-handoff-qa-scorer`) are helpers. Do not start at a specialist agent unless you want a single targeted step.
+6. **Create a new run folder for a real review.** Use `tools/New-AisrafRun.ps1` to scaffold `runs/<run_id>/`. Reviews 1, 2, 3, ... each get their own `runs/<run_id>/` folder (for example `RUN-MY-REVIEW-001`, `RUN-MY-REVIEW-002`, `RUN-MY-REVIEW-003`). Cross-shell commands for the scaffold are in [docs/COMMANDS.md](docs/COMMANDS.md).
+7. **Do not use `runs/RUN-001/` for personal review work.** `RUN-001` is the governed validator fixture for `sample-001-dfd-crop`. Editing it breaks the validator ladder. Personal review work always goes under a fresh `runs/<run_id>/`.
+
+What success looks like after the first 15 minutes:
+
+- You can identify the seven product flows in [docs/PRODUCT-FLOW-ROADMAP.md](docs/PRODUCT-FLOW-ROADMAP.md), recognize that Flow 1 (Local Orchestrated Review) is the everyday flow, recognize that Flow 4 (Connected Review Flow), Flow 5 (Threat Intelligence Enrichment), and Flow 6 (Mermaid Diagram Generation) are planned, and recognize that closed-loop autonomy is out of scope.
+- You know that you talk to `@aisraf-orchestrator` first.
+- You have a personal `runs/<run_id>/` folder scaffolded, with `inputs/`, `dfd/`, and a `run-profile.yaml` produced by `tools/New-AisrafRun.ps1`.
+- You can run the validator ladder (`Test-AisrafPackage.ps1`, `Test-AisrafBp12AReadiness.ps1`, `Test-AisrafRunProfile.ps1 ... -ExecutionReady`) from your shell of choice using the commands in [docs/COMMANDS.md](docs/COMMANDS.md).
+- You can name what AISRAF v0.1.2 does **not** do today: no marketplace install, no external adapter execution (Jira/Confluence/Lucid/Rovo/MCP/cloud/database/Terraform/event-bus/telemetry/post-back), no online threat-intelligence execution, no Mermaid diagram generation, no direct PNG/PDF DFD extraction, and no closed-loop autonomy.
+
 ## Visual Read Path
 
 The first public visual pack is registered in [diagrams/diagram-registry.yaml](diagrams/diagram-registry.yaml) and indexed under [diagrams/release-v0.1.2/](diagrams/release-v0.1.2/). These visuals orient readers to roles, package structure, and validation controls; they are not publication proof, production proof, marketplace proof, AM4 proof, or AL5 proof.

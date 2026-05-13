@@ -70,6 +70,32 @@ These diagrams show the Local Orchestrated Review operator journey (Flow 1). The
 
 ![M1-DFD Mode 1 Input-to-Output DFD showing local user, provider surface, AISRAF processing, local stores, and future targets excluded from current execution.](../diagrams/release-v0.1.2/png/M1-DFD-Mode-1-Input-to-Output-DFD.png)
 
+## 1b. Normal User Journey (Orchestrator-First)
+
+The everyday Local Orchestrated Review path is intentionally short. The operator does these steps once per review:
+
+1. **Start with `@aisraf-orchestrator`.** It is the recommended entry point. Specialist agents (`@aisraf-input-reader`, `@aisraf-dfd-extractor`, `@aisraf-review-table-builder`, `@aisraf-blueprint-questioner`, `@aisraf-finding-recommender`, `@aisraf-handoff-qa-scorer`) are **helper roles** that the orchestrator routes to. They are not the main first-run UX.
+2. **Provide local inputs.** Stage the DFD source (Mermaid where available), legend excerpts, design notes, intake ticket text, and the review transcript or questionnaire under `runs/<run_id>/inputs/`. v0.1.2 supports **local text/Markdown/structured artifacts and the governed Mermaid DFD source**; it does **not** claim direct PNG/PDF image-to-DFD extraction (see section 4a below).
+3. **Create or select `runs/<run_id>/`.** Use `tools/New-AisrafRun.ps1` to scaffold a fresh run folder for each separate DFD/review. Do not reuse `runs/RUN-001/` (it is the governed validator fixture).
+4. **Validate the run profile.** Run `Test-AisrafRunProfile.ps1 ... -ExecutionReady`. It must report `12 PASS, 0 FAIL (level=ExecutionReady)` before the orchestrator runs the chain.
+5. **Review the generated Markdown outputs.** Walk the 17 RS outputs (`01-input-inventory.md` through `17-accuracy-score.md`) and the 9 DFD outputs (`dfd/dfd-01-intake-quality-check.md` through `dfd/dfd-09-extraction-summary.md`). Run Observability evidence is captured alongside (Flow 2) — `00-run-log.md`, plus `runtime/run-state.yaml` and `runtime/events.ndjson` when the local runtime evidence harness is invoked.
+6. **Use specialist agents only when guided or for targeted steps.** A reviewer who only wants a DFD extraction can call `@aisraf-dfd-extractor` directly. A reviewer who only wants the review-table assembly can call `@aisraf-review-table-builder` directly. Otherwise, stay on `@aisraf-orchestrator`.
+
+Public users do **not** "run AM3." Public users run an **AISRAF Local Orchestrated Review**. `AM3` / `AL3` is internal architecture/evidence vocabulary used in contracts, runtime files, and validation artifacts — not an operator action.
+
+## 1c. New Review Run (Review 1, Review 2, Review 3, ...)
+
+Every separate review uses its own `runs/<run_id>/` folder. Reviews never share a folder.
+
+- **Review 1** scaffolds into `runs/RUN-MY-REVIEW-001/` (or whatever run id you choose).
+- **Review 2** scaffolds into `runs/RUN-MY-REVIEW-002/`.
+- **Review 3** scaffolds into `runs/RUN-MY-REVIEW-003/`.
+- Use `tools/New-AisrafRun.ps1 -RunId <run_id>` when the scaffold helper is available. The helper refuses to overwrite an existing folder, so each review id must be unique.
+- `runs/RUN-001/` is the **governed validator fixture** for `sample-001-dfd-crop`. Do not use it for personal review work; editing it breaks the validator ladder.
+- The scaffold helper, validator ladder, git checks, and bundle rebuild commands are available in three shell variants (PowerShell 7, Windows PowerShell 5.1, and Git Bash invoking `powershell.exe`) in [COMMANDS.md](COMMANDS.md).
+
+If you ever see a smoke-run folder name like `runs/RUN-SMOKE-AM3-001/`, that is internal maintainer evidence and must not be staged or published. Operators do not author smoke folders.
+
 ## 2. Install And Discovery Expectation
 
 For the public GitHub proof-of-concept, clone or download the repository and open the repository folder in VS Code. The AISRAF v0.1.2 package is delivered from the repository folder under `plugins/aisraf-copilot-plugin/`. Discovery happens through your local/provider surface (VS Code Local plugin list, GitHub Copilot agent dropdown, or Copilot CLI) from the repository package surface, not through marketplace publication. v0.1.2 is not marketplace-published.
@@ -116,6 +142,25 @@ Validate any run profile with:
 ```powershell
 pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/<run_id>/run-profile.yaml -ExecutionReady
 ```
+
+## 4a. Supported Inputs Today (v0.1.2)
+
+The current AISRAF chain reads local input files from `runs/<run_id>/inputs/`. The table below records what is **implemented and validated in v0.1.2** versus what is **planned/future** so operators do not over-claim.
+
+| Input class | v0.1.2 status | Notes |
+|---|---|---|
+| Mermaid DFD source (`.mmd`) | **Supported (current).** | The governed sample uses [samples/sample-001-dfd-crop/inputs/dfd-crop.mmd](../samples/sample-001-dfd-crop/inputs/dfd-crop.mmd). Stage your own Mermaid DFD source under `runs/<run_id>/inputs/`. |
+| Legend excerpt (Markdown) | **Supported (current).** | Stage a legend excerpt (Markdown or text) describing DFD symbols, trust boundaries, data classifications, encryption notations. |
+| Design notes / intake ticket text / review transcript (Markdown, text) | **Supported (current).** | All local text/Markdown inputs the orchestrator can read directly. |
+| Structured artifact (YAML/JSON local file) | **Supported (current) as a read-only context input.** | The orchestrator and skill contracts read these as local text/structured context. There is no live execution of the content. |
+| PNG/PDF DFD as an image | **Companion artifact only.** v0.1.2 does **not** claim direct PNG/PDF image-to-DFD extraction. | A PNG companion such as `samples/sample-001-dfd-crop/inputs/dfd-crop.png` exists for human reading; the source-of-truth for extraction is the Mermaid file. Operators provide DFD content as text/Mermaid for chain processing. |
+| Lucid / Lucidchart source ingestion (live Lucid API, Lucid JSON export) | **Planned (future).** | Lucid/Lucidchart source ingestion is part of **Connected Review Flow (Flow 4, v0.2.0)** and is **not implemented in v0.1.2**. See [`docs/CONNECTED-REVIEW-FLOW-PLAN.md`](CONNECTED-REVIEW-FLOW-PLAN.md). |
+| Jira intake (live Jira issue fields) | **Planned (future).** | Part of Flow 4 (v0.2.0). Not implemented in v0.1.2. |
+| Confluence / Rovo / MCP source ingestion | **Planned (future).** | Part of Flow 4 (v0.2.0). Not implemented in v0.1.2. |
+| Online threat-intelligence enrichment (NVD CVE API, CISA KEV, vendor advisories, official product documentation/security pages) | **Planned (future).** | `SKL-THREAT-INTEL-CURRENT-CONTEXT` is part of **Flow 5 (v0.2.1)**. Not implemented in v0.1.2. See [`docs/THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md`](THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md). |
+| Mermaid diagram generation (corrected DFD output) | **Planned (future).** | **Flow 6**. v0.1.2 reads a Mermaid DFD; it does not generate one. |
+
+The governed sample DFD source of truth is the Mermaid file under [samples/sample-001-dfd-crop/inputs/dfd-crop.mmd](../samples/sample-001-dfd-crop/inputs/dfd-crop.mmd). For a real review, stage your own design package under `runs/<run_id>/inputs/`. Redact sensitive data (PII, PAN, SSN, PHI, credentials, secrets, production endpoints) before staging and only then set `sensitive_data_confirmed_redacted: true` in the run profile.
 
 ## 5. Local Folder-First Operation
 
