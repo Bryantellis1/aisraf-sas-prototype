@@ -1547,7 +1547,8 @@ $validationAllowed += @(
     'package-12c-rel0-post-commit-qa-report.md',
     'package-12c-rel0-github-prerelease-stakeholder-asset-pack-report.md',
     'package-12c-rel0-product-flow-adapter-roadmap-rebase-report.md',
-    'package-12c-rel0-operating-flow-observability-ux-rebase-report.md'
+    'package-12c-rel0-operating-flow-observability-ux-rebase-report.md',
+    'package-12c-rel0-operating-flow-ux-stage-commit-report.md'
 )
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {
