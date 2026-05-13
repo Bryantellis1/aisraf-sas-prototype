@@ -466,8 +466,9 @@ if ($adapterFails -eq 0) {
 # templates/ is owned by Build Package 09 (active); see Check 08g for the templates/ allowed surface.
 # diagrams/ is opened by Build Package 13 only for the exact first public
 # visual pack paths listed below; no broad diagram-folder allowance is introduced.
-# docs/ is partially opened by Build Package 12C-REL0-B and WP-13 links for the
-# 5 approved release docs files; remaining docs surface stays reserved for later packages.
+# docs/ is partially opened by Build Package 12C-REL0-B, WP-13 links, and
+# WP-12C-REL0-GITHUB-PRERELEASE-STAKEHOLDER-ASSET-PACK for the 6 approved release
+# docs files; remaining docs surface stays reserved for later packages.
 $readmeOnlyFolders = @{
     'release'          = 'Build Package 15'
 }
@@ -555,25 +556,31 @@ $docsAbs = Resolve-PackagePath 'docs'
 $docsAllowedFiles = @(
     'README.md',
     'AISRAF-PRIMER.md',
+    'PROMPTS-SKILLS-AGENTS-TESTING-GUIDE.md',
     'OPERATOR-QUICKSTART.md',
     'SECURITY-REVIEW-WORKFLOW.md',
     'ARCHITECTURE-OVERVIEW.md',
-    'ROADMAP.md'
+    'ROADMAP.md',
+    'PRODUCT-FLOW-ROADMAP.md',
+    'CONNECTED-REVIEW-FLOW-PLAN.md',
+    'THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md',
+    'PLUGIN-INSTALL-UX-PLAN.md',
+    'BRANCH-RELEASE-STRATEGY.md'
 )
 if (Test-Path -LiteralPath $docsAbs -PathType Container) {
     foreach ($c in @(Get-ChildItem -LiteralPath $docsAbs -Force)) {
         if ($c.PSIsContainer) {
-            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Forbidden subfolder in docs/ (BP12C-REL0-B disallows nested folders; remaining docs surface is reserved for Build Package 14): docs/$($c.Name)/"
+            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Forbidden subfolder in docs/ (BP12C-REL0-B and WP-12C-REL0-GITHUB-PRERELEASE-STAKEHOLDER-ASSET-PACK disallow nested folders; remaining docs surface is reserved for Build Package 14): docs/$($c.Name)/"
             continue
         }
         if (-not ($docsAllowedFiles -contains $c.Name)) {
-            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Forbidden content in docs/ (BP12C-REL0-B fixes the docs/ inventory at README.md plus the 5 approved release docs files; remaining docs surface is reserved for Build Package 14): docs/$($c.Name)"
+            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Forbidden content in docs/ (BP12C-REL0-B, WP-12C-REL0-GITHUB-PRERELEASE-STAKEHOLDER-ASSET-PACK, and WP-12C-REL0-PRODUCT-FLOW-ADAPTER-ROADMAP-REBASE fix the docs/ inventory at README.md plus the 11 approved release docs files; remaining docs surface is reserved for Build Package 14): docs/$($c.Name)"
         }
     }
 }
 $folderLimitFails = @($results | Where-Object { $_.Check -eq '08-folder-content-limits' -and $_.Status -eq 'FAIL' }).Count
 if ($folderLimitFails -eq 0) {
-    Add-Result -Status PASS -Check '08-folder-content-limits' -Detail "Read-me-only folders contain only README.md; diagrams/ contains only exact WP-13 first-public-visual-pack paths; docs/ contains README.md plus the 5 approved release docs files."
+    Add-Result -Status PASS -Check '08-folder-content-limits' -Detail "Read-me-only folders contain only README.md; diagrams/ contains only exact WP-13 first-public-visual-pack paths; docs/ contains README.md plus the 11 approved release docs files (BP12C-REL0-B 5 release docs, the WP-12C-REL0-GITHUB-PRERELEASE-STAKEHOLDER-ASSET-PACK guide, and the WP-12C-REL0-PRODUCT-FLOW-ADAPTER-ROADMAP-REBASE 5 planning docs)."
 }
 
 # 8a. Build Package 12C Copilot skill-wrapper content limits.
@@ -1537,7 +1544,10 @@ $validationAllowed += @(
     'package-13-first-public-visual-pack-bp12a-drift-policy-report.md',
     'package-13-final-qa-and-publication-export-prep-report.md',
     'package-12c-rel0-final-public-qa-report.md',
-    'package-12c-rel0-post-commit-qa-report.md'
+    'package-12c-rel0-post-commit-qa-report.md',
+    'package-12c-rel0-github-prerelease-stakeholder-asset-pack-report.md',
+    'package-12c-rel0-product-flow-adapter-roadmap-rebase-report.md',
+    'package-12c-rel0-operating-flow-observability-ux-rebase-report.md'
 )
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {

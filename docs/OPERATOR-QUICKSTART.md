@@ -1,14 +1,13 @@
 # AISRAF Operator Quickstart
 
-## Autonomy Terms In Plain English
+> **Public language note.** The legacy `Mode 0/1/2/3/4` numbered list is retired for public use. The operator runs **AISRAF Local Orchestrated Review** (Flow 1), and AISRAF captures **observability evidence** alongside it (Flow 2). See [PRODUCT-FLOW-ROADMAP.md](PRODUCT-FLOW-ROADMAP.md) for the full product operating model. The `AM` / `AL` / `Mode N` vocabulary remains as internal architecture/evidence vocabulary in contracts, runtime files, and validation artifacts.
 
-- **AL means Autonomy Level:** how autonomous the user experience is.
-- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability.
-- **Mode 0:** preview/read-only; no writes.
-- **Mode 1 / AL2:** everyday controlled-output local workbench.
-- **Mode 2 / AM3 / AL3:** local orchestrated runtime evidence path.
-- **Mode 3:** maintainer validation and release QA.
-- **Mode 4 / AM4:** future external adapter/post-back execution.
+## Internal Autonomy Vocabulary (For Contributors Only)
+
+- **AL means Autonomy Level:** how autonomous the user experience is (internal evidence vocabulary).
+- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability (internal evidence vocabulary).
+- **AM3 / AL3:** internal name for the local orchestrated runtime evidence path captured by Flow 2 (Run Observability / Runtime Evidence).
+- **AM4 / AL4:** internal name for the future external-adapter/post-back capability covered by Flow 4 (planned Connected Review Flow).
 - **AL5:** closed-loop autonomy; out of scope.
 
 | Field | Value |
@@ -22,25 +21,48 @@
 
 ## 1. Start Here
 
-AISRAF v0.1.2 is a local security architecture review workbench with bounded AM3 / AL3 local orchestrated runtime evidence. Start in preview mode. Confirm what each role reads, what it may write during an approved controlled-output gate, what stops it, and what it must not claim. Do not write files until the controlled-output gate is explicitly approved.
+AISRAF v0.1.2 is a local security architecture review workbench. The operator runs **AISRAF Local Orchestrated Review** (Flow 1) and AISRAF captures **observability evidence** (Flow 2) alongside it. Start by previewing roles, expected reads/writes, run profile, and stop conditions. Confirm what each role reads, what it may write during an approved controlled-output gate, and what it must not claim. Do not write files until the controlled-output gate is explicitly approved.
 
-The day-to-day operator workflow remains the AL2 controlled-output workbench: one selected agent session acts as a temporary orchestrator that walks the operator through the chain sequentially. Separately, AM3 evidence proves the local orchestrated runtime path: AISRAF Orchestrator owns run-state and event log, specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs, and human gates remain required. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
+The day-to-day operator workflow: one selected agent session (typically `@aisraf-orchestrator`) walks the operator through the chain sequentially. AISRAF captures observability evidence alongside the review — run-state, event log, specialist handoff records (internal AM3-01 through AM3-06 representation), human gate records, and validation results. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or Connected Review Flow (Flow 4 / internal AM4) integration.
 
-Release journey modes:
+Release flow status (operator-facing):
 
-| Mode | Operator meaning |
+| Flow | Operator meaning |
 |---|---|
-| Mode 0 - read/preview, no writes | Inspect the selected role, expected inputs, planned outputs, run profile, and stop conditions. No file changes. |
-| Mode 1 - AL2 controlled-output workbench | Normal security architect / application architect path. The operator approves local Markdown writes under an approved run folder. |
-| Mode 2 - AM3 / AL3 local orchestrated runtime evidence | Release-visible local runtime journey/proof path. AM3 shows the orchestrator-owned run-state, event log, AM3-01 through AM3-06 handoffs, and human gates in local evidence. |
-| Mode 3 - maintainer validation and release QA | Maintainer path for package validation, bundle checksum validation, release manifests, blocker registers, and QA reports. |
-| Mode 4 - AM4 external adapter / post-back execution | Future only. No Jira, Confluence, Lucidchart, MCP, cloud, database, Terraform, event bus, telemetry, or post-back execution occurs in v0.1.2. |
+| Local Orchestrated Review (Flow 1) | Normal security architect / application architect path. The operator approves local Markdown writes under an approved run folder. Optional "preview-first" step lets you inspect roles, expected inputs, planned outputs, run profile, and stop conditions without writes. |
+| Run Observability (Flow 2) | Captured alongside Flow 1. Records orchestrator-owned run-state, event log, specialist handoff records, human gate records, and validation result summary as local evidence (`00-run-log.md`, `runtime/run-state.yaml`, `runtime/events.ndjson`, or equivalent governed names). v0.1.2 emits this evidence today through the local runtime evidence harness; the target product experience is for the orchestrator to auto-emit during Flow 1. Not a separate operator mode. |
+| Release QA Flow (Flow 3) | Maintainer-only path for package validation, bundle checksum validation, release manifests, blocker registers, and QA reports. Operators do not run this. |
+| Connected Review Flow (Flow 4) | Planned for v0.2.0. No Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, or post-back execution occurs in v0.1.2. |
+| Threat Intelligence Enrichment (Flow 5) | Planned for v0.2.1. Not implemented in v0.1.2. |
+| Mermaid Diagram Generation (Flow 6) | Planned. Generates a corrected Mermaid DFD as a review aid; original input diagram stays separate. Not implemented in v0.1.2. |
+| Plugin Install UX (Flow 7) | Repo-local evaluation today; clean install/load UX planned for v0.1.3 onward. |
 
-AL5 closed-loop autonomy remains out of scope.
+Closed-loop autonomy is out of scope.
 
-## Mode 1 Visual Map
+## 1a. Two User Journeys In Plain English
 
-These diagrams show the everyday AL2 local controlled-output operator journey. They do not claim external adapter execution, marketplace publication, production operation, AM4 execution, or AL5 autonomy.
+### Application architect / solution architect — pre-review
+
+1. Create a run folder with `tools/New-AisrafRun.ps1`.
+2. Add the DFD/source diagram, legend, design notes, intake notes, and transcript or questionnaire under `runs/<run_id>/inputs/`.
+3. Start with `@aisraf-orchestrator`.
+4. Get back: missing facts, internal review table, targeted questions, suggested controls (drawn from blueprints and catalogs), and corrected-diagram guidance.
+5. Use those outputs to improve the design package before formal security review.
+
+### Security architect — review
+
+1. Receive the staged design package.
+2. Stage it under a personal `runs/<run_id>/inputs/`.
+3. Use `@aisraf-orchestrator` to run the review chain.
+4. Review the extracted components, flows, trust boundaries, data classifications, authentication / authorization annotations, encryption-in-transit notes, and storage / at-rest protection.
+5. Produce findings, recommendations, handoff pack, validation notes, and an accuracy score where eligible.
+6. Keep unknowns visible. Every unanswered question must surface as `Unknown`, `Not Stated`, or `Deferred` and feed `09-missing-facts.md` and `12-targeted-questions.md`.
+
+Public users do **not** "run AM3." Public users run an **AISRAF Local Orchestrated Review**, and AISRAF captures observability evidence alongside the run. `AM3` / `AL3` remains **internal** vocabulary used in contracts, runtime files, and validation artifacts.
+
+## Local Orchestrated Review Visual Map
+
+These diagrams show the Local Orchestrated Review operator journey (Flow 1). They do not claim external adapter execution, marketplace publication, production operation, Connected Review Flow (Flow 4) execution, or closed-loop autonomy.
 
 ![M1-CTX Mode 1 Local Review Context showing human actors, local workstation/provider surface, AISRAF controlled processing, local evidence, and future adapter targets.](../diagrams/release-v0.1.2/png/M1-CTX-Mode-1-Local-Review-Context.png)
 
@@ -52,7 +74,7 @@ These diagrams show the everyday AL2 local controlled-output operator journey. T
 
 For the public GitHub proof-of-concept, clone or download the repository and open the repository folder in VS Code. The AISRAF v0.1.2 package is delivered from the repository folder under `plugins/aisraf-copilot-plugin/`. Discovery happens through your local/provider surface (VS Code Local plugin list, GitHub Copilot agent dropdown, or Copilot CLI) from the repository package surface, not through marketplace publication. v0.1.2 is not marketplace-published.
 
-License posture: public source-available evaluation-only proof-of-concept. Not open source. Not production software. AM3 / AL3 local orchestrated runtime evidence only. AL2 controlled-output workbench remains the everyday user path. No AM4 adapter execution. No Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, or external post-back execution in v0.1.2. AL5 closed-loop autonomy is out of scope.
+License posture: public source-available evaluation-only proof-of-concept. Not open source. Not production software. Local Orchestrated Review (Flow 1) is the everyday user path; Run Observability / Runtime Evidence (Flow 2) is captured alongside it. No Connected Review Flow adapter execution (Flow 4 / internal AM4) in v0.1.2. No Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, or external post-back execution in v0.1.2. No Threat Intelligence Enrichment (Flow 5) in v0.1.2. Closed-loop autonomy is out of scope.
 
 Once the local/provider surface loads the package, the operator should see:
 
@@ -97,7 +119,20 @@ pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/<
 
 ## 5. Local Folder-First Operation
 
-v0.1.2 operates in folder-first-only mode. Every input is a local file. Every output is a local Markdown file under the approved run folder. AM3 runtime evidence is also local-only, human-gated, validator-backed, and evidence-bound. AISRAF does not contact Jira, Confluence, Lucidchart, Rovo/MCP, cloud, databases, Terraform, event buses, or telemetry backends. There is no post-back execution.
+v0.1.2 operates in folder-first-only mode. Every input is a local file. Every output is a local Markdown file under the approved run folder. Run Observability (Flow 2) is local-only, human-gated, validator-backed, and evidence-bound. AISRAF does not contact Jira, Confluence, Lucidchart, Rovo/MCP, cloud, databases, Terraform, event buses, or telemetry backends. There is no post-back execution. Connected Review Flow (Flow 4) is planned for v0.2.0; it is not active in v0.1.2.
+
+### Target Observability Artifact Set Per Run
+
+Every orchestrated run should eventually produce, under the run folder:
+
+- `00-run-log.md` — operator-readable run log.
+- `runtime/run-state.yaml` — current step, completed steps, pending steps, gate state (or an equivalent governed run-state file).
+- `runtime/events.ndjson` — append-only event log of orchestrator events, handoff request/response pairs, gate request/decision events, and terminal events (or an equivalent governed event log).
+- Handoff records — the internal AM3-01 through AM3-06 specialist handoff representation (internal vocabulary).
+- Human gate records — operator approvals, deferrals, rejections.
+- Validation result summary — the validator ladder results for the run profile and (where applicable) the AM3 runtime validators.
+
+**v0.1.2 reality.** v0.1.2 includes a local runtime evidence harness (`tools/Invoke-AisrafAm3LocalRun.ps1` + `tools/Test-AisrafAm3Runtime.ps1`). The accepted smoke evidence lives under local-only `runs/RUN-SMOKE-AM3-001/runtime/` and is internal. The target product experience is for this evidence to be produced **automatically** during Local Orchestrated Review of a personal run folder. v0.1.2 does not yet auto-emit that evidence from the orchestrator into every personal run folder.
 
 If a run profile attempts to enable an external integration field, the run-profile validator fails closed.
 
@@ -155,9 +190,10 @@ An application or solution architect can use AISRAF locally as a shift-left lint
 - Do not edit `runs/RUN-001/`.
 - Do not edit `samples/`.
 - Do not edit `catalogs/`, `blueprints/`, `templates/`, `prompts/`, `skills/`, `prototype-agents/`, or `config/` without an approved work package.
-- Do not claim AM3 / AL3 beyond the accepted local evidence path.
-- Do not claim AM4 / AL4 or AL5 behavior as current.
+- Do not claim Run Observability / Runtime Evidence (Flow 2 / internal AM3 / AL3) beyond the accepted local evidence path.
+- Do not claim Connected Review Flow (Flow 4 / internal AM4 / AL4) or closed-loop autonomy as current.
 - Do not claim live Jira, Confluence, Lucidchart, MCP, Foundry, ADK, MAF, database, Terraform, cloud runtime, event bus, telemetry backend, or external post-back execution.
+- Do not claim live Threat Intelligence Enrichment (Flow 5) — `SKL-THREAT-INTEL-CURRENT-CONTEXT` is planned for v0.2.1 and is not implemented in v0.1.2.
 
 ## 10. Validator Ladder
 
@@ -168,3 +204,27 @@ pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/R
 ```
 
 All three must return 0 FAIL before any contribution or staging activity.
+
+## 11. Cross-Shell Command Snippets
+
+The validator commands above are written for **PowerShell 7 (`pwsh`)** because that is the shell tested by the gate. The same scripts can be invoked from **Windows PowerShell (`powershell.exe`)** and from **Git Bash invoking `powershell.exe`**, but cross-shell command parity is **not yet validated by an automated gate**. The cross-shell command UX is covered by the next gate (`WP-12C-REL0-CROSS-SHELL-COMMAND-UX`).
+
+```powershell
+# PowerShell 7 / pwsh (validator-tested shell)
+pwsh -NoProfile -File ./tools/Test-AisrafPackage.ps1
+pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/RUN-001/run-profile.yaml -ExecutionReady
+```
+
+```powershell
+# Windows PowerShell / powershell.exe (cross-shell parity is planned; not yet validated)
+powershell.exe -NoProfile -File .\tools\Test-AisrafPackage.ps1
+powershell.exe -NoProfile -File .\tools\Test-AisrafRunProfile.ps1 -RunProfilePath .\runs\RUN-001\run-profile.yaml -ExecutionReady
+```
+
+```bash
+# Git Bash invoking powershell.exe (cross-shell parity is planned; not yet validated)
+powershell.exe -NoProfile -File ./tools/Test-AisrafPackage.ps1
+powershell.exe -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/RUN-001/run-profile.yaml -ExecutionReady
+```
+
+Do not assume Windows PowerShell or Git Bash invocations match the `pwsh` baseline until the cross-shell gate explicitly validates them.

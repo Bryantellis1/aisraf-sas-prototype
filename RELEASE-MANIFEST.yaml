@@ -41,6 +41,7 @@ public_docs:
   security_review_workflow: docs/SECURITY-REVIEW-WORKFLOW.md
   architecture_overview: docs/ARCHITECTURE-OVERVIEW.md
   roadmap: docs/ROADMAP.md
+  prompts_skills_agents_testing_guide: docs/PROMPTS-SKILLS-AGENTS-TESTING-GUIDE.md
 
 autonomy_terms_plain_english:
   al: "AL means Autonomy Level: how autonomous the user experience is."

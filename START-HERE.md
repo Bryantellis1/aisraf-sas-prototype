@@ -2,15 +2,40 @@
 
 Package: AISRAF SAS Prototype v0.1.2
 
-## Autonomy Terms In Plain English
+> **Stakeholder reading entry point:** [docs/PROMPTS-SKILLS-AGENTS-TESTING-GUIDE.md](docs/PROMPTS-SKILLS-AGENTS-TESTING-GUIDE.md) — How AISRAF is assembled: prompts, skills, agents, run profiles, outputs, and validation.
 
-- **AL means Autonomy Level:** how autonomous the user experience is.
-- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability.
-- **Mode 0:** preview/read-only; no writes.
-- **Mode 1 / AL2:** everyday controlled-output local workbench.
-- **Mode 2 / AM3 / AL3:** local orchestrated runtime evidence path.
-- **Mode 3:** maintainer validation and release QA.
-- **Mode 4 / AM4:** future external adapter/post-back execution.
+> **Product flow entry point:** [docs/PRODUCT-FLOW-ROADMAP.md](docs/PRODUCT-FLOW-ROADMAP.md) — AISRAF as a product: Local Orchestrated Review, Run Observability / Runtime Evidence, Release QA Flow, planned Connected Review Flow, planned Threat Intelligence Enrichment, planned Plugin Install UX. The legacy `Mode 0/1/2/3/4` numbered list is retired for public use.
+
+## Product Operating Model (Plain English)
+
+| # | Flow | Status |
+|---|---|---|
+| 1 | Local Orchestrated Review — normal user flow; app/security architect creates a run, stages local inputs, uses `@aisraf-orchestrator`, produces local Markdown review outputs. | Current (v0.1.2). |
+| 2 | Run Observability — captured alongside Flow 1; target evidence set per run: `00-run-log.md`, `runtime/run-state.yaml` (or equivalent), `runtime/events.ndjson` (or equivalent), handoff records, human gate records, validation result summary. v0.1.2 emits this evidence today through a local runtime evidence harness; the target product experience is for the orchestrator to auto-emit during Flow 1. Not a separate public mode. | Current (v0.1.2). |
+| 3 | Release QA Flow — maintainer-only; validators, manifests, bundle checksum, blocker registers, license/overclaim scans, QA reports. | Current (v0.1.2). |
+| 4 | Connected Review Flow — Jira intake, Confluence output, Lucid/Lucidchart source ingestion, Rovo/MCP, post-back controls. | Planned (v0.2.0). Not implemented in v0.1.2. |
+| 5 | Threat Intelligence Enrichment — `SKL-THREAT-INTEL-CURRENT-CONTEXT` using NVD CVE API, CISA KEV, vendor advisories, official product documentation/security pages. | Planned (v0.2.1). Not implemented in v0.1.2. |
+| 6 | Mermaid Diagram Generation — corrected Mermaid DFD generated from extracted components, flows, trust boundaries, data classifications, auth/authz, and encryption-in-transit / at-rest notes; original input diagram stays separate. | Planned. Not implemented in v0.1.2. |
+| 7 | Plugin Install UX — repo-local evaluation today; clean install/load UX later. | Planned (v0.1.3 onward). |
+
+Closed-loop autonomy is **out of scope**. Detailed plans live in [docs/PRODUCT-FLOW-ROADMAP.md](docs/PRODUCT-FLOW-ROADMAP.md), [docs/CONNECTED-REVIEW-FLOW-PLAN.md](docs/CONNECTED-REVIEW-FLOW-PLAN.md), [docs/THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md](docs/THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md), [docs/PLUGIN-INSTALL-UX-PLAN.md](docs/PLUGIN-INSTALL-UX-PLAN.md), and [docs/BRANCH-RELEASE-STRATEGY.md](docs/BRANCH-RELEASE-STRATEGY.md).
+
+## How Users Run AISRAF (Plain English)
+
+Public users do **not** "run AM3." Public users run an **AISRAF Local Orchestrated Review**, and AISRAF captures observability evidence alongside the run.
+
+- **Application architect / solution architect — pre-review.** Create a run folder, add DFD/source + legend + design notes + intake notes + transcript/questionnaire under `runs/<run_id>/inputs/`, start with `@aisraf-orchestrator`, get missing facts + review table + targeted questions + suggested controls + corrected-diagram guidance, improve the design before formal review.
+- **Security architect — review.** Receive the staged design package, stage it under a personal `runs/<run_id>/inputs/`, use `@aisraf-orchestrator` to run the review chain, review the extracted components / flows / boundaries / data classes / auth-authz / encryption / storage protection, produce findings + recommendations + handoff pack + validation notes + score where eligible, keep unknowns visible.
+- **Maintainer / release path.** Run validators, check manifests + plugin bundle checksum, check blocker reports, confirm no binaries / no secrets / no overclaim, confirm release posture, then decide on push / stage / commit / tag / release.
+
+## Internal Autonomy Vocabulary (For Contributors Only)
+
+The terms below are **internal architecture/evidence vocabulary**. They are not the public way users describe what AISRAF does. Use the product flows above in public documentation.
+
+- **AL means Autonomy Level:** how autonomous the user experience is (internal evidence vocabulary).
+- **AM means Autonomy Mode / release evidence lane:** how AISRAF proves that autonomy capability (internal evidence vocabulary).
+- **AM3 / AL3:** internal name for the local orchestrated runtime evidence path captured by Flow 2 (Run Observability / Runtime Evidence).
+- **AM4 / AL4:** internal name for the future external-adapter/post-back capability covered by Flow 4 (planned Connected Review Flow).
 - **AL5:** closed-loop autonomy; out of scope.
 
 AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
@@ -46,7 +71,7 @@ pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/R
 11. Receive local Markdown outputs: `00-run-log.md`, `01-input-inventory.md` through `17-accuracy-score.md`, plus the DFD outputs under `dfd/01` through `dfd/09`.
 12. Keep the run folder as local evidence/work product and use a separate `runs/<run_id>/` folder for each separate DFD or review.
 13. Do not use `runs/RUN-001/` for personal reviews; it is the governed fixture.
-14. v0.1.2 is not marketplace-published and performs no external post-back; Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, and AM4 external adapter execution remain future Mode 4 only.
+14. v0.1.2 is not marketplace-published and performs no external post-back. Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, and external adapter execution are planned for the Connected Review Flow (Flow 4, v0.2.0); they are not implemented in v0.1.2.
 
 License and notice posture: `LICENSE` and `NOTICE.md` now define a public source-available evaluation-only proof-of-concept posture. The license permits evaluation, review, demonstration, and proof-of-concept testing only, and does not grant production use, commercial use, redistribution, hosted service offering, or marketplace publication rights without separate written permission.
 
@@ -60,17 +85,19 @@ The first public visual pack is registered in [diagrams/diagram-registry.yaml](d
 
 ![V-24 AISRAF Validation Ladder showing package validation, BP12A readiness, run profile checks, AM3 checks, git hygiene, and human release decision.](diagrams/release-v0.1.2/png/V-24-Validation-Ladder.png)
 
-Release journey modes:
+Release flow status (current product operating model):
 
-| Mode | v0.1.2 status |
+| Flow | v0.1.2 status |
 |---|---|
-| Mode 0 - read/preview, no writes | Current preview path for inspecting roles, expected reads/writes, run profiles, and release evidence without modifying files. |
-| Mode 1 - AL2 controlled-output workbench | Current everyday security architect and application architect workflow. Outputs are local governed Markdown under an approved run folder. |
-| Mode 2 - AM3 / AL3 local orchestrated runtime evidence | Current release-visible local runtime journey/proof path. AISRAF Orchestrator owns run-state and event log; AM3-01 through AM3-06 handoffs and human gates are represented in local-only evidence. |
-| Mode 3 - maintainer validation and release QA | Current maintainer path for package validators, release manifests, blocker registers, bundle checksum validation, and QA closeout. |
-| Mode 4 - AM4 external adapter / post-back execution | Future only. Jira, Confluence, Lucidchart, Rovo, MCP, cloud, database, Terraform, event bus, telemetry, and post-back execution are not current behavior. |
+| Local Orchestrated Review (Flow 1) | Current everyday flow for security architects and application architects. Outputs are local governed Markdown under an approved run folder. |
+| Run Observability (Flow 2) | Current. Captured alongside Flow 1. Target evidence set per run: `00-run-log.md`, `runtime/run-state.yaml` (or equivalent), `runtime/events.ndjson` (or equivalent), handoff records, human gate records, validation result summary. v0.1.2 emits this evidence today through the local runtime evidence harness (`tools/Invoke-AisrafAm3LocalRun.ps1` + `tools/Test-AisrafAm3Runtime.ps1`). The target product experience is for the orchestrator to auto-emit this evidence during Local Orchestrated Review of any personal run folder. The accepted smoke evidence under `runs/RUN-SMOKE-AM3-001/` is internal and must not be staged or published in this gate. |
+| Release QA Flow (Flow 3) | Current maintainer-only path for package validators, release manifests, blocker registers, bundle checksum validation, license/overclaim scans, and QA closeout. |
+| Connected Review Flow (Flow 4) | Planned for v0.2.0. Jira, Confluence, Lucidchart, Rovo/MCP. Not implemented in v0.1.2. |
+| Threat Intelligence Enrichment (Flow 5) | Planned for v0.2.1. Not implemented in v0.1.2. |
+| Mermaid Diagram Generation (Flow 6) | Planned. Generates a corrected Mermaid DFD from extracted facts as a review aid; original input diagram stays separate. Not implemented in v0.1.2. |
+| Plugin Install UX (Flow 7) | Repo-local evaluation today; clean install/load UX planned for v0.1.3 onward. |
 
-AL5 closed-loop autonomy remains out of scope.
+Closed-loop autonomy is out of scope.
 
 ## v0.1.2 Release — Read First
 
@@ -80,7 +107,7 @@ Pick the entrypoint that matches your role.
 - **Operator** — start with [docs/OPERATOR-QUICKSTART.md](docs/OPERATOR-QUICKSTART.md).
 - **Security architect** — start with [docs/SECURITY-REVIEW-WORKFLOW.md](docs/SECURITY-REVIEW-WORKFLOW.md).
 - **Maintainer** — read [docs/ARCHITECTURE-OVERVIEW.md](docs/ARCHITECTURE-OVERVIEW.md) and [RELEASE-MANIFEST.yaml](RELEASE-MANIFEST.yaml).
-- **Roadmap reader** — read [docs/ROADMAP.md](docs/ROADMAP.md).
+- **Roadmap reader** — read [docs/ROADMAP.md](docs/ROADMAP.md) and [docs/PRODUCT-FLOW-ROADMAP.md](docs/PRODUCT-FLOW-ROADMAP.md). Branch/tag and feature plans live in [docs/BRANCH-RELEASE-STRATEGY.md](docs/BRANCH-RELEASE-STRATEGY.md), [docs/CONNECTED-REVIEW-FLOW-PLAN.md](docs/CONNECTED-REVIEW-FLOW-PLAN.md), [docs/THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md](docs/THREAT-INTELLIGENCE-ENRICHMENT-PLAN.md), and [docs/PLUGIN-INSTALL-UX-PLAN.md](docs/PLUGIN-INSTALL-UX-PLAN.md).
 
 Release state: Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim. REL0 release-decision stage commit closeout is accepted at HEAD `cc96644fa5263ccdaabcb0ff7ed9fb6282ac5ab5`; WP-13 visual pack / publication export prep is accepted; the active gate is **WP-12C-REL0-FINAL-PUBLIC-QA**. Public release is not push-ready until final public QA, stage/commit, push prep, and publication gates are complete. Push, tag, GitHub Release, publication, and AM4 adapter work remain blocked / future until their explicit gates pass.
 
@@ -126,4 +153,4 @@ AM3 boundary: AISRAF Orchestrator owns run-state and event log. Specialist hando
 
 The immediate governed gate is **WP-12C-REL0-FINAL-PUBLIC-QA**. If it passes, the next gate is **REL0-STAGE-COMMIT**. Push prep, push, tag, GitHub Release, publication, and AM4 adapter work remain blocked until their explicit gates pass.
 
-**AM4 adapter work** (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution) is future and not part of the current v0.1.2 claim.
+**Connected Review Flow adapter work (Flow 4 / internal AM4)** — Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution — is planned for v0.2.0 and is not part of the current v0.1.2 claim. **Threat Intelligence Enrichment (Flow 5)** is planned for v0.2.1.
