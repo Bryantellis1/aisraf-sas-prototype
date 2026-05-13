@@ -26,6 +26,20 @@ AISRAF is a governed local AI-assisted security architecture review workbench. I
 
 The current package is a public-safe local workbench with bounded AM3 / AL3 local orchestrated multi-agent runtime evidence. It is evidence-bound and validation-backed. It is **not** a production cloud service, **not** a live external-integration runtime, and **not** a claim of full specialist-generated review output execution.
 
+Publication posture: public source-available evaluation-only proof-of-concept. Not open source. Not production software. Not marketplace-published. AM3 / AL3 local orchestrated runtime evidence only. AL2 controlled-output workbench remains the everyday user path. No AM4 adapter execution. No Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, or external post-back execution in v0.1.2. AL5 closed-loop autonomy is out of scope.
+
+## Visual Architecture Map
+
+These diagrams show package structure, AM3 runtime evidence, maintainer gate flow, and the future-only AM4 boundary. They are public evaluation documentation only and do not add marketplace, production, cloud, database, Terraform, event bus, telemetry, external post-back, AM4, or AL5 behavior.
+
+![V-02 AISRAF Package Map / Read Order showing recommended documents, repository surfaces, and role-specific navigation paths.](../diagrams/release-v0.1.2/png/V-02-AISRAF-Package-Map-Read-Order.png)
+
+![M2-FLOW Mode 2 Runtime Evidence Flow showing AM3 local runtime inputs, handoff chain, state evidence, human gates, validators, and excluded external execution.](../diagrams/release-v0.1.2/png/M2-FLOW-Mode-2-Runtime-Evidence-Flow.png)
+
+![M3-FLOW Mode 3 Commit Gate Flow showing surface preparation, validator ladder, git hygiene, staging decision, human commit, post-commit validation, and REL0 decision.](../diagrams/release-v0.1.2/png/M3-FLOW-Mode-3-Commit-Gate-Flow.png)
+
+![M4-BND Mode 4 Future Boundary and Non-Claim separating current AL2 and AM3 evidence from future AM4 adapter targets and AL5 exclusions.](../diagrams/release-v0.1.2/png/M4-BND-Mode-4-Future-Boundary-and-Non-Claim.png)
+
 ## 2. Concept-To-Release Spine
 
 ```text

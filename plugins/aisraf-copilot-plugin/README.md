@@ -110,4 +110,4 @@ pwsh -NoProfile -File ./tools/Test-AisrafAm3Runtime.ps1 -RunProfilePath ./runs/R
 
 ## License And Notice
 
-`LICENSE` and `NOTICE.md` are placeholder / evaluation-only / all-rights-reserved documents pending founder/legal confirmation. Public publication remains blocked unless the founder explicitly accepts that placeholder posture for the release lane.
+`LICENSE` and `NOTICE.md` define AISRAF v0.1.2 as a public source-available evaluation-only proof-of-concept. Not open source. Not production software. Not marketplace-published. The license permits evaluation, review, demonstration, and proof-of-concept testing only, and does not grant production use, commercial use, redistribution, hosted service offering, or marketplace publication rights without separate written permission.

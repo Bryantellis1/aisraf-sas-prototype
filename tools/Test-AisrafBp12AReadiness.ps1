@@ -618,7 +618,32 @@ $wp12cRel0ReleaseDecisionStageCommitFixADrift = @(
     'validation/package-12c-rel0-release-decision-stage-commit-fix-a-report.md'
 )
 
-$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift + $wp12cAm3PlanRoadmapDrift + $wp12cAm3ReleaseClaimAlignmentDrift + $wp12cRel0FinalQaRemediationDrift + $wp12cRel0ReleaseDecisionStageCommitFixADrift
+# WP-12C-REL0-RELEASE-DECISION-FOUNDER-APPROVAL: exact founder approval report
+# file produced after release-decision stage-commit closeout. Exact-path only;
+# no wildcards; no broad validation/ allowance.
+$wp12cRel0ReleaseDecisionFounderApprovalDrift = @(
+    'validation/package-12c-rel0-release-decision-founder-approval-report.md'
+)
+
+# WP-12C-REL0-PUBLIC-LICENSE-NOTICE-FIX-EVAL-BP12A-DRIFT-POLICY: exact
+# license-file allowance for the evaluation-only public source-available
+# proof-of-concept license/notice gate. The repository LICENSE was rewritten
+# to drop the open-source claim and assert evaluation-only posture; BP12A
+# previously flagged the resulting tracked diff because LICENSE was not in
+# any exact-path allow-list. Exact-path only; LICENSE only; no wildcards;
+# no broadening of docs/, validation/, release/, diagrams/, publications/,
+# *.md, *.txt, or LICENSE* surfaces.
+$wp12cRel0PublicLicenseNoticeFixEvalDrift = @(
+    'LICENSE'
+)
+
+# WP-13-FIRST-PUBLIC-VISUAL-PACK-BP12A-DRIFT-POLICY: exact allowance for
+# the first public visual pack diagram README only.
+$wp13FirstPublicVisualPackDrift = @(
+    'diagrams/README.md'
+)
+
+$allowedTrackedDriftExact = @('tools/README.md') + $bp12bApprovedExpectedBaselineRefreshDrift + $bp12bApprovedPostExecutionRunLogDrift + $bp12cApprovedAdapterAlignmentDrift + $wp12cL0InstallReadinessDrift + $wp12cK1bAuthorityPatchDrift + $wp12cApprovedPluginScaffoldDrift + $wp12cL1aProviderInstallSurfaceDrift + $wp12cK3bValidatorPatchDrift + $wp12cK3cExactFutureDrift + $wp12cRel0CPublicEntrypointDrift + $wp12cAm3PlanRoadmapDrift + $wp12cAm3ReleaseClaimAlignmentDrift + $wp12cRel0FinalQaRemediationDrift + $wp12cRel0ReleaseDecisionStageCommitFixADrift + $wp12cRel0ReleaseDecisionFounderApprovalDrift + $wp12cRel0PublicLicenseNoticeFixEvalDrift + $wp13FirstPublicVisualPackDrift
 $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     $trackedPath = $_
     $isExactAllowed = $allowedTrackedDriftExact -contains $trackedPath
@@ -626,7 +651,7 @@ $unexpectedTrackedDiff = @($trackedDiffFiles | Where-Object {
     (-not $isExactAllowed) -and (-not $isExactFutureBundlePath)
 })
 if ($trackedDiffResult.ExitCode -eq 0 -and $unexpectedTrackedDiff.Count -eq 0) {
-    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, exact K3C future bundle paths, WP-12C-REL0-C public-entrypoint files (README.md, START-HERE.md), WP-12C-AM3-PLAN roadmap re-positioning (docs/ROADMAP.md), WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT public release language surfaces, WP-12C-REL0-FINAL-QA-REMEDIATION exact release hygiene files, and WP-12C-REL0-RELEASE-DECISION-STAGE-COMMIT-FIX-A validator-policy patch report only; no broad plugins/** allowance; no broad docs/ allowance; no broad validation/ allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
+    Add-Result -Area '01-git-workspace' -Status PASS -Check 'tracked-drift' -Detail ("Tracked drift restricted to governed tooling support, BP12B approved expected-baseline refresh paths, BP12B approved post-execution run-log appendage, BP12C-D adapter-alignment checklist corrections, WP-12C-L0 install-readiness checklist, WP-12C-K1B-A authority patch files, WP-12C-K2/K3A plugin scaffold paths, WP-12C-L1A plugin.json path, K3B validator patch paths, exact K3C future bundle paths, WP-12C-REL0-C public-entrypoint files (README.md, START-HERE.md), WP-12C-AM3-PLAN roadmap re-positioning (docs/ROADMAP.md), WP-12C-AM3-RELEASE-CLAIM-ALIGNMENT public release language surfaces, WP-12C-REL0-FINAL-QA-REMEDIATION exact release hygiene files, WP-12C-REL0-RELEASE-DECISION-STAGE-COMMIT-FIX-A validator-policy patch report, WP-12C-REL0-RELEASE-DECISION-FOUNDER-APPROVAL exact report, and WP-12C-REL0-PUBLIC-LICENSE-NOTICE-FIX-EVAL exact LICENSE allowance only; no broad plugins/** allowance; no broad docs/ allowance; no broad validation/ allowance; no broad LICENSE*/release/diagrams/publications allowance: {0}" -f ($(if ($trackedDiffFiles.Count -gt 0) { $trackedDiffFiles -join ', ' } else { 'none' })))
 }
 else {
     Add-Result -Area '01-git-workspace' -Status FAIL -Check 'tracked-drift' -Detail ('Unexpected tracked drift: ' + ($unexpectedTrackedDiff -join ', '))

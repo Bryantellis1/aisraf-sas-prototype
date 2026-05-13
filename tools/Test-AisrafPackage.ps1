@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Smoke-test the Build Package 01-12C surface of AISRAF SAS Prototype v0.1.2 (with corrective patch 10A on the sample side and 11A on the run side; BP12-SAMPLE-DFD-BLOCKER fully resolved; BP13 next_allowed).
+    Smoke-test the Build Package 01-13 surface of AISRAF SAS Prototype v0.1.2 (with corrective patch 10A on the sample side and 11A on the run side; BP12-SAMPLE-DFD-BLOCKER fully resolved; BP13 first public visual pack active).
 
 .DESCRIPTION
     Test-AisrafPackage is the active package validator. It confirms:
@@ -66,8 +66,9 @@
                 solution-package alignment artifacts: solution-package-architecture,
                 agent-spec-template, capability-agent-traceability-register,
                 platform-projection-matrix, and plugin-roadmap);
-      - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP,
-        diagram/docs/release content beyond folder README placeholders);
+            - no forbidden later-package artifacts exist (DOCX/PDF/PPTX/ZIP,
+                release content beyond folder README placeholder; diagrams/ is open
+                only through the exact WP-13 first-public-visual-pack allow-list);
       - the old reference workspace path is acknowledged as read-only.
 
     The test does not run prompts, skills, PRAs, .agent.md adapters, Jira,
@@ -463,10 +464,11 @@ if ($adapterFails -eq 0) {
 # catalogs/ is owned by Build Package 07 (active); see Check 08e for the catalogs/ allowed surface.
 # blueprints/ is owned by Build Package 08 (active); see Check 08f for the blueprints/ allowed surface.
 # templates/ is owned by Build Package 09 (active); see Check 08g for the templates/ allowed surface.
-# docs/ is partially opened by Build Package 12C-REL0-B (active) for the 5 approved
-# release docs files; remaining docs surface stays reserved for Build Package 14.
+# diagrams/ is opened by Build Package 13 only for the exact first public
+# visual pack paths listed below; no broad diagram-folder allowance is introduced.
+# docs/ is partially opened by Build Package 12C-REL0-B and WP-13 links for the
+# 5 approved release docs files; remaining docs surface stays reserved for later packages.
 $readmeOnlyFolders = @{
-    'diagrams'         = 'Build Package 13'
     'release'          = 'Build Package 15'
 }
 foreach ($folder in $readmeOnlyFolders.Keys) {
@@ -477,6 +479,75 @@ foreach ($folder in $readmeOnlyFolders.Keys) {
         if ($c.Name -ne 'README.md') {
             $rel = "$folder/$($c.Name)"
             Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Forbidden content in $folder/ (owned by $($readmeOnlyFolders[$folder])): $rel"
+        }
+    }
+}
+$diagramsAbs = Resolve-PackagePath 'diagrams'
+$wp13DiagramAllowedDirs = @(
+    'diagrams/release-v0.1.2',
+    'diagrams/release-v0.1.2/png',
+    'diagrams/release-v0.1.2/source',
+    'diagrams/release-v0.1.2/svg',
+    'diagrams/release-v0.1.2/thumbnails'
+)
+$wp13DiagramAllowedFiles = @(
+    'diagrams/README.md',
+    'diagrams/diagram-registry.yaml',
+    'diagrams/release-v0.1.2/README.md',
+    'diagrams/release-v0.1.2/png/M1-CTX-Mode-1-Local-Review-Context.png',
+    'diagrams/release-v0.1.2/png/M1-DFD-Mode-1-Input-to-Output-DFD.png',
+    'diagrams/release-v0.1.2/png/M1-SEQ-Mode-1-Operator-Run-Sequence.png',
+    'diagrams/release-v0.1.2/png/M2-FLOW-Mode-2-Runtime-Evidence-Flow.png',
+    'diagrams/release-v0.1.2/png/M3-FLOW-Mode-3-Commit-Gate-Flow.png',
+    'diagrams/release-v0.1.2/png/M4-BND-Mode-4-Future-Boundary-and-Non-Claim.png',
+    'diagrams/release-v0.1.2/png/V-00-AISRAF-Customer-Story-Flow.png',
+    'diagrams/release-v0.1.2/png/V-02-AISRAF-Package-Map-Read-Order.png',
+    'diagrams/release-v0.1.2/png/V-03-Stakeholder-Reading-Path.png',
+    'diagrams/release-v0.1.2/png/V-04-Evidence-Pack-vs-Capability-Roadmap-vs-Drift-Baseline.png',
+    'diagrams/release-v0.1.2/png/V-10-DFD-Annotation-Legend-Card.png',
+    'diagrams/release-v0.1.2/png/V-11-Annotated-DFD-Example.png',
+    'diagrams/release-v0.1.2/png/V-23-Release-Package-Structure.png',
+    'diagrams/release-v0.1.2/png/V-24-Validation-Ladder.png',
+    'diagrams/release-v0.1.2/png/V-25-Publication-and-License-Boundary.png',
+    'diagrams/release-v0.1.2/source/README.md',
+    'diagrams/release-v0.1.2/svg/README.md',
+    'diagrams/release-v0.1.2/thumbnails/M1-CTX-Mode-1-Local-Review-Context.png',
+    'diagrams/release-v0.1.2/thumbnails/M1-DFD-Mode-1-Input-to-Output-DFD.png',
+    'diagrams/release-v0.1.2/thumbnails/M1-SEQ-Mode-1-Operator-Run-Sequence.png',
+    'diagrams/release-v0.1.2/thumbnails/M2-FLOW-Mode-2-Runtime-Evidence-Flow.png',
+    'diagrams/release-v0.1.2/thumbnails/M3-FLOW-Mode-3-Commit-Gate-Flow.png',
+    'diagrams/release-v0.1.2/thumbnails/M4-BND-Mode-4-Future-Boundary-and-Non-Claim.png',
+    'diagrams/release-v0.1.2/thumbnails/V-00-AISRAF-Customer-Story-Flow.png',
+    'diagrams/release-v0.1.2/thumbnails/V-02-AISRAF-Package-Map-Read-Order.png',
+    'diagrams/release-v0.1.2/thumbnails/V-03-Stakeholder-Reading-Path.png',
+    'diagrams/release-v0.1.2/thumbnails/V-04-Evidence-Pack-vs-Capability-Roadmap-vs-Drift-Baseline.png',
+    'diagrams/release-v0.1.2/thumbnails/V-10-DFD-Annotation-Legend-Card.png',
+    'diagrams/release-v0.1.2/thumbnails/V-11-Annotated-DFD-Example.png',
+    'diagrams/release-v0.1.2/thumbnails/V-23-Release-Package-Structure.png',
+    'diagrams/release-v0.1.2/thumbnails/V-24-Validation-Ladder.png',
+    'diagrams/release-v0.1.2/thumbnails/V-25-Publication-and-License-Boundary.png'
+)
+if (Test-Path -LiteralPath $diagramsAbs -PathType Container) {
+    foreach ($diagramDir in @(Get-ChildItem -LiteralPath $diagramsAbs -Recurse -Force -Directory -ErrorAction SilentlyContinue)) {
+        $diagramDirRelativePath = Convert-ToPackageRelativePath $diagramDir.FullName
+        if (-not ($wp13DiagramAllowedDirs -contains $diagramDirRelativePath)) {
+            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Forbidden diagram folder outside exact WP-13 allow-list: $diagramDirRelativePath/"
+        }
+    }
+    foreach ($diagramFile in @(Get-ChildItem -LiteralPath $diagramsAbs -Recurse -Force -File -ErrorAction SilentlyContinue)) {
+        $diagramFileRelativePath = Convert-ToPackageRelativePath $diagramFile.FullName
+        if (-not ($wp13DiagramAllowedFiles -contains $diagramFileRelativePath)) {
+            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Forbidden diagram file outside exact WP-13 allow-list: $diagramFileRelativePath"
+        }
+    }
+    foreach ($diagramAllowedDir in $wp13DiagramAllowedDirs) {
+        if (-not (Test-Path -LiteralPath (Resolve-PackagePath $diagramAllowedDir) -PathType Container)) {
+            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Required WP-13 diagram folder missing: $diagramAllowedDir/"
+        }
+    }
+    foreach ($diagramAllowedFile in $wp13DiagramAllowedFiles) {
+        if (-not (Test-Path -LiteralPath (Resolve-PackagePath $diagramAllowedFile) -PathType Leaf)) {
+            Add-Result -Status FAIL -Check '08-folder-content-limits' -Detail "Required WP-13 diagram file missing: $diagramAllowedFile"
         }
     }
 }
@@ -502,7 +573,7 @@ if (Test-Path -LiteralPath $docsAbs -PathType Container) {
 }
 $folderLimitFails = @($results | Where-Object { $_.Check -eq '08-folder-content-limits' -and $_.Status -eq 'FAIL' }).Count
 if ($folderLimitFails -eq 0) {
-    Add-Result -Status PASS -Check '08-folder-content-limits' -Detail "Read-me-only folders contain only README.md; docs/ contains README.md plus the 5 approved BP12C-REL0-B release docs files."
+    Add-Result -Status PASS -Check '08-folder-content-limits' -Detail "Read-me-only folders contain only README.md; diagrams/ contains only exact WP-13 first-public-visual-pack paths; docs/ contains README.md plus the 5 approved release docs files."
 }
 
 # 8a. Build Package 12C Copilot skill-wrapper content limits.
@@ -1444,6 +1515,9 @@ $validationAllowed += @(
     'package-12c-rel0-release-decision-rerun-report.md',
     'package-12c-rel0-release-decision-stage-commit-fix-a-report.md',
     'package-12c-rel0-release-decision-stage-commit-retry-report.md',
+    'package-12c-rel0-release-decision-founder-approval-report.md',
+    'package-12c-rel0-public-license-notice-fix-eval-report.md',
+    'package-12c-rel0-public-license-notice-fix-eval-bp12a-drift-policy-report.md',
     'package-12c-rel0-final-release-qa-report.md',
     'package-12c-rel0-final-release-blocker-register.md',
     'package-12c-rel0-c-micropatch-report.md',
@@ -1458,7 +1532,11 @@ $validationAllowed += @(
     'package-12c-am3-smoke-evidence-report.md',
     'package-12c-am3-smoke-retry-evidence-report.md',
     'package-12c-am3-qa-report.md',
-    'package-12c-am3-release-claim-alignment-report.md'
+    'package-12c-am3-release-claim-alignment-report.md',
+    'package-13-first-public-visual-pack-report.md',
+    'package-13-first-public-visual-pack-bp12a-drift-policy-report.md',
+    'package-13-final-qa-and-publication-export-prep-report.md',
+    'package-12c-rel0-final-public-qa-report.md'
 )
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {

@@ -53,6 +53,14 @@ The v0.1.2 release ships AISRAF as a local-first workbench with three reinforcin
 - **Evidence-bound.** Every output preserves unknowns, deferred states, and missing facts explicitly. Findings trace to evidence. Recommendations trace to findings and to blueprint/question context. No fact is invented.
 - **Controlled-output.** The 7 AISRAF agents may write only to approved scratch run folders. Hooks enforce path guards before each write and run focused validators after each write. Canonical surfaces (`prompts/`, `skills/`, `prototype-agents/`, `catalogs/`, `blueprints/`, `templates/`, `config/`, `samples/`, `runs/RUN-001/`) and provider projections are never mutated by a review run.
 
+## Visual Orientation
+
+These public visual-pack diagrams show the business motivation, value stream, and package boundary for evaluators. They are documentation assets only and do not claim production use, marketplace publication, AM4 adapter execution, or AL5 autonomy.
+
+![V-00 AISRAF Customer Story Flow showing the local, human-gated journey from design-review intake to local AISRAF outputs and reusable evidence.](../diagrams/release-v0.1.2/png/V-00-AISRAF-Customer-Story-Flow.png)
+
+![V-04 Evidence Pack vs Capability Roadmap vs Drift Baseline comparing proven evidence, future capability, and guardrails.](../diagrams/release-v0.1.2/png/V-04-Evidence-Pack-vs-Capability-Roadmap-vs-Drift-Baseline.png)
+
 ## 4. Autonomy Levels
 
 Release-visible journey modes:
@@ -121,14 +129,14 @@ This matters because every public-reader claim must map to a governed layer. Des
 
 AISRAF v0.1.2 is public-safe, local-first, evidence-bound, and human-gated. Public release artifacts (this document, `RELEASE-MANIFEST.yaml`, `CHANGELOG.md`, `SECURITY.md`, `CONTRIBUTING.md`, `LICENSE`, `NOTICE.md`, and the four companion docs) describe the AL2 workbench experience and the bounded AM3 / AL3 local orchestrated runtime evidence claim.
 
-`LICENSE` and `NOTICE.md` are placeholder / evaluation-only / all-rights-reserved documents pending founder/legal confirmation. Public publication remains blocked unless the founder explicitly accepts that placeholder posture for the release lane.
+`LICENSE` and `NOTICE.md` define AISRAF v0.1.2 as a public source-available evaluation-only proof-of-concept. Not open source. Not production software. Not marketplace-published. No AM4 adapter execution. No Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, or external post-back execution in v0.1.2. AL5 closed-loop autonomy is out of scope.
 
 What is **not** part of v0.1.2:
 
 - Full specialist-generated review output execution through AM3.
 - AM4 external adapter / post-back execution (Jira, Confluence, Lucidchart, MCP, Foundry, ADK, MAF, database, Terraform, cloud runtime, event bus, telemetry backend).
 - AL5 closed-loop autonomy.
-- Release visuals (future WP-13).
+- DOCX/PDF release export binaries inside this repository; Word/PDF outputs are deferred to GitHub Release assets or later exact-path authorization.
 
 ## 9. How To Read The Companion Docs
 

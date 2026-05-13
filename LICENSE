@@ -1,43 +1,104 @@
-AISRAF SAS Prototype v0.1.2 — License (Pending Founder / Legal Confirmation)
+AISRAF SAS Prototype v0.1.2 Evaluation-Only Source-Available License
 
-Status: PLACEHOLDER. License pending founder / legal confirmation.
+Copyright (c) 2026 E-Way / project owner. All rights reserved except for
+the limited permissions expressly stated in this license.
 
-Until the project owner selects and publishes a final license, the contents of
-this repository (the "AISRAF Materials") are provided as-is for evaluation,
-review, and governed contribution under the work-package discipline described
-in CONTRIBUTING.md. No open-source rights are granted by this placeholder.
+Status: Public source-available evaluation-only proof-of-concept. Not open
+source. Not production software. Not marketplace-published.
 
-All rights reserved by the project owner pending publication of the final
-license.
+1. Scope
 
-The following limited evaluation use is permitted while this placeholder is
-in effect:
+The contents of this repository, including source files, documentation,
+configuration, validation materials, samples, plugin packaging, and related
+materials (the "AISRAF Materials"), are made available only for evaluation,
+review, demonstration, and proof-of-concept testing.
 
-1. You may read the AISRAF Materials.
-2. You may run the local validators (`tools/Test-AisrafPackage.ps1`,
-   `tools/Test-AisrafBp12AReadiness.ps1`,
-   `tools/Test-AisrafRunProfile.ps1`) against your own local checkout.
-3. You may use the AISRAF plugin under your own provider surface against
-   your own local inputs, subject to the Local-First and Sensitive Data
-   Rules in SECURITY.md.
-4. You may contribute changes back to the project under the governance
-   model in CONTRIBUTING.md.
+2. Limited permissions
 
-The following are NOT granted by this placeholder:
+Subject to this license, you may:
 
-- No right to redistribute the AISRAF Materials in modified or unmodified
-  form.
-- No right to publish the AISRAF Materials to a public marketplace.
-- No right to claim AISRAF integration with, endorsement by, or runtime
-  on, any third-party platform.
-- No warranty. THE AISRAF MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY
-  OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-  WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
-  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-  LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION
-  OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
-  WITH THE AISRAF MATERIALS OR THE USE OR OTHER DEALINGS IN THE AISRAF
-  MATERIALS.
+- read and inspect the AISRAF Materials;
+- clone or download the repository for local evaluation;
+- run the local validators against your own local checkout;
+- run local proof-of-concept tests against your own local inputs; and
+- submit governed contributions back to the project owner under the process
+  described in CONTRIBUTING.md.
 
-When the final license is selected, this file will be replaced. Until then,
-treat all use as evaluation-only under the limits stated above.
+3. Restrictions
+
+You may not, without separate written permission from the project owner:
+
+- use the AISRAF Materials in production or for production decisioning;
+- use the AISRAF Materials for commercial use;
+- sell, resell, sublicense, lease, rent, transfer, or otherwise distribute the
+  AISRAF Materials, modified or unmodified;
+- offer the AISRAF Materials as a hosted service, managed service, consulting
+  platform, marketplace package, marketplace listing, or marketplace-published
+  product;
+- publish, post, upload, or package the AISRAF Materials in any public or
+  private marketplace;
+- remove or obscure copyright, ownership, license, or notice text;
+- use E-Way, AISRAF, or related names, logos, trademarks, service marks,
+  branding, or trade dress except to identify the project accurately; or
+- claim endorsement, partnership, certification, support, or approval by
+  E-Way, GitHub, Microsoft, Anthropic, Atlassian, Lucid, HashiCorp, Google,
+  or any other named provider or platform.
+
+4. Release and execution boundary
+
+AISRAF v0.1.2 is limited to AM3 / AL3 local orchestrated runtime evidence and
+an AL2 controlled-output local workbench. There is no AM4 adapter execution.
+There is no Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database,
+Terraform, event bus, telemetry, or external post-back execution in v0.1.2.
+AL5 closed-loop autonomy is out of scope.
+
+5. Third-party provider terms
+
+Your use of any provider surface, editor, model, cloud, source-control
+platform, plugin host, or other third-party product remains subject to that
+provider's separate terms and policies. This license does not change those
+terms and does not grant rights in third-party products.
+
+6. Confidential information and user data
+
+Do not submit secrets, credentials, customer data, production endpoints,
+personal data, or confidential information to the AISRAF Materials. You are
+responsible for confirming that any local inputs used during evaluation are
+redacted and authorized for that use.
+
+7. Ownership
+
+Except for the limited permissions stated above, all rights, title, and
+interest in the AISRAF Materials remain with E-Way / project owner. No rights
+are granted by implication, estoppel, or otherwise.
+
+8. Future license changes
+
+The project owner may publish future versions of the AISRAF Materials under a
+different license or commercial agreement. A future license change does not
+grant additional rights to this v0.1.2 release unless the project owner states
+that in writing.
+
+9. Termination
+
+If you violate this license, your permissions under this license terminate
+automatically. Upon termination, you must stop using the AISRAF Materials and
+delete any copies in your possession or control, except where retention is
+required by law.
+
+10. No warranty
+
+THE AISRAF MATERIALS ARE PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY
+OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NONINFRINGEMENT,
+SECURITY, ACCURACY, AVAILABILITY, OR ERROR-FREE OPERATION.
+
+11. No liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, E-WAY / PROJECT OWNER AND CONTRIBUTORS
+WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+CONSEQUENTIAL, EXEMPLARY, PUNITIVE, OR OTHER DAMAGES, OR FOR LOST PROFITS,
+LOST REVENUE, LOST DATA, BUSINESS INTERRUPTION, SECURITY INCIDENTS, OR
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, ARISING FROM OR RELATED TO THE
+AISRAF MATERIALS OR THIS LICENSE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGES.

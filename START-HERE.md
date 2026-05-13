@@ -15,22 +15,50 @@ Package: AISRAF SAS Prototype v0.1.2
 
 AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. This is an evidence-path claim, not a claim of full specialist-generated review output execution, production readiness, publication, or AM4 integration.
 
-Gate state: REL0 remediation baseline commit `abcad6feb16a94ed71c81f6620032584f22e5a68` is the accepted technical candidate for this release-decision remediation pass. The current gate is **WP-12C-REL0-RELEASE-DECISION-REMEDIATION**; next is **WP-12C-REL0-RELEASE-DECISION-RERUN**. WP-13, AM4, push, and publish remain blocked until the REL0 release decision and push-prep gates pass.
+Gate state: release-decision stage commit closeout is accepted at HEAD `cc96644fa5263ccdaabcb0ff7ed9fb6282ac5ab5`, the public source-available evaluation-only license/notice posture is accepted, and the WP-13 visual pack / publication export prep gate is accepted. The current gate is **WP-12C-REL0-FINAL-PUBLIC-QA**. Stage/commit, AM4, push, tag, GitHub Release, and publication remain blocked until their explicit gates pass.
+
+Publication posture: **Public source-available evaluation-only proof-of-concept. Not open source. Not production software. Not marketplace-published.** AM3 / AL3 local orchestrated runtime evidence only. AL2 controlled-output workbench remains the everyday user path. No AM4 adapter execution. No Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, or external post-back execution in v0.1.2. AL5 closed-loop autonomy is out of scope.
 
 The everyday security architect and application architect workflow remains a local controlled-output workbench. AISRAF does not execute external adapters or post back to Jira, Confluence, Lucidchart, Rovo, MCP, Azure AI Foundry, Google ADK, Microsoft Agent Framework, databases, Terraform, cloud runtimes, event buses, or telemetry systems (AM4 / AL4, future). AL5 closed-loop autonomy is out of scope.
 
 ## Review Journey In One Pass
 
-1. Load or open the AISRAF package/plugin from this workspace or its local provider surface.
-2. In the provider surface, expect the AISRAF agents, provider Agent Skills, and hook configuration; start with `@aisraf-orchestrator`.
-3. Create or use a run folder at `runs/<run_id>/`.
-4. Put DFD/design package inputs under `runs/<run_id>/inputs/`.
-5. Control the run with `runs/<run_id>/run-profile.yaml`.
-6. Receive local Markdown outputs: `00-run-log.md`, `01-input-inventory.md` through `17-accuracy-score.md`, plus the DFD outputs under `dfd/01` through `dfd/09`.
-7. Use a separate `runs/<run_id>/` folder for each separate DFD or review.
-8. v0.1.2 performs no external post-back; AM4 external adapter execution remains future only.
+1. Read [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md) first; AISRAF v0.1.2 is public source-available evaluation-only, not open source, not production software, and not marketplace-published.
+2. Review the autonomy terms above so Mode 1 local workbench, AM3 / AL3 local evidence, future AM4, and out-of-scope AL5 stay separate.
+3. Open [docs/OPERATOR-QUICKSTART.md](docs/OPERATOR-QUICKSTART.md) for the operator path, then clone or download the public GitHub proof-of-concept repository.
+4. Open the repository folder in VS Code.
+5. Start with `@aisraf-orchestrator` from the local/provider surface.
+6. Create a personal run folder, for example:
 
-License and notice posture: `LICENSE` and `NOTICE.md` are placeholder / evaluation-only / all-rights-reserved documents pending founder/legal confirmation. Public publication remains blocked unless the founder explicitly accepts that placeholder posture for the release lane.
+```powershell
+pwsh -NoProfile -File ./tools/New-AisrafRun.ps1 -RunId RUN-MY-REVIEW-001 -SampleId sample-001-dfd-crop -CopySampleInputs
+```
+
+7. Put DFD/design package inputs under `runs/<run_id>/inputs/`, for example `runs/RUN-MY-REVIEW-001/inputs/`.
+8. Edit `runs/RUN-MY-REVIEW-001/run-profile.yaml`, including `sensitive_data_confirmed_redacted: true` only after confirming inputs are redacted.
+9. Validate the run profile:
+
+```powershell
+pwsh -NoProfile -File ./tools/Test-AisrafRunProfile.ps1 -RunProfilePath ./runs/RUN-MY-REVIEW-001/run-profile.yaml -ExecutionReady
+```
+
+10. Prompt the orchestrator: `Run a local folder-first AISRAF review using runs/RUN-MY-REVIEW-001/run-profile.yaml. Do not use external adapters. Write outputs only under runs/RUN-MY-REVIEW-001/.`
+11. Receive local Markdown outputs: `00-run-log.md`, `01-input-inventory.md` through `17-accuracy-score.md`, plus the DFD outputs under `dfd/01` through `dfd/09`.
+12. Keep the run folder as local evidence/work product and use a separate `runs/<run_id>/` folder for each separate DFD or review.
+13. Do not use `runs/RUN-001/` for personal reviews; it is the governed fixture.
+14. v0.1.2 is not marketplace-published and performs no external post-back; Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, and AM4 external adapter execution remain future Mode 4 only.
+
+License and notice posture: `LICENSE` and `NOTICE.md` now define a public source-available evaluation-only proof-of-concept posture. The license permits evaluation, review, demonstration, and proof-of-concept testing only, and does not grant production use, commercial use, redistribution, hosted service offering, or marketplace publication rights without separate written permission.
+
+## Visual Read Path
+
+The first public visual pack is registered in [diagrams/diagram-registry.yaml](diagrams/diagram-registry.yaml) and indexed under [diagrams/release-v0.1.2/](diagrams/release-v0.1.2/). These visuals orient readers to roles, package structure, and validation controls; they are not publication proof, production proof, marketplace proof, AM4 proof, or AL5 proof.
+
+![V-03 Stakeholder Reading Path mapping reader roles to documents, journey modes, and expected outcomes.](diagrams/release-v0.1.2/png/V-03-Stakeholder-Reading-Path.png)
+
+![V-23 Release Package Structure showing root release surfaces, specification folders, operational folders, governed fixtures, provider projections, and reader journey.](diagrams/release-v0.1.2/png/V-23-Release-Package-Structure.png)
+
+![V-24 AISRAF Validation Ladder showing package validation, BP12A readiness, run profile checks, AM3 checks, git hygiene, and human release decision.](diagrams/release-v0.1.2/png/V-24-Validation-Ladder.png)
 
 Release journey modes:
 
@@ -54,15 +82,15 @@ Pick the entrypoint that matches your role.
 - **Maintainer** — read [docs/ARCHITECTURE-OVERVIEW.md](docs/ARCHITECTURE-OVERVIEW.md) and [RELEASE-MANIFEST.yaml](RELEASE-MANIFEST.yaml).
 - **Roadmap reader** — read [docs/ROADMAP.md](docs/ROADMAP.md).
 
-Release state: Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim. REL0 final QA remediation closed at `abcad6feb16a94ed71c81f6620032584f22e5a68`; the active gate is **WP-12C-REL0-RELEASE-DECISION-REMEDIATION**. Next is **WP-12C-REL0-RELEASE-DECISION-RERUN**. WP-13 release visuals, push, publish, and AM4 adapter work remain blocked / future until the REL0 release decision and push-prep gates pass.
+Release state: Build Packages 01–12 are governed and validator-green. BP12C operator-experience and plugin-packaging increments through WP-12C-REL0-B are committed. WP-12C-AM3-QA accepted only the bounded local runtime evidence claim. REL0 release-decision stage commit closeout is accepted at HEAD `cc96644fa5263ccdaabcb0ff7ed9fb6282ac5ab5`; WP-13 visual pack / publication export prep is accepted; the active gate is **WP-12C-REL0-FINAL-PUBLIC-QA**. Public release is not push-ready until final public QA, stage/commit, push prep, and publication gates are complete. Push, tag, GitHub Release, publication, and AM4 adapter work remain blocked / future until their explicit gates pass.
 
 AM3 boundary: AISRAF Orchestrator owns run-state and event log. Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. Human gates remain required. AM4 external adapter execution remains future. The local smoke evidence under `runs/RUN-SMOKE-AM3-001/` must not be staged or published in this gate.
 
-> **Carried-forward blocker.** `BP12-SAMPLE-DFD-BLOCKER` (severity HARD, owner founder) records a defect in the canonical sample DFD (`samples/sample-001-dfd-crop/inputs/dfd-crop.png`/`.mmd` and the byte-copies under `runs/RUN-001/inputs/`). Build Package 13 (Diagrams) is also separately gated by founder-approved Package 10A / 11A correction OR sample-002 with a clean DFD. See [validation/sample-input-readiness-checklist.md](validation/sample-input-readiness-checklist.md) for the full defect statement and gate verdicts.
+> **WP-13 entry note.** The accepted prior state authorizes the WP-13 visual pack and keeps `runs/RUN-001/`, `samples/`, AM3 runtime evidence, AM3 contracts, and canonical/provider surfaces unchanged. Visual diagrams are registered under [diagrams/](diagrams/) only.
 
 ## Contributor / Package Authoring — Operator Steps
 
-1. Open this folder as the VS Code workspace root: `D:/E-Way 2/AISRAF- SAS Prototype v0.1.2`.
+1. Open the repository folder as the VS Code workspace root.
 2. Read [README.md](README.md).
 3. Read [PROTOTYPE-CHARTER.md](PROTOTYPE-CHARTER.md).
 4. Read [BUILD-ORDER.md](BUILD-ORDER.md).
@@ -75,11 +103,11 @@ AM3 boundary: AISRAF Orchestrator owns run-state and event log. Specialist hando
 11. Browse [templates/README.md](templates/README.md) to see the 31 reusable output-shape templates introduced in Build Package 09 across four family folders ([templates/output/](templates/output/) — 27 templates, [templates/jira/](templates/jira/) — 1 template, [templates/confluence/](templates/confluence/) — 1 template, [templates/run/](templates/run/) — 2 row templates), and [templates/template-registry.yaml](templates/template-registry.yaml) for the template→prompt, template→skill, template→PRA, template→adapter, template→blueprint, and template→catalog consumer maps.
 12. Browse [samples/README.md](samples/README.md) and [samples/sample-001-dfd-crop/README.md](samples/sample-001-dfd-crop/README.md) to see the Build Package 10 sample set: one active gold-standard scored sample (`sample-001-dfd-crop` — AI SaaS Security Review Portal), six synthetic inputs, and 26 Markdown expected baselines (17 RS + 9 DFD) mirroring Package 09 templates. Samples 002–008 are recorded as `planned_or_deferred_samples` entries inside [samples/sample-registry.yaml](samples/sample-registry.yaml) only — no folders or files exist for them. Samples are test fixtures, not runs; numeric scoring is qualitative (`PASS_READY_FOR_REVIEW`) until the chain executes against the Build Package 11 run fixture and numeric scoring activates.
 13. Browse [runs/README.md](runs/README.md) and [runs/RUN-001/README.md](runs/RUN-001/README.md) to see the Build Package 11 run-evidence model: the first canonical governed run fixture `runs/RUN-001/` for `sample-001-dfd-crop`, with [runs/RUN-001/run-profile.yaml](runs/RUN-001/run-profile.yaml) (Build Package 02 schema-compliant), [runs/RUN-001/00-run-log.md](runs/RUN-001/00-run-log.md) (Build Package 09 file-shape compliant), 6 byte-copies of the sample-001 inputs under `runs/RUN-001/inputs/`, and an empty governed `runs/RUN-001/dfd/` folder reserved for the 9 DFD subskill outputs. The 17 RS chain outputs at the run-folder root and the 9 DFD outputs under `dfd/` are reserved future paths — Build Package 11 does NOT execute the chain and does NOT produce any of the 26 outputs. The run-folder shape is pinned in [validation/run-folder-shape-checklist.md](validation/run-folder-shape-checklist.md), the run-log shape in [validation/run-log-checklist.md](validation/run-log-checklist.md), and the comparison/scoring procedure in [validation/run-comparison-checklist.md](validation/run-comparison-checklist.md). Other `runs/RUN-*` folders are smoke runs and must be removed before human git stage.
-14. Read [validation/README.md](validation/README.md) — the Build Package 12 validation taxonomy index — for the 8-category gate model (package, registry, chain, sample, run, cross-cutting hygiene, forward, final QA), the run order (1 → 2 → 3 → 4 → 5 → 6 → 7 → 8), and the BLOCKERS section naming `BP12-SAMPLE-DFD-BLOCKER`. Build Package 12 added 10 new validation files plus 14 numbered amendments in [validation/no-drift-rules.md](validation/no-drift-rules.md). The empty governed folder `runs/RUN-001/dfd/` now carries `.gitkeep` as a fresh-clone reservation marker. Build Package 13 (Diagrams) is BLOCKED behind `BP12-SAMPLE-DFD-BLOCKER` resolution.
+14. Read [validation/README.md](validation/README.md) — the Build Package 12 validation taxonomy index — for the 8-category gate model (package, registry, chain, sample, run, cross-cutting hygiene, forward, final QA), the run order (1 → 2 → 3 → 4 → 5 → 6 → 7 → 8), and the blocker taxonomy. Build Package 12 added 10 validation files plus 14 numbered amendments in [validation/no-drift-rules.md](validation/no-drift-rules.md). The empty governed folder `runs/RUN-001/dfd/` now carries `.gitkeep` as a fresh-clone reservation marker. Build Package 13 visual assets live under [diagrams/release-v0.1.2/](diagrams/release-v0.1.2/).
 
 ## Stop For Now
 
-- Do not create diagrams yet (Build Package 13).
+- Do not create additional diagrams outside the approved Build Package 13 visual-pack surface.
 - Do not create release artifacts yet (Build Package 15).
 - Do not execute the Build Package 04–09 chain against `runs/RUN-001/` as part of Build Package 11 — chain execution is operator-driven and produces the 26 reserved outputs only when run.
 - Do not create the 17 RS chain outputs (`runs/RUN-001/01-input-inventory.md` through `17-accuracy-score.md`) or the 9 DFD outputs (`runs/RUN-001/dfd/dfd-01-intake-quality-check.md` through `dfd-09-extraction-summary.md`) inside Build Package 11 — those are reserved future paths.
@@ -96,6 +124,6 @@ AM3 boundary: AISRAF Orchestrator owns run-state and event log. Specialist hando
 
 ## Next Build Package
 
-The immediate governed gate is **WP-12C-REL0-RELEASE-DECISION-REMEDIATION**. If remediation passes, the next gate is **WP-12C-REL0-RELEASE-DECISION-RERUN**. WP-13 release visuals, push, publish, and AM4 adapter work remain blocked until the REL0 release decision and push-prep gates pass.
+The immediate governed gate is **WP-12C-REL0-FINAL-PUBLIC-QA**. If it passes, the next gate is **REL0-STAGE-COMMIT**. Push prep, push, tag, GitHub Release, publication, and AM4 adapter work remain blocked until their explicit gates pass.
 
 **AM4 adapter work** (Jira, Confluence, Lucidchart, Rovo, MCP, Foundry, ADK, MAF, database, Terraform, cloud, event bus, telemetry, post-back execution) is future and not part of the current v0.1.2 claim.

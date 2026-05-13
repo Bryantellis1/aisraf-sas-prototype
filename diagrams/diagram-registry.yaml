@@ -1,0 +1,336 @@
+registry_id: AISRAF-DIAGRAM-REGISTRY-v0.1.2
+work_package: WP-13-FIRST-PUBLIC-VISUAL-PACK-AND-PUBLICATION-EXPORT
+release: AISRAF v0.1.2
+source_visual_folder: C:/Users/Bryan/Downloads/SAS Images/RELEASE DIAGRAMS
+target_diagram_folder: diagrams/release-v0.1.2
+publication_posture: public_source_available_evaluation_only_not_open_source
+marketplace_claim: none
+production_claim: none
+am4_claim: future_only
+al5_claim: out_of_scope
+registry_status: active_first_public_visual_pack
+
+quality_gate_summary:
+  filename_matches_visual_id: pass
+  title_matches_visual_id: pass
+  github_markdown_readability: pass
+  alt_text_required: pass
+  purpose_stakeholder_viewpoint_target_doc_required: pass
+  unsupported_current_am4_claim: none_found
+  al5_claim: none_found
+  marketplace_claim: none_found
+  production_ready_claim: none_found
+  confidential_content: none_found_by_visual_review_and_text_scan
+  dfd_annotation_fields: pass_for_v10_v11_m1_dfd
+  license_notice_alignment: public_source_available_evaluation_only
+
+accepted_visuals:
+  - id: V-00
+    title: AISRAF Customer Story Flow
+    status: accepted
+    purpose: Show the local-first customer story from design intake through local AISRAF outputs and retained evidence.
+    stakeholder: evaluators, founders, security architects, application architects
+    viewpoint: stakeholder and communication; business motivation; value stream
+    target_docs:
+      - README.md
+      - docs/AISRAF-PRIMER.md
+    png_path: diagrams/release-v0.1.2/png/V-00-AISRAF-Customer-Story-Flow.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/V-00-AISRAF-Customer-Story-Flow.png
+    dimensions: 1672x941
+    sha256: 9718de6460aeed527e4f986313f285df3288824710d3c1060a0009261a206644
+    alt_text: V-00 AISRAF Customer Story Flow showing a local, human-gated journey from submitted design package to local security outputs and evidence.
+    review_notes: No external execution, marketplace, production, AM4 current, AL5, or confidential-content claim found.
+
+  - id: V-02
+    title: AISRAF Package Map / Read Order
+    status: accepted
+    purpose: Explain the package surfaces and recommended read order for new users.
+    stakeholder: new evaluators, operators, maintainers, contributors
+    viewpoint: stakeholder and communication; product-package; solution structure
+    target_docs:
+      - README.md
+      - docs/ARCHITECTURE-OVERVIEW.md
+    png_path: diagrams/release-v0.1.2/png/V-02-AISRAF-Package-Map-Read-Order.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/V-02-AISRAF-Package-Map-Read-Order.png
+    dimensions: 1672x941
+    sha256: 796af6b63b8b509fc2b7239a5caffe20b850918d57cc82372370b7132b61fecd
+    alt_text: V-02 AISRAF Package Map / Read Order showing recommended documents and repository surfaces.
+    review_notes: Release and future work are separated; no unsupported publication or production claim found.
+
+  - id: V-03
+    title: Stakeholder Reading Path
+    status: accepted
+    purpose: Route each stakeholder group to the right documents and journey mode.
+    stakeholder: security architects, application architects, maintainers, founders, contributors
+    viewpoint: stakeholder and communication; role journey
+    target_docs:
+      - START-HERE.md
+    png_path: diagrams/release-v0.1.2/png/V-03-Stakeholder-Reading-Path.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/V-03-Stakeholder-Reading-Path.png
+    dimensions: 1672x941
+    sha256: 534be03f89445c5e98bbf387303f88e692b6cdda52fff049c9b404a42680b465
+    alt_text: V-03 Stakeholder Reading Path mapping reader roles to documents, journey modes, and expected outcomes.
+    review_notes: Mode 4 is framed as future adapter work; AL5 is not claimed.
+
+  - id: V-04
+    title: Evidence Pack vs Capability Roadmap vs Drift Baseline
+    status: accepted
+    purpose: Distinguish current evidence, planned capability, and guardrails that prevent drift.
+    stakeholder: founders, maintainers, release reviewers, roadmap reviewers
+    viewpoint: business motivation; product-package; migration planning; release governance
+    target_docs:
+      - docs/AISRAF-PRIMER.md
+      - docs/ROADMAP.md
+    png_path: diagrams/release-v0.1.2/png/V-04-Evidence-Pack-vs-Capability-Roadmap-vs-Drift-Baseline.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/V-04-Evidence-Pack-vs-Capability-Roadmap-vs-Drift-Baseline.png
+    dimensions: 1672x941
+    sha256: 02af609508921779e20a6ad7072f57fe5a74d94b0cf4ba2a27e736bfd2a909d1
+    alt_text: V-04 Evidence Pack vs Capability Roadmap vs Drift Baseline comparing proven evidence, future work, and guardrails.
+    review_notes: Current proof and future capability are separated; AL5 is explicitly out of scope.
+
+  - id: V-10
+    title: DFD Annotation Legend Card
+    status: accepted
+    purpose: Provide the public DFD annotation notation for data class, transport, authentication, authorization, storage, and trust zones.
+    stakeholder: security architects, application architects, reviewers
+    viewpoint: security/control/evidence; DFD trust-boundary
+    target_docs:
+      - docs/SECURITY-REVIEW-WORKFLOW.md
+    png_path: diagrams/release-v0.1.2/png/V-10-DFD-Annotation-Legend-Card.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/V-10-DFD-Annotation-Legend-Card.png
+    dimensions: 1672x941
+    sha256: 024bd46dfecc9caec13b6b08d4c367657a44af0305f9604fdf302e5ad2463b22
+    alt_text: V-10 AISRAF DFD Annotation Legend Card defining flow labels, data class, transport protection, authentication, authorization, and store-at-rest notation.
+    dfd_quality:
+      data_class: shown
+      authentication: shown
+      authorization: shown
+      encryption_in_transit: shown
+      store_at_rest_protection: shown
+    review_notes: Legend states external execution is not implied unless explicitly stated and future AM4 integrations must be separated.
+
+  - id: V-11
+    title: Annotated DFD Example
+    status: accepted
+    purpose: Show an example local AISRAF review DFD with full annotation and explicit future adapter boundary.
+    stakeholder: security architects, application architects, reviewers
+    viewpoint: security/control/evidence; DFD trust-boundary; solution architecture
+    target_docs:
+      - docs/SECURITY-REVIEW-WORKFLOW.md
+    png_path: diagrams/release-v0.1.2/png/V-11-Annotated-DFD-Example.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/V-11-Annotated-DFD-Example.png
+    dimensions: 1672x941
+    sha256: 335bd42097e630d72ece80f6b42645e444763486ac88ece698e10efd68c195e9
+    alt_text: V-11 Annotated DFD Example showing local AISRAF processing zones, flow labels, stores, controls, and future adapter targets marked not current behavior.
+    dfd_quality:
+      data_class: shown
+      authentication: shown
+      authorization: shown
+      encryption_in_transit: shown
+      store_at_rest_protection: shown
+    review_notes: External systems are visually isolated as AM4 future-only; all stores are local and encrypted at rest.
+
+  - id: M1-CTX
+    title: Mode 1 Local Review Context
+    status: accepted
+    purpose: Explain the AL2 local controlled-output workbench context and surrounding actors, local surfaces, and evidence outputs.
+    stakeholder: operators, security architects, application architects
+    viewpoint: user journey; C4 context
+    target_docs:
+      - docs/OPERATOR-QUICKSTART.md
+    png_path: diagrams/release-v0.1.2/png/M1-CTX-Mode-1-Local-Review-Context.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/M1-CTX-Mode-1-Local-Review-Context.png
+    dimensions: 1672x941
+    sha256: c3be20bdd0b90ef5ff2073038c82f24619e284373c4411d2a455110e39ba7af2
+    alt_text: M1-CTX Mode 1 Local Review Context showing human actors, local workstation/provider surface, AISRAF controlled processing, local evidence, and future adapter targets.
+    review_notes: Future external adapter targets are marked not part of Mode 1 behavior.
+
+  - id: M1-DFD
+    title: Mode 1 Input-to-Output DFD
+    status: accepted
+    purpose: Show the Mode 1 local input-to-output data flow with AISRAF notation and future adapter non-claim boundary.
+    stakeholder: operators, security architects, application architects
+    viewpoint: user journey; DFD trust-boundary; security/control/evidence
+    target_docs:
+      - docs/OPERATOR-QUICKSTART.md
+      - docs/SECURITY-REVIEW-WORKFLOW.md
+    png_path: diagrams/release-v0.1.2/png/M1-DFD-Mode-1-Input-to-Output-DFD.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/M1-DFD-Mode-1-Input-to-Output-DFD.png
+    dimensions: 1672x941
+    sha256: a56ca2c24bb26c0e6147fbb53b54a41e542c862b24d56295272a864f0842cb1d
+    alt_text: M1-DFD Mode 1 Input-to-Output DFD showing local user, provider surface, AISRAF processing, local stores, and future targets excluded from current execution.
+    dfd_quality:
+      data_class: shown
+      authentication: shown
+      authorization: shown
+      encryption_in_transit: shown
+      store_at_rest_protection: shown
+    review_notes: Future handoff/post-back targets are marked future only; current Mode 1 execution remains local.
+
+  - id: M1-SEQ
+    title: Mode 1 Operator Run Sequence
+    status: accepted
+    purpose: Show the operator run sequence for local folder-first Mode 1 execution.
+    stakeholder: operators, security architects, application architects
+    viewpoint: user journey; UML sequence
+    target_docs:
+      - docs/OPERATOR-QUICKSTART.md
+    png_path: diagrams/release-v0.1.2/png/M1-SEQ-Mode-1-Operator-Run-Sequence.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/M1-SEQ-Mode-1-Operator-Run-Sequence.png
+    dimensions: 1448x1086
+    sha256: 3d2bbe1f0b3e7269ac1896db333ae5b9fa90907da53afb6b9c57868a3f5b3856
+    alt_text: M1-SEQ Mode 1 Operator Run Sequence showing local setup, run profile validation, orchestrator use, local outputs, and no external adapter execution.
+    review_notes: The diagram states no AM4, Jira, Confluence, MCP, or cloud post-back in Mode 1.
+
+  - id: M2-FLOW
+    title: Mode 2 Runtime Evidence Flow
+    status: accepted
+    purpose: Explain the AM3 / AL3 local orchestrated runtime evidence path for v0.1.2.
+    stakeholder: maintainers, release reviewers, architecture reviewers
+    viewpoint: solution architecture; C4 container/component; implementation/migration
+    target_docs:
+      - docs/ARCHITECTURE-OVERVIEW.md
+    png_path: diagrams/release-v0.1.2/png/M2-FLOW-Mode-2-Runtime-Evidence-Flow.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/M2-FLOW-Mode-2-Runtime-Evidence-Flow.png
+    dimensions: 1448x1086
+    sha256: 7fbe67a2914ec9aaf2083a7f3e34fb9c9583d1e40cedfcc19751029ce0cecf7f
+    alt_text: M2-FLOW Mode 2 Runtime Evidence Flow showing AM3 local runtime inputs, handoff chain, state evidence, human gates, validators, and not-included external execution.
+    review_notes: Public release claim is limited to AM3 / AL3 local orchestrated runtime evidence; external post-back, cloud, MCP, and AM4 are excluded.
+
+  - id: M3-FLOW
+    title: Mode 3 Commit Gate Flow
+    status: accepted
+    purpose: Show the maintainer validation and release QA commit-gate flow.
+    stakeholder: maintainers, QA reviewers, release operators
+    viewpoint: release governance; implementation/migration
+    target_docs:
+      - docs/ARCHITECTURE-OVERVIEW.md
+    png_path: diagrams/release-v0.1.2/png/M3-FLOW-Mode-3-Commit-Gate-Flow.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/M3-FLOW-Mode-3-Commit-Gate-Flow.png
+    dimensions: 1448x1086
+    sha256: a6e31bd7261154a490633db739b809d1583c8c6a538732575e1ea756be264729
+    alt_text: M3-FLOW Mode 3 Commit Gate Flow showing surface preparation, validator ladder, git hygiene, staging decision, human commit, post-commit validation, and REL0 decision.
+    review_notes: Hard stops include no push, no publish, no AM4 work, and no backlog expansion inside the gate.
+
+  - id: M4-BND
+    title: Mode 4 Future Boundary and Non-Claim
+    status: accepted
+    purpose: Make the boundary between current v0.1.2 claims and future AM4 adapter work explicit.
+    stakeholder: founders, maintainers, architecture reviewers, roadmap reviewers
+    viewpoint: solution architecture; migration planning; risk; release governance
+    target_docs:
+      - docs/ARCHITECTURE-OVERVIEW.md
+      - docs/ROADMAP.md
+    png_path: diagrams/release-v0.1.2/png/M4-BND-Mode-4-Future-Boundary-and-Non-Claim.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/M4-BND-Mode-4-Future-Boundary-and-Non-Claim.png
+    dimensions: 1448x1086
+    sha256: afa278b6efb751503c92cc73e6401b920c0f6be8d1c9e2fd1a9f44bca094920f
+    alt_text: M4-BND Mode 4 Future Boundary and Non-Claim separating current AL2 and AM3 evidence from future AM4 adapters, cloud, databases, Terraform, event bus, telemetry, and AL5 exclusions.
+    review_notes: Mode 4 is framed as future/deferred/not current behavior; AL5 is explicitly out of scope.
+
+  - id: V-23
+    title: Release Package Structure
+    status: accepted
+    purpose: Show the release package structure and classify canonical, projection, release-facing, and local-evidence surfaces.
+    stakeholder: new evaluators, maintainers, release reviewers
+    viewpoint: stakeholder and communication; product-package; release governance
+    target_docs:
+      - START-HERE.md
+    png_path: diagrams/release-v0.1.2/png/V-23-Release-Package-Structure.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/V-23-Release-Package-Structure.png
+    dimensions: 1448x1086
+    sha256: a19b3ce67b42c42ee63f1c9a1a21aaa0613b1baf32d1de1951c79b18b29eb47a
+    alt_text: V-23 Release Package Structure showing root release surfaces, specification folders, operational folders, governed fixtures, provider projections, and reader journey.
+    review_notes: Local evidence boundaries are visible; no release publication execution is claimed.
+
+  - id: V-24
+    title: AISRAF Validation Ladder
+    status: accepted
+    purpose: Show the fail-closed validator chain and human-gated release decision flow.
+    stakeholder: maintainers, QA reviewers, release operators
+    viewpoint: release governance; risk; transition control
+    target_docs:
+      - START-HERE.md
+    png_path: diagrams/release-v0.1.2/png/V-24-Validation-Ladder.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/V-24-Validation-Ladder.png
+    dimensions: 1448x1086
+    sha256: 17d363848e07c19398a896b275b0e150a6ab579b9f3b95599b9c1296e0c87245
+    alt_text: V-24 AISRAF Validation Ladder showing package validation, BP12A readiness, run profile checks, AM3 contract/runtime checks, git hygiene, and human release decision.
+    review_notes: The diagram retains no git add, no push, no publish, AM4 future, and AL5 not claimed boundaries.
+
+  - id: V-25
+    title: Publication and License Boundary
+    status: accepted
+    purpose: Explain publication readiness, license posture, and release boundary conditions.
+    stakeholder: founders, legal/release reviewers, maintainers, public evaluators
+    viewpoint: governance; legal/notice; release authority
+    target_docs:
+      - README.md
+    png_path: diagrams/release-v0.1.2/png/V-25-Publication-and-License-Boundary.png
+    thumbnail_path: diagrams/release-v0.1.2/thumbnails/V-25-Publication-and-License-Boundary.png
+    dimensions: 1448x1086
+    sha256: 88ab2e9427d939f4221da11e31ac986a468049a0f88f5ad37258b8f8ccf4781b
+    alt_text: V-25 Publication and License Boundary showing local package, human-gated release candidate, publication and license boundary, publication surfaces, and blocked claims.
+    review_notes: Marketplace publication, AM4 adapter execution, external post-back, production-readiness, and AL5 claims remain blocked without separate authorization.
+
+deferred_visuals:
+  available_deferred:
+    - id: V-05
+      source_file: V-05 Reference Architecture -> Pattern -> Solution Architecture -> Review Run.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-06
+      source_file: V-06 AISRAF Core Reference Model.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-07
+      source_file: V-07 Pattern Anatomy.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-08
+      source_file: V-08 Catalog Object Model.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-09
+      source_file: V-09 Security Ontology Alignment.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-12
+      source_file: V-12 Flow Annotation Field Model.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-13
+      source_file: V-13 DFD-to-Interaction Table Extraction.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-14
+      source_file: V-14 Legend Normalization Flow.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: M1-CON_M1-CMP
+      source_file: M1-CON - M1-CMP.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: M2-CON_M2-CMP
+      source_file: M2-CON - M2-CMP.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-27
+      source_file: V-27 Artifact Consumer Map.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-28
+      source_file: V-28 Skill-to-Output Map.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+    - id: V-29
+      source_file: V-29 Catalog Consumption Map.png
+      reason: second_wave_deferred_for_future_visual_pack_review
+  not_found:
+    - id: V-26
+      expected_title: Canonical-to-Projection Traceability
+      reason: not_present_in_source_visual_folder
+  explicitly_deferred:
+    - source_file: Deep Mode 4 component diagram.png
+      reason: deep_mode_4_component_diagram_deferred_by_scope
+    - source_file: Deep Mode 4 component diagrams 2.png
+      reason: deep_mode_4_component_diagram_deferred_by_scope
+
+rejected_visuals:
+  - source_file: AISRF Local Workbench and Future Cloud Extension.png
+    reason: not_in_requested_first_or_second_wave_and_title_uses_AISRF_not_AISRAF_with_cloud_extension_scope_risk
+
+publication_export_plan:
+  markdown_export: planned_from_existing_markdown_docs_and_diagram_links
+  docx_export: defer_to_github_release_asset_or_future_exact_release_path_authorization
+  pdf_export: defer_to_github_release_asset_or_future_exact_release_path_authorization
+  committed_publication_binaries: none
+  validator_binary_allowlist_change_required: false

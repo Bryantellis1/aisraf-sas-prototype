@@ -43,6 +43,16 @@ Release journey modes in this workflow:
 
 AL5 closed-loop autonomy is not part of the workflow.
 
+## DFD Visual Standard
+
+The public DFD visuals define the annotation standard used by AISRAF review outputs. Data class, authentication, authorization, encryption in transit, and store-at-rest protection must remain explicit where applicable.
+
+![V-10 AISRAF DFD Annotation Legend Card defining flow labels, data class, transport protection, authentication, authorization, storage annotation, and trust-zone conventions.](../diagrams/release-v0.1.2/png/V-10-DFD-Annotation-Legend-Card.png)
+
+![V-11 Annotated DFD Example showing local AISRAF processing zones, flow labels, local stores, controls, and future adapter targets marked not current behavior.](../diagrams/release-v0.1.2/png/V-11-Annotated-DFD-Example.png)
+
+![M1-DFD Mode 1 Input-to-Output DFD showing current local Mode 1 execution with explicit data class, transport, authentication, authorization, and store protection labels.](../diagrams/release-v0.1.2/png/M1-DFD-Mode-1-Input-to-Output-DFD.png)
+
 ## 2. Inputs Expected
 
 The chain reads local files only:

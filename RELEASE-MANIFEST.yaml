@@ -21,13 +21,13 @@
 release_id: aisraf-v0.1.2
 package_name: AISRAF SAS Prototype
 package_version: v0.1.2
-commit_hash: abcad6feb16a94ed71c81f6620032584f22e5a68
-commit_hash_note: Accepted REL0 remediation baseline for release-decision remediation; AM3 stage commit remains historical evidence, not the current release metadata pointer.
-release_status: pre_release_public_safe_local_first_evidence_bound
-release_posture: not_published; not_pushed; not_diagrammed; am3_local_runtime_evidence_proven; am4_not_implemented
-current_gate: WP-12C-REL0-RELEASE-DECISION-REMEDIATION
-next_gate: WP-12C-REL0-RELEASE-DECISION-RERUN
-next_gate_after_rerun: REL0-PUSH-PREP_ONLY_IF_RELEASE_DECISION_PASSES
+commit_hash: cc96644fa5263ccdaabcb0ff7ed9fb6282ac5ab5
+commit_hash_note: Accepted release-decision stage-commit retry closeout HEAD for the evaluation-only public license and notice fix gate.
+release_status: public_source_available_evaluation_only_proof_of_concept_not_published
+release_posture: not_open_source; not_production_software; not_marketplace_published; not_pushed; wp13_visual_pack_registered; am3_local_runtime_evidence_only; am4_not_implemented
+current_gate: WP-12C-REL0-FINAL-PUBLIC-QA
+next_gate: WP-12C-REL0-STAGE-COMMIT_ONLY_IF_FINAL_PUBLIC_QA_PASSES
+next_gate_after_visual_pack: WP-12C-REL0-FINAL-PUBLIC-QA_ACTIVE
 rel0_final_qa_result: WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON
 rel0_release_decision_result: WP-12C-REL0_RELEASE_DECISION_BLOCKED_WITH_REASON
 release_notes_doc: CHANGELOG.md
@@ -210,26 +210,27 @@ known_warnings:
     resolution: local_only_path; excluded from staging via local ignore; ignored, untracked, unstaged, and not a publication artifact
 
 next_gates:
-  - id: WP-12C-REL0-RELEASE-DECISION-REMEDIATION
-    description: Align release-decision metadata, plugin user journey, autonomy terms, exact validator allow-listing, and placeholder license/notice posture
+  - id: WP-12C-REL0-FINAL-PUBLIC-QA
+    description: Final public release QA across public-reader docs, visual pack, legal boundary, plugin UX, publication export posture, validators, and git hygiene
     blocked_by: none_current_gate_active
-  - id: WP-12C-REL0-RELEASE-DECISION-RERUN
-    description: Rerun the founder release decision after remediation
-    blocked_by: WP-12C-REL0-RELEASE-DECISION-REMEDIATION
-  - id: REL0-PUSH-PREP
-    description: Push preparation only if the release decision passes and founder authorization is explicit
-    blocked_by: WP-12C-REL0-RELEASE-DECISION-RERUN
-  - id: WP-13
-    description: Release diagrams and visuals
-    blocked_by: REL0 release decision, push-prep, and explicit founder authorization
+  - id: WP-12C-REL0-STAGE-COMMIT
+    description: Stage and commit only after final public QA passes and explicit human authorization is given
+    blocked_by: WP-12C-REL0-FINAL-PUBLIC-QA
+  - id: WP-12C-REL0-PUSH-PREP
+    description: Push preparation only after the stage/commit gate closes and founder authorization is explicit
+    blocked_by: WP-12C-REL0-STAGE-COMMIT
   - id: AM4-ADAPTERS
     description: External adapter execution work packages
-    blocked_by: REL0 release decision, WP-13 decisions, and explicit founder authorization
+    blocked_by: future explicit founder authorization
 
-license_status: pending_founder_legal_confirmation
+license_status: public_source_available_evaluation_only_selected
+license_type: custom_evaluation_only_source_available
+open_source_status: not_open_source
+source_available_status: public_readable_public_evaluable_only
 license_note: >-
-  LICENSE is a public-safe placeholder (all rights reserved) until founder
-  / legal selects the final public license. NOTICE.md mirrors the placeholder
-  posture. No open-source rights are granted by this placeholder. Public
-  publication remains blocked unless the founder explicitly accepts this
-  placeholder posture for the release lane.
+  LICENSE and NOTICE.md define AISRAF v0.1.2 as a public source-available
+  evaluation-only proof-of-concept. Not open source. Not production software.
+  Not marketplace-published. The license permits evaluation, review,
+  demonstration, and proof-of-concept testing only, and does not grant
+  production use, commercial use, redistribution, hosted service offering,
+  or marketplace publication rights without separate written permission.

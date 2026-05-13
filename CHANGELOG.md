@@ -8,6 +8,8 @@ This changelog follows the spirit of Keep a Changelog and uses [SemVer](https://
 
 AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence. The accepted evidence is local-only, human-gated, validator-backed, and evidence-bound. The day-to-day operator experience remains a local controlled-output workbench; this release does not claim AM4 external adapter execution, AL5 closed-loop autonomy, production operation, external post-back, marketplace publication, or push/publish approval.
 
+License posture: public source-available evaluation-only proof-of-concept. Not open source. Not production software. Not marketplace-published. The license permits evaluation, review, demonstration, and proof-of-concept testing only, and does not grant production use, commercial use, redistribution, hosted service offering, or marketplace publication rights without separate written permission.
+
 Release journey modes are explicit in v0.1.2: Mode 0 read/preview with no writes; Mode 1 AL2 controlled-output workbench as the normal practitioner workflow; Mode 2 AM3 / AL3 local orchestrated runtime evidence as the release-visible local runtime journey/proof path; Mode 3 maintainer validation and release QA; and Mode 4 AM4 external adapter / post-back execution as future only. AL5 closed-loop autonomy remains out of scope.
 
 ### Added
@@ -24,6 +26,7 @@ Release journey modes are explicit in v0.1.2: Mode 0 read/preview with no writes
 
 - **`docs/` allow-list.** `Test-AisrafPackage.ps1` Check 08-folder-content-limits now permits the 5 BP12C-REL0-B release docs files plus README.md in `docs/`. The remaining `docs/` surface remains reserved for Build Package 14.
 - **Plugin bundle and checksum manifest.** Rebuilt by `tools/Build-AisrafCopilotPluginBundle.ps1 -Clean` after the validator update so source/target SHA-256 alignment is preserved across all 199 bundled files.
+- **License and notice posture.** `LICENSE` and `NOTICE.md` now define the public source-available evaluation-only proof-of-concept release posture.
 
 ### Not changed (carry-over)
 
@@ -37,11 +40,11 @@ Release journey modes are explicit in v0.1.2: Mode 0 read/preview with no writes
 - AL5 closed-loop autonomy (out of scope).
 - Release visuals (future WP-13).
 - Release automation (future).
-- Marketplace publication (future).
+- Marketplace publication (future and not granted by the v0.1.2 license).
 
 ### Security and external execution posture
 
-- No external execution claim. The plugin does not contact Jira, Confluence, Lucidchart, MCP servers, cloud runtimes, databases, Terraform, event buses, or telemetry backends.
+- No external execution claim. The plugin does not contact Jira, Confluence, Lucidchart, Rovo/MCP, cloud runtimes, databases, Terraform, event buses, or telemetry backends.
 - All inputs and outputs are local Markdown / YAML / image files under approved run folders.
 - Run-profile validator enforces `external_execution: false` for v0.1.2.
 - Sensitive-data screen runs against run-profile string fields. Operator must affirm sensitive-data redaction.

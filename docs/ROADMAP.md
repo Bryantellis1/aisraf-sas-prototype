@@ -20,10 +20,10 @@
 | Runtime evidence | WP-12C-AM3-QA accepted the bounded AM3 / AL3 local runtime evidence path under `runs/RUN-SMOKE-AM3-001/runtime/` |
 | Release | AISRAF v0.1.2 |
 | Current claim | AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence |
-| Claim limiter | Evidence-path claim only; not full specialist-generated review output execution, production readiness, publication, or AM4 integration |
-| Gate state | REL0 remediation baseline commit `abcad6feb16a94ed71c81f6620032584f22e5a68` is the accepted technical candidate for release-decision remediation |
-| Current gate | WP-12C-REL0-RELEASE-DECISION-REMEDIATION |
-| Next gate | WP-12C-REL0-RELEASE-DECISION-RERUN |
+| Claim limiter | Evidence-path claim only; not full specialist-generated review output execution, production software, publication, or AM4 integration |
+| Gate state | Release-decision stage commit closeout is accepted at HEAD `cc96644fa5263ccdaabcb0ff7ed9fb6282ac5ab5`; founder selected public source-available evaluation-only proof-of-concept posture |
+| Current gate | WP-12C-REL0-FINAL-PUBLIC-QA |
+| Next gate | REL0-STAGE-COMMIT, only if final public QA passes |
 | Deferred autonomy | AM4 external adapter / post-back execution remains future adapter work; AL5 closed-loop autonomy remains out of scope |
 
 ## 1. v0.1.2 Current Claim: AM3 / AL3 Local Runtime Evidence
@@ -39,7 +39,7 @@ AISRAF v0.1.2 ships:
 
 What the current release proves: AISRAF v0.1.2 proves AM3 / AL3 local orchestrated multi-agent runtime evidence, while preserving the AL2 controlled-output local workbench as the everyday operator experience. AM3 evidence is local-only, human-gated, validator-backed, and evidence-bound. AISRAF Orchestrator owns run-state and event log. Specialist handoffs are represented by AM3-01 through AM3-06 request/response pairs. Human gates remain required. The validator ladder returns 0 FAIL; package-validator WARN rows are limited to local-only smoke folders.
 
-License and notice posture: `LICENSE` and `NOTICE.md` are placeholder / evaluation-only / all-rights-reserved documents pending founder/legal confirmation. Public publication remains blocked unless the founder explicitly accepts that placeholder posture for the release lane.
+License and notice posture: `LICENSE` and `NOTICE.md` define a public source-available evaluation-only proof-of-concept. AISRAF v0.1.2 is not open source, not production software, and not marketplace-published. No AM4 adapter execution is included. No Jira, Confluence, Lucidchart, Rovo/MCP, cloud, database, Terraform, event bus, telemetry, or external post-back execution occurs in v0.1.2. AL5 closed-loop autonomy is out of scope.
 
 Release journey modes for v0.1.2:
 
@@ -54,6 +54,14 @@ Release journey modes for v0.1.2:
 AL5 closed-loop autonomy remains out of scope.
 
 What the current release does **not** claim: full specialist-generated review output execution, AM4 external adapter / post-back execution, AL5 closed-loop autonomy, marketplace publication, production operation, or any live external integration.
+
+## Roadmap Visuals
+
+These diagrams separate current evidence, future capability, and release guardrails. They are not runtime, marketplace, production, AM4, or AL5 proof.
+
+![M4-BND Mode 4 Future Boundary and Non-Claim separating current v0.1.2 claims from future AM4 adapters and AL5 exclusions.](../diagrams/release-v0.1.2/png/M4-BND-Mode-4-Future-Boundary-and-Non-Claim.png)
+
+![V-04 Evidence Pack vs Capability Roadmap vs Drift Baseline comparing what is proven now, what is planned later, and what must remain controlled.](../diagrams/release-v0.1.2/png/V-04-Evidence-Pack-vs-Capability-Roadmap-vs-Drift-Baseline.png)
 
 > **AM3 lane accepted local runtime evidence.** AM3 makes no network call, executes no Jira / Confluence / Lucidchart / MCP / cloud / database / Terraform / event bus / telemetry action, and does not introduce closed-loop autonomy. AM3 lane scope, DoD, tests, risks, runtime, and QA are governed by `validation/package-12c-am3-runtime-plan.md`, `validation/package-12c-am3-definition-of-done.md`, `validation/package-12c-am3-test-plan.md`, `validation/package-12c-am3-risk-register.md`, `validation/package-12c-am3-smoke-retry-evidence-report.md`, and `validation/package-12c-am3-qa-report.md`. AM4 external adapter execution remains future.
 
@@ -70,16 +78,18 @@ The WP-12C-AM3 lane delivered the local evidence path for AM3 / AL3 as the closi
 - **WP-12C-AM3-STAGE-COMMIT** — closed at `34c1d55ce79e6bb0f9f274bef335af42600ef3f7` as `WP-12C-AM3_STAGE_COMMIT_PASS_READY_FOR_REL0_FINAL_QA`.
 - **WP-12C-REL0-FINAL-QA** — ran and returned `WP-12C-REL0_FINAL_QA_BLOCKED_WITH_REASON`.
 - **REL0 final QA remediation** — closed at `abcad6feb16a94ed71c81f6620032584f22e5a68` as the accepted technical remediation baseline.
-- **WP-12C-REL0-RELEASE-DECISION-REMEDIATION** — current gate. Align release-decision metadata, plugin reader journey, plain-language autonomy terms, and exact validator allow-listing. No staging, push, publish, runtime edits, WP-13 work, or AM4 work.
-- **WP-12C-REL0-RELEASE-DECISION-RERUN** — next gate after this remediation passes.
+- **WP-12C-REL0-RELEASE-DECISION-REMEDIATION** — closed predecessor gate. Aligned release-decision metadata, plugin reader journey, plain-language autonomy terms, and exact validator allow-listing.
+- **WP-12C-REL0-RELEASE-DECISION-RERUN / PUBLIC LICENSE NOTICE FIX EVAL** — accepted prior state for WP-13 entry. Public source-available evaluation-only posture is the release boundary.
+- **WP-13-FIRST-PUBLIC-VISUAL-PACK-AND-PUBLICATION-EXPORT / PREP** — accepted predecessor gate. Registers the first public-quality visual pack, links visuals into public docs, records Markdown/Word/PDF publication export posture without committing DOCX/PDF binaries, and passes WP13 final QA / publication export prep.
+- **WP-12C-REL0-FINAL-PUBLIC-QA** — current gate. Verifies public-reader readiness, legal boundary, visual clarity, plugin UX, publication export posture, validator ladder, and git hygiene before stage/commit.
 
 Each AM3 gate requires the previous gate's evidence and passes the validator ladder with 0 FAIL.
 
 ## 3. WP-13: Release Visuals
 
-WP-13 covers release diagrams and release visuals (architecture diagrams, workflow diagrams, plugin install diagrams, evidence diagrams). WP-13 has not started in v0.1.2; `diagrams/` and `release/` remain README-only folders reserved for their owning build packages.
+WP-13 covers release diagrams and release visuals for the public evaluation package. The first public-quality visual pack is governed under [../diagrams/release-v0.1.2/](../diagrams/release-v0.1.2/) and registered in [../diagrams/diagram-registry.yaml](../diagrams/diagram-registry.yaml).
 
-WP-13 begins only after the REL0 release decision closes and a later gate authorizes publication preparation. WP-13 remains blocked during release-decision remediation and release-decision rerun.
+WP-13 does not create DOCX/PDF/PPTX/ZIP files, push, tag, create a GitHub Release, start AM4, edit runtime code, edit AM3 contracts, edit AM3 smoke evidence, edit `runs/RUN-001/`, edit samples, or mutate canonical/provider surfaces. Word and PDF publication outputs remain deferred to GitHub Release assets or later exact-path release authorization.
 
 ## 4. Historical Orchestration Planning Names
 
@@ -125,9 +135,11 @@ v0.1.2 (AM3 / AL3 local runtime evidence accepted; not published)
   → WP-12C-AM3-STAGE-COMMIT  (closed — commit 34c1d55ce79e6bb0f9f274bef335af42600ef3f7)
   → REL0-FINAL-QA            (ran — blockers found)
   → REL0 final QA remediation (closed — commit abcad6feb16a94ed71c81f6620032584f22e5a68)
-  → WP-12C-REL0-RELEASE-DECISION-REMEDIATION (active)
-  → WP-12C-REL0-RELEASE-DECISION-RERUN
-  → WP-13 release visuals    (still blocked by REL0 release decision closure and BP12-SAMPLE-DFD blocker)
+  → WP-12C-REL0-RELEASE-DECISION-REMEDIATION (closed predecessor)
+  → WP-12C-REL0-RELEASE-DECISION-RERUN / PUBLIC LICENSE NOTICE FIX EVAL (accepted prior state)
+  → WP-13 release visuals and publication export prep (closed — ready for final public QA)
+  → WP-12C-REL0-FINAL-PUBLIC-QA (current)
+  → REL0-STAGE-COMMIT
   → AL4 adapter work packages (one per adapter; future)
   → (AL5 is not on the roadmap)
 ```
