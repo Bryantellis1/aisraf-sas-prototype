@@ -1553,7 +1553,8 @@ $validationAllowed += @(
     'package-12c-rel0-operating-flow-ux-stage-commit-report.md',
     'package-12c-rel0-cross-shell-command-ux-report.md',
     'package-12c-rel0-plugin-install-ux-packaging-report.md',
-    'package-12c-rel0-stakeholder-asset-refresh-report.md'
+    'package-12c-rel0-stakeholder-asset-refresh-report.md',
+    'package-12c-rel0-push-prep-report.md'
 )
 $validationFails = @()
 if (Test-Path -LiteralPath $validationAbs -PathType Container) {

@@ -9,7 +9,7 @@ plugin_id: aisraf-copilot-plugin
 work_package: WP-12C-K3C
 bundle_target: plugins/aisraf-copilot-plugin/bundle
 manifest_path: plugins/aisraf-copilot-plugin/bundle-checksum-manifest.yaml
-generated_at_utc: 2026-05-14T00:07:28Z
+generated_at_utc: 2026-05-14T00:17:30Z
 entry_count: 201
 hash_algorithm: sha256
 entries:
@@ -811,8 +811,8 @@ entries:
     target_sha256: 8afe38dde86b05636754c3c33ae49a2d66b8e279081cddc72fb7e7ba2ff2d9ca
   - source_path: tools/Test-AisrafPackage.ps1
     target_path: plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafPackage.ps1
-    source_sha256: 20cc39bce76375a3751040810db10fd03997766a08848006df34cb4ae7d76229
-    target_sha256: 20cc39bce76375a3751040810db10fd03997766a08848006df34cb4ae7d76229
+    source_sha256: 27f93c9770e2401e2603fe577b584f8ae40b02104b4665e97fe8918e0aee7cc1
+    target_sha256: 27f93c9770e2401e2603fe577b584f8ae40b02104b4665e97fe8918e0aee7cc1
   - source_path: tools/Test-AisrafRunProfile.ps1
     target_path: plugins/aisraf-copilot-plugin/bundle/tools/Test-AisrafRunProfile.ps1
     source_sha256: e48074d4b985eb3579ac256bc66ad726a29c0e47e28afbfcd4f9a7ea77b53cc7
