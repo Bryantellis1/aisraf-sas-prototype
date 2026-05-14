@@ -1545,6 +1545,7 @@ $validationAllowed += @(
     'package-13-first-public-visual-pack-bp12a-drift-policy-report.md',
     'package-13-final-qa-and-publication-export-prep-report.md',
     'package-12c-rel0-final-public-qa-report.md',
+    'package-12c-rel0-final-public-qa-rerun-report.md',
     'package-12c-rel0-post-commit-qa-report.md',
     'package-12c-rel0-github-prerelease-stakeholder-asset-pack-report.md',
     'package-12c-rel0-product-flow-adapter-roadmap-rebase-report.md',
